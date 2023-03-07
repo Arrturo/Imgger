@@ -53,3 +53,4 @@ class Subcomment(models.Model):
 
     def __str__(self):
         return f"{self.content[:20]}"
+        return f"{self.comment[:20]}"
