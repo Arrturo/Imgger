@@ -204,17 +204,5 @@ class Query(graphene.ObjectType):
 
     def resolve_images(self, info, **kwargs):
         return Image.objects.all()
-
-class Mutation(graphene.ObjectType):
-    create_user = CreateUserMutation.Field()
-    update_user = UpdateUserMutation.Field()
-    delete_user = DeleteUserMutation.Field()
-    create_post = CreatePostMutation.Field()
-    update_post = UpdatePostMutation.Field()
-    delete_post = DeletePostMutation.Field()
-    create_category = CreateCategoryMutation.Field()
-    update_category = UpdateCategoryMutation.Field()
-    delete_category = DeleteCategoryMutation.Field()
     
-schema = graphene.Schema(query=Query, mutation=Mutation)
-
+schema = graphene.Schema(query=Query)
