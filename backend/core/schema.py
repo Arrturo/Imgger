@@ -38,7 +38,6 @@ class SubcommentType(DjangoObjectType):
         fields = "__all__"
 
 
-
 class CreateUserMutation(graphene.Mutation):
     class Arguments:
         username = graphene.String(required=True)
@@ -130,47 +129,7 @@ class UpdatePostMutation(graphene.Mutation):
             post.category = category
         post.save()
         return UpdatePostMutation(post=post)
-
-class DeletePostMutation(graphene.Mutation):
-    class Arguments:
-        post_id = graphene.ID(required=True)
-
-    post = graphene.Field(PostType)
-
-    def mutate(self, info, post_id):
-        post = Post.objects.get(id=post_id)
-        post.delete()
-        return DeletePostMutation(post=post)
-
-
-class UpdatePostMutation(graphene.Mutation):
-    class Arguments:
-        post_id = graphene.ID(required=True)
-        title = graphene.String()
-        description = graphene.String()
-        user_id = graphene.ID()
-        image_id = graphene.ID()
-        category_id = graphene.ID()
-
-    post = graphene.Field(PostType)
-
-    def mutate(self, info, post_id, title, description, user_id, image_id, category_id):
-        post = Post.objects.get(id=post_id)
-        if title:
-            post.title = title
-        if description:
-            post.description = description
-        if user_id:
-            user = get_user_model().objects.get(id=user_id)
-            post.user = user
-        if image_id:
-            image = Image.objects.get(id=image_id)
-            post.image = image
-        if category_id:
-            category = Category.objects.get(id=category_id)
-            post.category = category
-        post.save()
-        return UpdatePostMutation(post=post)
+    
 
 class DeletePostMutation(graphene.Mutation):
     class Arguments:
@@ -245,56 +204,6 @@ class Query(graphene.ObjectType):
 
     def resolve_images(self, info, **kwargs):
         return Image.objects.all()
-class UpdateCategoryMutation(graphene.Mutation):
-    class Arguments:
-        category_id = graphene.ID(required=True)
-        name = graphene.String()
-
-    category = graphene.Field(CategoryType)
-
-    def mutate(self, info, category_id, name):
-        category = Category.objects.get(id=category_id)
-        if name:
-            category.name = name
-        category.save()
-        return UpdateCategoryMutation(category=category)
-
-class DeleteCategoryMutation(graphene.Mutation):
-    class Arguments:
-        category_id = graphene.ID(required=True)
-
-    category = graphene.Field(CategoryType)
-
-    def mutate(self, info, category_id):
-        category = Category.objects.get(id=category_id)
-        category.delete()
-        return DeleteCategoryMutation(category=category)
-
-class Query(graphene.ObjectType):
-    users = graphene.List(UserType)
-    posts = graphene.List(PostType)
-    categories = graphene.List(CategoryType)
-    images = graphene.List(ImageType)
-    comments = graphene.List(CommentType)
-    subcomments = graphene.List(SubcommentType)
-
-    def resolve_users(self, info, **kwargs):
-        return User.objects.all()
-
-    def resolve_posts(self, info, **kwargs):
-        return Post.objects.all()
-
-    def resolve_categories(self, info, **kwargs):
-        return Category.objects.all()
-
-    def resolve_comments(self, info, **kwargs):
-        return Comment.objects.all()
-
-    def resolve_subcomments(self, info, **kwargs):
-        return Subcomment.objects.all()
-
-    def resolve_images(self, info, **kwargs):
-        return Image.objects.all()
 
 class Mutation(graphene.ObjectType):
     create_user = CreateUserMutation.Field()
@@ -309,4 +218,4 @@ class Mutation(graphene.ObjectType):
     update_category = UpdateCategoryMutation.Field()
     delete_category = DeleteCategoryMutation.Field()
     
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query, mutation=Mutation)
