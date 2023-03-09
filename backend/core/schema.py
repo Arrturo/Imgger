@@ -143,6 +143,47 @@ class DeletePostMutation(graphene.Mutation):
         return DeletePostMutation(post=post)
 
 
+class UpdatePostMutation(graphene.Mutation):
+    class Arguments:
+        post_id = graphene.ID(required=True)
+        title = graphene.String()
+        description = graphene.String()
+        user_id = graphene.ID()
+        image_id = graphene.ID()
+        category_id = graphene.ID()
+
+    post = graphene.Field(PostType)
+
+    def mutate(self, info, post_id, title, description, user_id, image_id, category_id):
+        post = Post.objects.get(id=post_id)
+        if title:
+            post.title = title
+        if description:
+            post.description = description
+        if user_id:
+            user = get_user_model().objects.get(id=user_id)
+            post.user = user
+        if image_id:
+            image = Image.objects.get(id=image_id)
+            post.image = image
+        if category_id:
+            category = Category.objects.get(id=category_id)
+            post.category = category
+        post.save()
+        return UpdatePostMutation(post=post)
+
+class DeletePostMutation(graphene.Mutation):
+    class Arguments:
+        post_id = graphene.ID(required=True)
+
+    post = graphene.Field(PostType)
+
+    def mutate(self, info, post_id):
+        post = Post.objects.get(id=post_id)
+        post.delete()
+        return DeletePostMutation(post=post)
+
+
 class CreateCategoryMutation(graphene.Mutation):
     class Arguments:
         name = graphene.String(required=True)
@@ -204,5 +245,16 @@ class Query(graphene.ObjectType):
 
     def resolve_images(self, info, **kwargs):
         return Image.objects.all()
+
+class Mutation(graphene.ObjectType):
+    create_user = CreateUserMutation.Field()
+    update_user = UpdateUserMutation.Field()
+    delete_user = DeleteUserMutation.Field()
+    create_post = CreatePostMutation.Field()
+    update_post = UpdatePostMutation.Field()
+    delete_post = DeletePostMutation.Field()
+    create_category = CreateCategoryMutation.Field()
+    update_category = UpdateCategoryMutation.Field()
+    delete_category = DeleteCategoryMutation.Field()
     
 schema = graphene.Schema(query=Query)
