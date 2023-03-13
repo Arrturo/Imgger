@@ -1,5 +1,4 @@
 import graphene
-from graphene_django import DjangoObjectType
 from .models import Post, Category, Image, Comment, Subcomment
 from django.contrib.auth.models import User
 from .mutations.users import CreateUserMutation, UpdateUserMutation, DeleteUserMutation
@@ -45,6 +44,13 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
 class AuthMutatuion(graphene.ObjectType):
     register = mutations.Register.Field()
+    verify_account = mutations.VerifyAccount.Field()
+    token_auth = mutations.ObtainJSONWebToken.Field()
+    update_account = mutations.UpdateAccount.Field()
+    # resend_activation_email = mutations.ResendActivationEmail.Field()
+    send_password_reset_email = mutations.SendPasswordResetEmail.Field()
+    password_reset = mutations.PasswordReset.Field()
+    password_change = mutations.PasswordChange.Field()
 
 
 class Mutation(AuthMutatuion, graphene.ObjectType):

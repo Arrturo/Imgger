@@ -139,6 +139,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# AUTH_USER_MODEL = 'core.ExtendUser'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -162,6 +163,7 @@ GRAPHQL_JWT = {
         "graphql_auth.mutations.Register"
     ],
     "JWT_VERIFY_EXPIRATION": True,
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
 }
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
