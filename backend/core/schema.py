@@ -8,16 +8,13 @@ from .mutations.categories import CreateCategoryMutation, UpdateCategoryMutation
 from .mutations.comments import CreateCommentMutation, UpdateCommentMutation, DeleteCommentMutation
 from .mutations.subcomments import CreateSubCommentMutation, UpdateSubCommentMutation, DeleteSubCommentMutation
 from .types import UserType, PostType, CategoryType, CommentType, ImageType, SubcommentType
-from .mutations.users import CreateUserMutation, UpdateUserMutation, DeleteUserMutation
-from .mutations.posts import CreatePostMutation, UpdatePostMutation, DeletePostMutation
-from .mutations.categories import CreateCategoryMutation, UpdateCategoryMutation, DeleteCategoryMutation
-from .mutations.comments import CreateCommentMutation, UpdateCommentMutation, DeleteCommentMutation
-from .mutations.subcomments import CreateSubCommentMutation, UpdateSubCommentMutation, DeleteSubCommentMutation
-from .types import UserType, PostType, CategoryType, CommentType, ImageType, SubcommentType
+from graphql_auth.schema import UserQuery, MeQuery
+from graphql_auth import mutations
 
 
-class Query(graphene.ObjectType):
+class Query(UserQuery, MeQuery, graphene.ObjectType):
     users = graphene.List(UserType)
+    users_by_id = graphene.Field(UserType, id=graphene.Int())
     posts = graphene.List(PostType)
     categories = graphene.List(CategoryType)
     images = graphene.List(ImageType)
@@ -26,7 +23,10 @@ class Query(graphene.ObjectType):
 
     def resolve_users(self, info, **kwargs):
         return User.objects.all()
-
+    
+    def resolve_users_by_id(self, info, id):
+        return User.objects.get(id=id)
+        
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all()
 
@@ -42,17 +42,26 @@ class Query(graphene.ObjectType):
     def resolve_images(self, info, **kwargs):
         return Image.objects.all()
 
-class Mutation(graphene.ObjectType):
+
+class AuthMutatuion(graphene.ObjectType):
+    register = mutations.Register.Field()
+
+
+class Mutation(AuthMutatuion, graphene.ObjectType):
     create_user = CreateUserMutation.Field()
     update_user = UpdateUserMutation.Field()
     delete_user = DeleteUserMutation.Field()
     create_post = CreatePostMutation.Field()
     update_post = UpdatePostMutation.Field()
     delete_post = DeletePostMutation.Field()
-    update_post = UpdatePostMutation.Field()
-    delete_post = DeletePostMutation.Field()
     create_category = CreateCategoryMutation.Field()
     update_category = UpdateCategoryMutation.Field()
     delete_category = DeleteCategoryMutation.Field()
+    create_comment = CreateCommentMutation.Field()
+    update_comment = UpdateCommentMutation.Field()
+    delete_comment = DeleteCommentMutation.Field()
+    create_subcomment = CreateSubCommentMutation.Field()
+    update_subcomment = UpdateSubCommentMutation.Field()
+    delete_subcomment = DeleteSubCommentMutation.Field()
     
 schema = graphene.Schema(query=Query, mutation=Mutation)

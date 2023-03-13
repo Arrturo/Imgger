@@ -2,12 +2,14 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-import graphene
+
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
+
     def __str__(self):
         return f"{self.name}"
+
 
 class Image(models.Model):
     file = models.ImageField()
@@ -26,6 +28,7 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.title}"
 
+
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.CharField(max_length=2555)
@@ -43,4 +46,3 @@ class Subcomment(models.Model):
 
     def __str__(self):
         return f"{self.content[:20]}"
-        return f"{self.comment[:20]}"
