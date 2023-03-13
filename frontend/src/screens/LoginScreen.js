@@ -29,14 +29,14 @@ function LoginScreen() {
 
             <Form onSubmit={submitHandler} className="text-2xl">
                 <Form.Group controlId='email'>
-                    <Form.Label>Email address</Form.Label>
+                    <Form.Label><i class="fa-solid fa-at"></i> Email address</Form.Label>
                         <Form.Control type='email' placeholder='Enter your email address' value={email} onChange={(e)=>setEmail(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId='password' className="mt-3">
-                    <Form.Label>Password</Form.Label>
+                    <Form.Label><i class="fa-solid fa-lock"></i> Password</Form.Label>
                         <Form.Control type='password' placeholder='Enter your password' value={password} onChange={(e)=>setPassword(e.target.value)}>
                             
                         </Form.Control>
