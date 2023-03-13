@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Post, Category, Image, Comment, Subcomment, ExtendUser
+from .models import Post, Category, Image, Comment, Subcomment
 from django.apps import apps
 
 

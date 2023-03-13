@@ -37,6 +37,7 @@ class UpdateUserMutation(graphene.Mutation):
         user.save()
         return UpdateUserMutation(user=user)
 
+
 class DeleteUserMutation(graphene.Mutation):
     class Arguments:
         user_id = graphene.ID(required=True)

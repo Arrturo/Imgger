@@ -4,11 +4,11 @@ from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 
 
-class ExtendUser(AbstractUser):
-    email = models.EmailField(max_length=255, blank=False, verbose_name='email')
-
-    USERNAME_FIELD = 'username'
-    EMAIL_FIELD = 'email'
+# class ExtendUser(AbstractUser):
+#     email = models.EmailField(max_length=255, blank=False, verbose_name='email')
+#
+#     USERNAME_FIELD = 'username'
+#     EMAIL_FIELD = 'email'
 
 
 class Category(models.Model):
@@ -28,7 +28,7 @@ class Post(models.Model):
     dislikes = models.IntegerField(default=0)
     description = models.TextField(max_length=255, null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(ExtendUser, null=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, null=False, on_delete=models.CASCADE)
 
@@ -37,7 +37,7 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    user = models.ForeignKey(ExtendUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.CharField(max_length=2555)
     create_time = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -46,7 +46,7 @@ class Comment(models.Model):
         return f"{self.comment[:20]}"
 
 class Subcomment(models.Model):
-    user = models.ForeignKey(ExtendUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
     content = models.CharField(max_length=2555)
     create_time = models.DateTimeField(auto_now_add=True)
