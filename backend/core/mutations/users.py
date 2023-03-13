@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from ..types import UserType
 import graphene
 
+
 class CreateUserMutation(graphene.Mutation):
     class Arguments:
         username = graphene.String(required=True)
@@ -35,6 +36,7 @@ class UpdateUserMutation(graphene.Mutation):
             user.set_password(password)
         user.save()
         return UpdateUserMutation(user=user)
+
 
 class DeleteUserMutation(graphene.Mutation):
     class Arguments:
