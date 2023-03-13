@@ -34,42 +34,42 @@ function RegisterScreen() {
             <Form onSubmit={submitHandler} className="text-2xl">
 
                 <Form.Group controlId='firstName' className="mt-3">
-                    <Form.Label>First name</Form.Label>
+                    <Form.Label><i class="fa-solid fa-user-large"></i> First name</Form.Label>
                         <Form.Control type='text' placeholder='Enter your first name' value={firstName} onChange={(e)=>setFirstName(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId='secondName' className="mt-3">
-                    <Form.Label>Second name</Form.Label>
+                    <Form.Label><i class="fa-solid fa-user-large"></i> Second name</Form.Label>
                         <Form.Control type='text' placeholder='Enter your second name' value={secondName} onChange={(e)=>setSecondName(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId='nickName' className="mt-3">
-                    <Form.Label>Nickname</Form.Label>
+                    <Form.Label><i class="fa-solid fa-user-tag"></i> Nickname</Form.Label>
                         <Form.Control type='text' placeholder='Enter your nickname' value={nickname} onChange={(e)=>setNickname(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId='email' className="mt-3">
-                    <Form.Label>Email address</Form.Label>
+                    <Form.Label><i class="fa-solid fa-at"></i> Email address</Form.Label>
                         <Form.Control type='email' placeholder='Enter your email address' value={email} onChange={(e)=>setEmail(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId='password' className="mt-3">
-                    <Form.Label>Password</Form.Label>
+                    <Form.Label><i class="fa-solid fa-lock"></i> Password</Form.Label>
                         <Form.Control type='password' placeholder='Enter your password' value={password} onChange={(e)=>setPassword(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId='confirmPassword' className="mt-3">
-                    <Form.Label>Confirm Password</Form.Label>
+                    <Form.Label><i class="fa-solid fa-lock"></i> Confirm Password</Form.Label>
                         <Form.Control type='password' placeholder='Enter your password again' value={confirmPassword} onChange={(e)=>setConfirmPassword(e.target.value)}>
                             
                         </Form.Control>
