@@ -8,6 +8,12 @@ from .mutations.categories import CreateCategoryMutation, UpdateCategoryMutation
 from .mutations.comments import CreateCommentMutation, UpdateCommentMutation, DeleteCommentMutation
 from .mutations.subcomments import CreateSubCommentMutation, UpdateSubCommentMutation, DeleteSubCommentMutation
 from .types import UserType, PostType, CategoryType, CommentType, ImageType, SubcommentType
+from .mutations.users import CreateUserMutation, UpdateUserMutation, DeleteUserMutation
+from .mutations.posts import CreatePostMutation, UpdatePostMutation, DeletePostMutation
+from .mutations.categories import CreateCategoryMutation, UpdateCategoryMutation, DeleteCategoryMutation
+from .mutations.comments import CreateCommentMutation, UpdateCommentMutation, DeleteCommentMutation
+from .mutations.subcomments import CreateSubCommentMutation, UpdateSubCommentMutation, DeleteSubCommentMutation
+from .types import UserType, PostType, CategoryType, CommentType, ImageType, SubcommentType
 
 
 class Query(graphene.ObjectType):
