@@ -8,9 +8,11 @@ from .mutations.categories import CreateCategoryMutation, UpdateCategoryMutation
 from .mutations.comments import CreateCommentMutation, UpdateCommentMutation, DeleteCommentMutation
 from .mutations.subcomments import CreateSubCommentMutation, UpdateSubCommentMutation, DeleteSubCommentMutation
 from .types import UserType, PostType, CategoryType, CommentType, ImageType, SubcommentType
+from graphql_auth.schema import UserQuery, MeQuery
+from graphql_auth import mutations
 
 
-class Query(graphene.ObjectType):
+class Query(UserQuery, MeQuery, graphene.ObjectType):
     users = graphene.List(UserType)
     posts = graphene.List(PostType)
     categories = graphene.List(CategoryType)
@@ -36,13 +38,16 @@ class Query(graphene.ObjectType):
     def resolve_images(self, info, **kwargs):
         return Image.objects.all()
 
-class Mutation(graphene.ObjectType):
+
+class AuthMutatuion(graphene.ObjectType):
+    register = mutations.Register.Field()
+
+
+class Mutation(AuthMutatuion, graphene.ObjectType):
     create_user = CreateUserMutation.Field()
     update_user = UpdateUserMutation.Field()
     delete_user = DeleteUserMutation.Field()
     create_post = CreatePostMutation.Field()
-    update_post = UpdatePostMutation.Field()
-    delete_post = DeletePostMutation.Field()
     update_post = UpdatePostMutation.Field()
     delete_post = DeletePostMutation.Field()
     create_category = CreateCategoryMutation.Field()
