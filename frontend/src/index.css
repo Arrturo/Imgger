@@ -8,3 +8,36 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+*::selection{
+  background-color: gold;
+  color: black;
+}
+
+main{
+  background-color: #fffbdf;
+}
+
+.formularz{
+  background: radial-gradient(circle at 50% 100%, #e7d8a280 5%, #e7d8a2 5% 10%, #e7d8a280 10% 15%, #e7d8a2 15% 20%, #e7d8a280 20% 25%, #e7d8a2 25% 30%, #e7d8a280 30% 35%, #e7d8a2 35% 40%, transparent 40%), radial-gradient(circle at 100% 50%, #e7d8a280 5%, #e7d8a2 5% 10%, #e7d8a280 10% 15%, #e7d8a2 15% 20%, #e7d8a280 20% 25%, #e7d8a2 25% 30%, #e7d8a280 30% 35%, #e7d8a2 35% 40%, transparent 40%), radial-gradient(circle at 50% 0%, #e7d8a280 5%, #e7d8a2 5% 10%, #e7d8a280 10% 15%, #e7d8a2 15% 20%, #e7d8a280 20% 25%, #e7d8a2 25% 30%, #e7d8a280 30% 35%, #e7d8a2 35% 40%, transparent 40%), radial-gradient(circle at 0 50%, #e7d8a280 5%, #e7d8a2 5% 10%, #e7d8a280 10% 15%, #e7d8a2 15% 20%, #e7d8a280 20% 25%, #e7d8a2 25% 30%, #e7d8a280 30% 35%, #e7d8a2 35% 40%, transparent 40%);
+  background-size: 3em 3em;
+  background-color: #ffffff;
+  opacity: 1
+  
+}
+
+.button-primary{
+  margin-left: 50%;
+  transform: translateX(-50%);
+  background-color: yellow;
+  color: black;
+  font-weight: bold;
+}
+
+.social-icon{
+  font-size: 50px;
+}
+
+.footer{
+  background-color: #fcf5bb;
+}
