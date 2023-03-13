@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from .models import Post, Category, Image, Comment, Subcomment
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 
 class UserType(DjangoObjectType):
@@ -180,12 +181,12 @@ class DeleteCategoryMutation(graphene.Mutation):
         return DeleteCategoryMutation(category=category)
 
 class Query(graphene.ObjectType):
-    users = graphene.List(UserType)
-    posts = graphene.List(PostType)
-    categories = graphene.List(CategoryType)
-    images = graphene.List(ImageType)
-    comments = graphene.List(CommentType)
-    subcomments = graphene.List(SubcommentType)
+    users = graphene.Field(UserType, id=graphene.Int())
+    posts = graphene.Field(PostType, id=graphene.Int())
+    categories = graphene.Field(CategoryType, id=graphene.Int())
+    images = graphene.Field(ImageType, id=graphene.Int())
+    comments = graphene.Field(CommentType, id=graphene.Int())
+    subcomments = graphene.Field(SubcommentType, id=graphene.Int())
 
     def resolve_users(self, info, **kwargs):
         return User.objects.all()
