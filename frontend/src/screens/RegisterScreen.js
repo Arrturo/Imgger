@@ -3,26 +3,44 @@ import FormContainer from '../components/FormContainer';
 import {Form, Button, Row, Col, FormGroup} from 'react-bootstrap'
 import {Link, useNavigate, useLocation} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
+import { register } from '../actions/userActions';
+import Message from '../components/Message';
+import Loader from '../components/Loader';
 
 function RegisterScreen() {
 
-    const [firstName, setFirstName] = useState('')
-    const [secondName, setSecondName] = useState('')
-    const [nickname, setNickname] = useState('')
+    const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [message, setMessage] = useState('')
 
     const dispatch = useDispatch()
 
     const location = useLocation()
     const navigate = useNavigate()
 
+    const userRegister = useSelector(state => state.userRegister)
+    const {error, loading, userInfo} = userRegister
 
 
+
+    useEffect(() => {
+        if(userInfo?.data?.register?.success === true){
+            navigate('/login')
+            window.location.reload();
+        }
+    }, [navigate, userInfo])
+
+    
     
     const submitHandler = (e) => {
         e.preventDefault()
+        if(password != confirmPassword){
+            setMessage('Podane hasła muszą być identyczne!')
+        }else{
+            dispatch(register(username, email, password, confirmPassword))
+        }
     }
 
 
@@ -30,26 +48,15 @@ function RegisterScreen() {
     <div>
         <FormContainer >
             <h1 className="text-5xl text-center mb-5 underline decoration-double decoration-amber-500">Sign up</h1>
-
+            {message && <Message variant='danger'>{message}</Message>}
+            {error && <Message variant='danger'>{error}</Message>}
+            {loading && <Loader />}
             <Form onSubmit={submitHandler} className="text-2xl">
 
-                <Form.Group controlId='firstName' className="mt-3">
-                    <Form.Label><i class="fa-solid fa-user-large"></i> First name</Form.Label>
-                        <Form.Control type='text' placeholder='Enter your first name' value={firstName} onChange={(e)=>setFirstName(e.target.value)}>
-                            
-                        </Form.Control>
-                </Form.Group>
 
-                <Form.Group controlId='secondName' className="mt-3">
-                    <Form.Label><i class="fa-solid fa-user-large"></i> Second name</Form.Label>
-                        <Form.Control type='text' placeholder='Enter your second name' value={secondName} onChange={(e)=>setSecondName(e.target.value)}>
-                            
-                        </Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId='nickName' className="mt-3">
-                    <Form.Label><i class="fa-solid fa-user-tag"></i> Nickname</Form.Label>
-                        <Form.Control type='text' placeholder='Enter your nickname' value={nickname} onChange={(e)=>setNickname(e.target.value)}>
+                <Form.Group controlId='username' className="mt-3">
+                    <Form.Label><i class="fa-solid fa-user-tag"></i> Username</Form.Label>
+                        <Form.Control type='text' placeholder='Enter your nickname' value={username} onChange={(e)=>setUsername(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>

@@ -2,10 +2,27 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { LinkContainer } from 'react-router-bootstrap'
+import {useDispatch, useSelector} from 'react-redux'
+import {logout} from '../actions/userActions'
 import '../index.css';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+
 
 
 function Header() {
+
+	const userLogin = useSelector(state => state.userLogin)
+    const {userInfo} = userLogin
+
+
+
+	const dispatch = useDispatch()
+
+
+	const logoutHandler = () =>{
+		dispatch(logout())
+		localStorage.clear()
+	}
 
 	return (
         <header className="text-2xl">
@@ -20,12 +37,27 @@ function Header() {
                             <LinkContainer to='/newpost'>
                                 <Nav.Link className="hover:text-amber-500 text-amber-200"> <i class="fa-solid fa-plus"></i> New post </Nav.Link>
                             </LinkContainer>
-							<LinkContainer to='/login' >
-								<Nav.Link className="hover:text-amber-500 text-amber-200"><i class="fa-solid fa-right-to-bracket"></i> Sign in</Nav.Link>
-							</LinkContainer>														
-							<LinkContainer to='/register' >
-								<Nav.Link className="hover:text-amber-400 text-amber-200"> Sign up</Nav.Link>
-							</LinkContainer>														
+
+							{userInfo ? (
+								<NavDropdown title={`Witaj ${userInfo?.user?.username} !`} id='username' className="pr-5">
+									<LinkContainer to='/profile'>
+									<NavDropdown.Item className="hover:text-amber-400"><i class="fa-solid fa-address-card"></i> Mój profil</NavDropdown.Item>
+									</LinkContainer>
+									<NavDropdown.Item onClick={logoutHandler} className="hover:text-amber-400"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</NavDropdown.Item>
+								</NavDropdown>
+								) : (
+								<>
+									<LinkContainer to='/login' >
+									<Nav.Link className="hover:text-amber-500 text-amber-200"><i class="fa-solid fa-right-to-bracket"></i> Sign in</Nav.Link>
+									</LinkContainer>
+
+									<LinkContainer to='/register' >
+									<Nav.Link className="hover:text-amber-500 text-amber-200"><i class="fa-solid fa-right-to-bracket"></i> Sign up</Nav.Link>
+									</LinkContainer>
+								</>
+								)}
+
+
 						</Nav>
 					</Navbar.Collapse>
 				</Container>

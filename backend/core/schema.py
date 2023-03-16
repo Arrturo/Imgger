@@ -9,6 +9,7 @@ from .mutations.subcomments import CreateSubCommentMutation, UpdateSubCommentMut
 from .types import UserType, PostType, CategoryType, CommentType, ImageType, SubcommentType
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
+import graphql_jwt
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
@@ -65,6 +66,5 @@ class Mutation(AuthMutatuion, graphene.ObjectType):
     create_subcomment = CreateSubCommentMutation.Field()
     update_subcomment = UpdateSubCommentMutation.Field()
     delete_subcomment = DeleteSubCommentMutation.Field()
-
     
 schema = graphene.Schema(query=Query, mutation=Mutation)
