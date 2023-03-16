@@ -3,10 +3,15 @@ import FormContainer from '../components/FormContainer';
 import {Form, Button, Row, Col, FormGroup} from 'react-bootstrap'
 import {Link, useNavigate, useLocation} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
+import {login} from '../actions/userActions'
+import axios from 'axios';
+import Message from '../components/Message'
+import Loader from '../components/Loader'
+
 
 function LoginScreen() {
 
-    const [email, setEmail] = useState('')
+    const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
     const dispatch = useDispatch()
@@ -14,11 +19,22 @@ function LoginScreen() {
     const location = useLocation()
     const navigate = useNavigate()
 
+    const userLogin = useSelector(state => state.userLogin)
+    const {error, loading, userInfo} = userLogin
 
+    const redirect = location.search ? location.search.split('=')[1] : '/'
 
-    
+    useEffect(() => {
+        if(userInfo){
+            navigate(redirect)
+        }else{
+            navigate('/login')
+        }
+    }, [navigate, userInfo, redirect])
+
     const submitHandler = (e) => {
         e.preventDefault()
+        dispatch(login(username, password))
     }
 
 
@@ -27,10 +43,13 @@ function LoginScreen() {
         <FormContainer >
             <h1 className="text-5xl text-center mb-5 underline decoration-double decoration-amber-500">Sign in</h1>
 
+            {error && <Message variant='danger'>{error}</Message>}
+            {loading && <Loader />}
+
             <Form onSubmit={submitHandler} className="text-2xl">
-                <Form.Group controlId='email'>
-                    <Form.Label><i class="fa-solid fa-at"></i> Email address</Form.Label>
-                        <Form.Control type='email' placeholder='Enter your email address' value={email} onChange={(e)=>setEmail(e.target.value)}>
+                <Form.Group controlId='username'>
+                    <Form.Label> <i class="fa-solid fa-user-tag"></i> Username</Form.Label>
+                        <Form.Control type='text' placeholder='Enter your username' value={username} onChange={(e)=>setUsername(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
