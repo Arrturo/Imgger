@@ -6,13 +6,14 @@ from .mutations.posts import CreatePostMutation, UpdatePostMutation, DeletePostM
 from .mutations.categories import CreateCategoryMutation, UpdateCategoryMutation, DeleteCategoryMutation
 from .mutations.comments import CreateCommentMutation, UpdateCommentMutation, DeleteCommentMutation
 from .mutations.subcomments import CreateSubCommentMutation, UpdateSubCommentMutation, DeleteSubCommentMutation
+from .mutations.images import CreateImageMutation, UpdateImageMutation, DeleteImageMutation
 from .types import UserType, PostType, CategoryType, CommentType, ImageType, SubcommentType
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
-    users = graphene.List(UserType)
+    users = graphene.ConnectionField(UserType)
     users_by_id = graphene.Field(UserType, id=graphene.Int())
     posts = graphene.List(PostType)
     categories = graphene.List(CategoryType)
@@ -69,5 +70,8 @@ class Mutation(AuthMutatuion, graphene.ObjectType):
     create_subcomment = CreateSubCommentMutation.Field()
     update_subcomment = UpdateSubCommentMutation.Field()
     delete_subcomment = DeleteSubCommentMutation.Field()
+    create_image = CreateImageMutation.Field()
+    update_image = UpdateImageMutation.Field()
+    delete_image = DeleteImageMutation.Field()
     
 schema = graphene.Schema(query=Query, mutation=Mutation)
