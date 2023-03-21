@@ -11,7 +11,6 @@ admin.site.register(Category)
 admin.site.register(Image)
 admin.site.register(Comment)
 admin.site.register(Subcomment)
-# admin.site.register(ExtendUser)
 
 app = apps.get_app_config('graphql_auth')
 
