@@ -1,14 +1,7 @@
 # Create your models here.
 
 from django.db import models
-from django.contrib.auth.models import User, AbstractUser
-
-
-# class ExtendUser(AbstractUser):
-#     email = models.EmailField(max_length=255, blank=False, verbose_name='email')
-#
-#     USERNAME_FIELD = 'username'
-#     EMAIL_FIELD = 'email'
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -19,8 +12,12 @@ class Category(models.Model):
 
 
 class Image(models.Model):
-    file = models.ImageField()
-    
+    name = models.CharField(max_length=50, null=False, blank=False, default='image')
+    file = models.ImageField(upload_to='images/', null=False, blank=False)
+
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Post(models.Model):
     title = models.CharField(max_length=25, null=False)
@@ -44,6 +41,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.comment[:20]}"
+
 
 class Subcomment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

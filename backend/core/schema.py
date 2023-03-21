@@ -1,15 +1,15 @@
 import graphene
 from .models import Post, Category, Image, Comment, Subcomment
 from django.contrib.auth.models import User
-from .mutations.users import CreateUserMutation, UpdateUserMutation, DeleteUserMutation
+from .mutations.users import UpdateUserMutation, DeleteUserMutation
 from .mutations.posts import CreatePostMutation, UpdatePostMutation, DeletePostMutation
 from .mutations.categories import CreateCategoryMutation, UpdateCategoryMutation, DeleteCategoryMutation
 from .mutations.comments import CreateCommentMutation, UpdateCommentMutation, DeleteCommentMutation
 from .mutations.subcomments import CreateSubCommentMutation, UpdateSubCommentMutation, DeleteSubCommentMutation
+from .mutations.images import CreateImageMutation
 from .types import UserType, PostType, CategoryType, CommentType, ImageType, SubcommentType
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
-import graphql_jwt
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
@@ -51,7 +51,6 @@ class AuthMutatuion(graphene.ObjectType):
 
 
 class Mutation(AuthMutatuion, graphene.ObjectType):
-    create_user = CreateUserMutation.Field()
     update_user = UpdateUserMutation.Field()
     delete_user = DeleteUserMutation.Field()
     create_post = CreatePostMutation.Field()
@@ -66,5 +65,7 @@ class Mutation(AuthMutatuion, graphene.ObjectType):
     create_subcomment = CreateSubCommentMutation.Field()
     update_subcomment = UpdateSubCommentMutation.Field()
     delete_subcomment = DeleteSubCommentMutation.Field()
-    
+    create_image = CreateImageMutation.Field()
+
+
 schema = graphene.Schema(query=Query, mutation=Mutation)

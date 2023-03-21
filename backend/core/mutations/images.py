@@ -3,39 +3,20 @@ import graphene
 from ..models import Image
 from graphene_file_upload.scalars import Upload
 
+
+class ImageInput(graphene.InputObjectType):
+    image = Upload(required=True)
+
+
 class CreateImageMutation(graphene.Mutation):
     class Arguments:
-        image = Upload(required=True)
+        input = ImageInput(required=True)
 
-    image = graphene.Field(Image)
+    ok = graphene.Boolean()
 
-    def mutate(self, info, image):
-        image = Image(image=image)
-        image.save()
-        return CreateImageMutation(image=image)
-    
-class UpdateImageMutation(graphene.Mutation):
-    class Arguments:
-        image_id = graphene.ID(required=True)
-        image = Upload()
-
-    image = graphene.Field(Image)
-
-    def mutate(self, info, image_id, image):
-        image = Image.objects.get(id=image_id)
-        if image:
-            image.image = image
-        image.save()
-        return UpdateImageMutation(image=image)
-    
-class DeleteImageMutation(graphene.Mutation):
-    class Arguments:
-        image_id = graphene.ID(required=True)
-
-    image = graphene.Field(Image)
-
-    def mutate(self, info, image_id):
-        image = Image.objects.get(id=image_id)
-        image.delete()
-        return DeleteImageMutation(image=image)
-    
+    @staticmethod
+    def mutate(root, info, input):
+        image = input.image
+        Image.objects.create(image=image)
+        ok = True
+        return CreateImageMutation(ok=ok)
