@@ -26,12 +26,12 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     
     def resolve_users_by_id(self, info, id):
         return User.objects.get(pk=id)
-        
+    
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all()
 
     def resolve_categories(self, info, **kwargs):
-        return Category.objects.all()
+        return Category.objects.all().order_by('name')
 
     def resolve_comments(self, info, **kwargs):
         return Comment.objects.all()

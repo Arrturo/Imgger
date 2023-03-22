@@ -61,9 +61,16 @@ function LoginScreen() {
                         </Form.Control>
                 </Form.Group>
 
+            <Row className="py-3">
+                <Col className="text-center text-base">
+                Don't remember password? <Link to={'#'} className="text-red-700 hover:text-red-800"> Reset them</Link>
+                </Col>
+            </Row>
                 <Button type='submit' variant='primary' className="mt-4 button-primary text-2xl ">Sign in</Button>
             </Form>
 
+
+            
             <Row className="py-3">
                 <Col className="text-center text-xl">
                     Do you need account? <Link to={'/register'} className="text-red-700 hover:text-red-800"> Sign up</Link>

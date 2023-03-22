@@ -23,6 +23,8 @@ function RegisterScreen() {
     const userRegister = useSelector(state => state.userRegister)
     const {error, loading, userInfo} = userRegister
 
+    
+    
 
 
     useEffect(() => {
@@ -37,12 +39,11 @@ function RegisterScreen() {
     const submitHandler = (e) => {
         e.preventDefault()
         if(password != confirmPassword){
-            setMessage('Podane hasła muszą być identyczne!')
+            setMessage('The entered passwords are different!')
         }else{
             dispatch(register(username, email, password, confirmPassword))
         }
     }
-
 
   return (
     <div>
@@ -56,28 +57,28 @@ function RegisterScreen() {
 
                 <Form.Group controlId='username' className="mt-3">
                     <Form.Label><i class="fa-solid fa-user-tag"></i> Username</Form.Label>
-                        <Form.Control type='text' placeholder='Enter your nickname' value={username} onChange={(e)=>setUsername(e.target.value)}>
+                        <Form.Control required type='text' placeholder='Enter your nickname' value={username} onChange={(e)=>setUsername(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId='email' className="mt-3">
                     <Form.Label><i class="fa-solid fa-at"></i> Email address</Form.Label>
-                        <Form.Control type='email' placeholder='Enter your email address' value={email} onChange={(e)=>setEmail(e.target.value)}>
+                        <Form.Control required type='email' placeholder='Enter your email address' value={email} onChange={(e)=>setEmail(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId='password' className="mt-3">
                     <Form.Label><i class="fa-solid fa-lock"></i> Password</Form.Label>
-                        <Form.Control type='password' placeholder='Enter your password' value={password} onChange={(e)=>setPassword(e.target.value)}>
+                        <Form.Control required type='password' placeholder='Enter your password' value={password} onChange={(e)=>setPassword(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId='confirmPassword' className="mt-3">
                     <Form.Label><i class="fa-solid fa-lock"></i> Confirm Password</Form.Label>
-                        <Form.Control type='password' placeholder='Enter your password again' value={confirmPassword} onChange={(e)=>setConfirmPassword(e.target.value)}>
+                        <Form.Control required type='password' placeholder='Enter your password again' value={confirmPassword} onChange={(e)=>setConfirmPassword(e.target.value)}>
                             
                         </Form.Control>
                 </Form.Group>
@@ -87,7 +88,7 @@ function RegisterScreen() {
 
             <Row className="py-3">
                 <Col className="text-center text-xl">
-                Already have an account <Link to={'/register'} className="text-red-700 hover:text-red-800"> Sign in</Link> now!
+                Already have an account <Link to={'/login'} className="text-red-700 hover:text-red-800"> Sign in</Link> now!
                 </Col>
             </Row>
         </FormContainer>

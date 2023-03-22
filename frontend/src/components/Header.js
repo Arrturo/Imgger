@@ -6,7 +6,8 @@ import {useDispatch, useSelector} from 'react-redux'
 import {logout} from '../actions/userActions'
 import '../index.css';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-
+import {useNavigate} from 'react-router-dom'
+import SearchBox from './SearchBox';
 
 
 function Header() {
@@ -14,7 +15,7 @@ function Header() {
 	const userLogin = useSelector(state => state.userLogin)
     const {userInfo} = userLogin
 
-
+	const navigate = useNavigate()
 
 	const dispatch = useDispatch()
 
@@ -22,6 +23,8 @@ function Header() {
 	const logoutHandler = () =>{
 		dispatch(logout())
 		localStorage.clear()
+		navigate('/')
+		window.location.reload()
 	}
 
 	return (
@@ -33,17 +36,29 @@ function Header() {
                     </LinkContainer>
 					<Navbar.Toggle aria-controls='navbarScroll' />
 					<Navbar.Collapse id='navbarScroll'>
+					<SearchBox />
 						<Nav className='my-2 my-lg-0 ms-auto p-1 gap-5 ' navbarScroll>
                             <LinkContainer to='/newpost'>
                                 <Nav.Link className="hover:text-amber-500 text-amber-200"> <i class="fa-solid fa-plus"></i> New post </Nav.Link>
                             </LinkContainer>
+							{userInfo?.user?.isStaff && (
+								<NavDropdown title={`Admin panel`} id='adminmenu' className="admin-nav">
+									<LinkContainer to= '/admin/categoriesList'>
+										<NavDropdown.Item className="hover:text-amber-400"><i class="fa-solid fa-list"></i> Categories</NavDropdown.Item>
+									</LinkContainer>
+									<LinkContainer to='/admin/userlist'>
+										<NavDropdown.Item className="hover:text-amber-400"><i class="fa-solid fa-user-group"></i> Users</NavDropdown.Item>
+									</LinkContainer>
+								
+							</NavDropdown>
+							)}
 
 							{userInfo ? (
-								<NavDropdown title={`Witaj ${userInfo?.user?.username} !`} id='username' className="pr-5">
+								<NavDropdown title={`Hello ${userInfo?.user?.username} !`} id='username' className="pr-5">
 									<LinkContainer to='/profile'>
-									<NavDropdown.Item className="hover:text-amber-400"><i class="fa-solid fa-address-card"></i> Mój profil</NavDropdown.Item>
+									<NavDropdown.Item className="hover:text-amber-400"><i class="fa-solid fa-address-card"></i> Account</NavDropdown.Item>
 									</LinkContainer>
-									<NavDropdown.Item onClick={logoutHandler} className="hover:text-amber-400"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</NavDropdown.Item>
+									<NavDropdown.Item onClick={logoutHandler} className="hover:text-amber-400"><i class="fa-solid fa-right-from-bracket"></i> Logout</NavDropdown.Item>
 								</NavDropdown>
 								) : (
 								<>

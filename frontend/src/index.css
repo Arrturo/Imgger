@@ -41,3 +41,17 @@ main{
 .footer{
   background-color: #fcf5bb;
 }
+
+.admin-nav{
+  /* text-decoration: underline red; */
+  border: dotted red 1px;
+  border-radius: 10%;
+}
+
+.category-item{
+  transition: scale .3s;
+}
+
+.category-item:hover{
+  scale: 1.05
+}
