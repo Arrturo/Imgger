@@ -66,3 +66,23 @@ class DeletePostMutation(graphene.Mutation):
         post = Post.objects.get(id=post_id)
         post.delete()
         return DeletePostMutation(post=post)
+    
+class like(graphene.Mutation):
+    class Arguments:
+        post_id = graphene.ID(required=True)
+    post = graphene.Field(PostType)
+    def mutate(self, info, post_id):
+        post = Post.objects.get(id=post_id)
+        post.likes += 1
+        post.save()
+        return like(post=post)
+    
+class dislike(graphene.Mutation):
+    class Arguments:
+        post_id = graphene.ID(required=True)
+    post = graphene.Field(PostType)
+    def mutate(self, info, post_id):
+        post = Post.objects.get(id=post_id)
+        post.dislikes += 1
+        post.save()
+        return dislike(post=post)
