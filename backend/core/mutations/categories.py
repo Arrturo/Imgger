@@ -7,7 +7,8 @@ class CreateCategoryMutation(graphene.Mutation):
         name = graphene.String(required=True)
 
     category = graphene.Field(CategoryType)
-
+    category = Category.objects.get()
+    
     def mutate(self, info, name):
         category = Category(name=name)
         category.save()
@@ -31,9 +32,18 @@ class DeleteCategoryMutation(graphene.Mutation):
     class Arguments:
         category_id = graphene.ID(required=True)
 
-    category = graphene.Field(CategoryType)
+    success = graphene.Boolean()
+    errors = graphene.List(graphene.String)
 
     def mutate(self, info, category_id):
         category = Category.objects.get(id=category_id)
-        category.delete()
-        return DeleteCategoryMutation(category=category)
+        if not category:
+            return DeleteCategoryMutation(success=False, errors=["Category not found"])
+        try:
+            category.delete()
+            success = True
+            errors = None
+        except:
+            success = False
+            errors = ["Something went wrong"]
+        return DeleteCategoryMutation(success=success, errors=errors)

@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 import graphene
 from ..models import Image
 from graphene_file_upload.scalars import Upload
