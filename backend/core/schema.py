@@ -14,6 +14,7 @@ import graphql_jwt
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     users = graphene.List(UserType)
+    users_by_id = graphene.Field(UserType, id=graphene.Int())
     posts = graphene.List(PostType)
     categories = graphene.List(CategoryType)
     images = graphene.List(ImageType)
@@ -22,12 +23,15 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
     def resolve_users(self, info, **kwargs):
         return User.objects.all()
+    
+    def resolve_users_by_id(self, info, id):
+        return User.objects.get(id=id)
 
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all()
 
     def resolve_categories(self, info, **kwargs):
-        return Category.objects.all()
+        return Category.objects.all().order_by('name')
 
     def resolve_comments(self, info, **kwargs):
         return Comment.objects.all()
