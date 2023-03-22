@@ -7,7 +7,6 @@ class CreateCategoryMutation(graphene.Mutation):
         name = graphene.String(required=True)
 
     category = graphene.Field(CategoryType)
-    category = Category.objects.get()
     
     def mutate(self, info, name):
         category = Category(name=name)
