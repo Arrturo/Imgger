@@ -67,11 +67,10 @@ export const deleteCategories = (id) => async (dispatch, getState) => {
             query: `
                 mutation{
                     deleteCategory(categoryId: ${id}){
-                        category{
-                            name
-                            }
-                        }
+                        success
+                        errors
                     }
+                }
             `
         }, config)
         
