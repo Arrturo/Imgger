@@ -3,7 +3,9 @@ import {USER_LOGIN_REQUEST, USER_LOGIN_SUCCESS, USER_LOGIN_FAIL, USER_REGISTER_R
 	USER_REGISTER_FAIL, USER_LOGOUT, USER_UPDATE_PROFILE_REQUEST,
 	USER_UPDATE_PROFILE_SUCCESS,
 	USER_UPDATE_PROFILE_FAIL,
-	USER_UPDATE_PROFILE_RESET,} from '../constants/userConstants'
+	USER_UPDATE_PROFILE_RESET, USER_LIST_FAIL, USER_LIST_REQUEST, USER_LIST_SUCCESS, USER_DELETE_FAIL,
+	USER_DELETE_REQUEST,
+	USER_DELETE_SUCCESS,} from '../constants/userConstants'
 import axios from 'axios'
 
 export const login = (username, password) => async (dispatch) =>{
@@ -211,3 +213,102 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 	}
 };
 
+
+
+export const listUsers = () => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: USER_LIST_REQUEST,
+		});
+
+		const {
+			userLogin: { userInfo },
+		} = getState();
+
+		const config = {
+			headers: {
+				'Content-type': 'application/json',
+				// Authorization: `Bearer ${userInfo.token}`,
+			},
+		};
+
+		const { data } = await axios.post(`http://127.0.0.1:8000/graphql`,{
+      query: `
+        query{
+          users{
+              id
+              username
+              email
+              isStaff
+              dateJoined
+          }
+        }
+      `
+    }, config);
+
+
+		dispatch({
+			type: USER_LIST_SUCCESS,
+			payload: data.data
+		});
+
+
+
+	} catch (error) {
+		dispatch({
+			type: USER_LIST_FAIL,
+			payload:
+				error.response && error.response.data.detail
+					? error.response.data.detail
+					: error.message,
+		});
+	}
+};
+
+
+
+
+export const deleteUser = (id) => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: USER_DELETE_REQUEST,
+		});
+
+		const {
+			userLogin: { userInfo },
+		} = getState();
+
+		const config = {
+			headers: {
+				'Content-type': 'application/json',
+				// Authorization: `Bearer ${userInfo.token}`,
+			},
+		};
+
+		const { data } = await axios.post(`http://127.0.0.1:8000/graphql`, {
+      query: `
+        mutation{
+          deleteUser(userId: ${id}){
+              user{
+                  username
+                  email
+              }
+          }
+        }
+      `
+    }, config);
+
+		dispatch({
+			type: USER_DELETE_SUCCESS,
+			payload: data,
+		});
+	} catch (error) {
+		dispatch({
+			type: USER_DELETE_FAIL,
+			payload:
+				error.response && error.response.data.detail
+					? error.response.data.detail
+					: error.message,
+		});
+	}
+};
