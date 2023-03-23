@@ -3,6 +3,7 @@ from ..types import CommentType
 import graphene
 from ..models import Post, Comment
 
+
 class CreateCommentMutation(graphene.Mutation):
     class Arguments:
         description = graphene.String(required=True)
@@ -17,7 +18,8 @@ class CreateCommentMutation(graphene.Mutation):
         comment = Comment(description=description, user=user, post=post)
         comment.save()
         return CreateCommentMutation(comment=comment)
-    
+
+
 class UpdateCommentMutation(graphene.Mutation):
     class Arguments:
         comment_id = graphene.ID(required=True)
@@ -39,7 +41,8 @@ class UpdateCommentMutation(graphene.Mutation):
             comment.post = post
         comment.save()
         return UpdateCommentMutation(comment=comment)
-    
+
+
 class DeleteCommentMutation(graphene.Mutation):
     class Arguments:
         comment_id = graphene.ID(required=True)
@@ -50,4 +53,3 @@ class DeleteCommentMutation(graphene.Mutation):
         comment = Comment.objects.get(id=comment_id)
         comment.delete()
         return DeleteCommentMutation(comment=comment)
-    

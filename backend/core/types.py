@@ -1,15 +1,18 @@
 from graphene_django import DjangoObjectType
 from .models import User, Post, Category, Comment, Image, Subcomment
 
+
 class UserType(DjangoObjectType):
     class Meta:
         model = User
         fields = "__all__"
 
+
 class PostType(DjangoObjectType):
     class Meta:
         model = Post
         fields = "__all__"
+
 
 class CategoryType(DjangoObjectType):
     class Meta:

@@ -18,7 +18,6 @@ class Category(models.Model):
 
 
 class Image(models.Model):
-    name = models.CharField(max_length=255, null=False, blank=False)
     file = models.ImageField()
     
 

@@ -23,10 +23,10 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
     def resolve_users(self, info, **kwargs):
         return User.objects.all()
-    
+
     def resolve_users_by_id(self, info, id):
         return User.objects.get(pk=id)
-    
+
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all()
 
@@ -54,7 +54,6 @@ class AuthMutation(graphene.ObjectType):
     password_change = mutations.PasswordChange.Field()
 
 
-
 class Mutation(AuthMutation, graphene.ObjectType):
     create_user = CreateUserMutation.Field()
     update_user = UpdateUserMutation.Field()
@@ -76,5 +75,6 @@ class Mutation(AuthMutation, graphene.ObjectType):
     update_subcomment = UpdateSubCommentMutation.Field()
     delete_subcomment = DeleteSubCommentMutation.Field()
     create_image = CreateImageMutation.Field()
-    
+
+
 schema = graphene.Schema(query=Query, mutation=Mutation)
