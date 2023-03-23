@@ -8,25 +8,26 @@ import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen'
 import CategoriesAdminScreen from './screens/CategoriesAdminScreen'; 
-
+import UserListScreen from './screens/UserListScreen';
 
 
 function App() {
 	return (
 		<Router>
-			<Header />
-			<main className="py-5">
-				<Container>
-					<Routes>
-						<Route path='/' element={<HomeScreen />}/>
-						<Route path='/login' element={<LoginScreen />}/>
-						<Route path='/register' element={<RegisterScreen />}/>
-						<Route path='profile' element={<ProfileScreen />}/>
-						<Route path='/admin/categoriesList' element={<CategoriesAdminScreen />} />
-					</Routes>
-				</Container>
+			<main className="min-h-screen">
+				<Header />
+					<Container className="mt-5">
+						<Routes>
+							<Route path='/' element={<HomeScreen />}/>
+							<Route path='/login' element={<LoginScreen />}/>
+							<Route path='/register' element={<RegisterScreen />}/>
+							<Route path='profile' element={<ProfileScreen />}/>
+							<Route path='/admin/categoriesList' element={<CategoriesAdminScreen />} />
+							<Route path='admin/userlist' element={<UserListScreen />} />
+						</Routes>
+					</Container>
+				<Footer />
 			</main>
-			<Footer />
 		</Router>
 	);
 }

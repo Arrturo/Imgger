@@ -29,7 +29,6 @@ function CategoriesAdminScreen() {
     }, [dispatch, navigate])
 
 
-
     const createCategoryHandler = (e) => {
         e.preventDefault()
         dispatch(createCategory(name))
@@ -67,22 +66,22 @@ function CategoriesAdminScreen() {
                 </Form>
             </Col>
         </Row>
-        <Table striped  hover responsive className="max-w-xl">
+        <Table striped  hover responsive className="max-w-xl mb-5">
             <thead className="text-center ">
                 <tr>
-                    <th>Id</th>
+                    <th></th>
                     <th>Name</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody className="text-center">
-                {categories.map(category => (
+                {categories.map((category, index) => (
                     <tr key={category.id}>
-                        <td>{category.id}</td>
+                        <td>{index + 1}</td>
                         <td>{category.name}</td>
                         <td >
-                            <Button varinat='light' className="btn-sm"><i class="fa-regular fa-pen-to-square text-lime-500"></i></Button>
-                            <Button varinat='danger' className="btn-sm" onClick={() => deleteHandler(category.id, category.name)}><i class="fa-solid fa-trash-can text-red-500"></i></Button>
+                            <Button varinat='light' className="btn-m"><i class="fa-regular fa-pen-to-square text-lime-500"></i></Button>
+                            <Button varinat='danger' className="btn-m" onClick={() => deleteHandler(category.id, category.name)}><i class="fa-solid fa-trash-can text-red-500"></i></Button>
                         </td>
                     </tr>
                 ))}

@@ -4,7 +4,8 @@ import CategoryItem from '../components/CategoryItem'
 import { categoriesList } from '../actions/categoriesActions'
 import {Message} from '../components/Message'
 import {Loader} from '../components/Loader'
-
+import Post from '../components/Post'
+import {Row, Col} from 'react-bootstrap'
 
 function HomeScreen() {
 
@@ -26,8 +27,61 @@ function HomeScreen() {
     <div>
       EXPLORE TAGS <br></br>
       {categories.map(category => (
-      <CategoryItem name={category.name} />))}      
+        <CategoryItem name={category.name} />))
+      }
 
+      <div className="py-5">
+        <Row >
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+            
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+          
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+          
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+
+          <Col sm={12} md={6} lg={4} xl={3} className="">
+            <Post />
+          </Col>
+
+        </Row>
+      </div>
 
     </div>
   )

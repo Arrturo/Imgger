@@ -19,6 +19,7 @@ function ProfileScreen() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [messagePassword, setMessagePassword] = useState('')
     const [message, setMessage] = useState('')
 
     const dispatch = useDispatch()
@@ -43,7 +44,7 @@ function ProfileScreen() {
         e.preventDefault()
 
         if(password != confirmPassword){
-            setMessage('The entered passwords are different!')
+            setMessagePassword('The entered passwords are different!')
         }else{
             if(window.confirm(`${name} Are you sure you want to update your details ?`)){
                 dispatch(updateUserProfile({
@@ -65,6 +66,7 @@ function ProfileScreen() {
             {loading && <Loader />}
             {error && <Message variant='danger'>{error}</Message>}
             {message && <Message variant='info'>{message}</Message>}
+            {messagePassword && <Message variant='danger'>{messagePassword}</Message>}
             <Form onSubmit={submitHandler}>
 
                 <Form.Group controlId='name'>
