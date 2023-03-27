@@ -1,6 +1,7 @@
 import graphene
 from ..models import Image
 from graphene_file_upload.scalars import Upload
+from graphql_jwt.decorators import login_required
 
 
 class ImageInput(graphene.InputObjectType):
@@ -14,6 +15,7 @@ class CreateImageMutation(graphene.Mutation):
     ok = graphene.Boolean()
 
     @staticmethod
+    @login_required
     def mutate(root, info, input):
         image = input.image
         Image.objects.create(image=image)
