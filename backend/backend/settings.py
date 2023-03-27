@@ -168,7 +168,8 @@ AUTHENTICATION_BACKENDS = [
 
 GRAPHQL_JWT = {
     "JWT_ALLOW_ANY_CLASSES": [
-        "graphql_auth.mutations.Register"
+        "graphql_auth.mutations.Register",
+        "graphql_auth.mutations.VerifyAccount",
     ],
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,

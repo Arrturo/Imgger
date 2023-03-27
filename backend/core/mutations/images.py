@@ -4,7 +4,7 @@ from graphene_file_upload.scalars import Upload
 
 
 class ImageInput(graphene.InputObjectType):
-    image = Upload(required=True,  upload_to = 'images/')
+    image = Upload(required=True,  upload_to='images/')
 
 
 class CreateImageMutation(graphene.Mutation):
@@ -19,6 +19,7 @@ class CreateImageMutation(graphene.Mutation):
             image = Image.objects.create(image=input.image)
             image.save()
             success = True
-        except:
+        except Exception as e:
+            print(e)
             success = False
-        return CreateImageMutation(succes=success)
+        return CreateImageMutation(succes=success, image=image, )
