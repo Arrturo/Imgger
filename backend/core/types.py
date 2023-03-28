@@ -1,5 +1,6 @@
 from graphene_django import DjangoObjectType
 from .models import User, Post, Category, Comment, Image, Subcomment
+from graphene_django.filter import DjangoFilterConnectionField
 import graphene
 
 
@@ -28,6 +29,11 @@ class CategoryType(DjangoObjectType):
             'name': ['exact', 'icontains', 'istartswith'],
         }
         interfaces = (graphene.relay.Node, )
+
+    posts = DjangoFilterConnectionField(PostType)
+
+    def resolve_posts(self, info, **kwargs):
+        return Post.objects.filter(category=self)
 
 
 class CommentType(DjangoObjectType):

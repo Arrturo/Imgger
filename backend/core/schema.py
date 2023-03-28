@@ -28,6 +28,8 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     posts = DjangoFilterConnectionField(PostType)
     posts_by_category = DjangoFilterConnectionField(PostType,
                                                     category=graphene.String(required=True))
+    categories_by_id = DjangoFilterConnectionField(CategoryType,
+                                                    id=graphene.ID(required=True))
     categories = DjangoFilterConnectionField(CategoryType)
     images = graphene.List(ImageType)
     comments = DjangoFilterConnectionField(CommentType)
@@ -41,9 +43,12 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all()
-    
-    def resolve_posts_by_categories(self, info, **kwargs):
+
+    def resolve_posts_by_category(self, info, **kwargs):
         return Post.objects.filter(category=kwargs['category'])
+
+    def resolve_categories_by_id(self, info, id):
+        return Category.objects.get(pk=id)
 
     def resolve_categories(self, info, **kwargs):
         return Category.objects.all().order_by('name')
