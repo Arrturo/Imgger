@@ -21,3 +21,33 @@ class CreateImageMutation(graphene.Mutation):
         Image.objects.create(image=image)
         ok = True
         return CreateImageMutation(ok=ok)
+
+
+class UpdateImageMutation(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID(required=True)
+        input = ImageInput(required=True)
+
+    ok = graphene.Boolean()
+
+    @staticmethod
+    @login_required
+    def mutate(root, info, id, input):
+        image = input.image
+        Image.objects.filter(id=id).update(image=image)
+        ok = True
+        return UpdateImageMutation(ok=ok)
+
+
+class DeleteImageMutation(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    ok = graphene.Boolean()
+
+    @staticmethod
+    @login_required
+    def mutate(root, info, id):
+        Image.objects.filter(id=id).delete()
+        ok = True
+        return DeleteImageMutation(ok=ok)
