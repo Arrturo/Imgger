@@ -20,7 +20,7 @@ from graphene_file_upload.django import FileUploadGraphQLView
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.conf.urls.static import static
-from core.views import image_upload_view, verify_user
+from core.views import image_upload_view, activate
 
 
 urlpatterns = [
@@ -28,7 +28,7 @@ urlpatterns = [
     path('graphql', csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True,
                                                               schema=schema))),
     path('upload/', image_upload_view, name='upload'),
-    path('activate/<str:token>', verify_user, name='activate')
+    path('activate/<token>', activate, name='activate'),
 ]
 
 if settings.DEBUG:

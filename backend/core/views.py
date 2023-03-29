@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from .forms import UploadForm
 from django.http import HttpResponse
-from .models import User
+from .schema import schema
+
 # Create your views here.
 
 
@@ -15,12 +16,16 @@ def image_upload_view(request):
     return render(request, 'upload.html', {'form': form})
 
 
-def verify_user(request):
-    if request.method == 'GET':
-        token = request.GET.get('token')
-        user = User.objects.get(token=token)
-        user.is_verified = True
-        user.save()
-        return HttpResponse('User verified')
-    else:
-        return HttpResponse('Error')
+def activate(request, token):
+    print(token)
+    mutation = '''
+        mutation {
+            verifyAccount(token: "%s") {
+                success
+                errors
+                }
+            }
+        ''' % token
+    result = schema.execute(mutation)
+    print(result)
+    return HttpResponse(result)

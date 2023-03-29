@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
+import base64
 
 from .models import Category, Comment, Image, Post, Subcomment
 from .mutations.categories import (CreateCategoryMutation,
@@ -10,7 +11,7 @@ from .mutations.categories import (CreateCategoryMutation,
                                    UpdateCategoryMutation)
 from .mutations.comments import (CreateCommentMutation, DeleteCommentMutation,
                                  UpdateCommentMutation)
-from .mutations.images import CreateImageMutation
+from .mutations.images import CreateImageMutation, DeleteImageMutation
 from .mutations.posts import (CreatePostMutation, DeletePostMutation,
                               UpdatePostMutation, dislike, like)
 from .mutations.subcomments import (CreateSubCommentMutation,
@@ -26,10 +27,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     users = graphene.List(UserType)
     users_by_id = graphene.Field(UserType, id=graphene.ID(required=True))
     posts = DjangoFilterConnectionField(PostType)
-    posts_by_category = DjangoFilterConnectionField(PostType,
-                                                    category=graphene.String(required=True))
-    categories_by_id = DjangoFilterConnectionField(CategoryType,
-                                                    id=graphene.ID(required=True))
+    post_by_id = graphene.Field(PostType, id=graphene.String())
     categories = DjangoFilterConnectionField(CategoryType)
     images = graphene.List(ImageType)
     comments = DjangoFilterConnectionField(CommentType)
@@ -43,6 +41,11 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all()
+
+    def resolve_post_by_id(self, info, id):
+        post_id = base64.b64decode(id).decode("utf-8").split(':')[1]
+        post_id = int(post_id)
+        return Post.objects.get(pk=post_id)
 
     def resolve_posts_by_category(self, info, **kwargs):
         return Post.objects.filter(category=kwargs['category'])
@@ -95,6 +98,7 @@ class Mutation(AuthMutation, graphene.ObjectType):
     update_subcomment = UpdateSubCommentMutation.Field()
     delete_subcomment = DeleteSubCommentMutation.Field()
     create_image = CreateImageMutation.Field()
+    delete_image = DeleteImageMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
