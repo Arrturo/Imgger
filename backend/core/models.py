@@ -21,6 +21,9 @@ class Image(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False)
     file = models.ImageField()
     
+    def __str__(self):
+        return f"{self.file}"
+    
 
 class Post(models.Model):
     title = models.CharField(max_length=25, null=False)

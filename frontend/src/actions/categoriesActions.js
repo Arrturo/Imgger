@@ -1,4 +1,4 @@
-import {CATEGORIES_LIST_REQUEST, CATEGORIES_LIST_SUCCESS, CATEGORIES_LIST_FAIL, CATEGORIES_DELETE_FAIL, CATEGORIES_DELETE_REQUEST, CATEGORIES_DELETE_SUCCESS, CATEGORIES_ADD_FAIL, CATEGORIES_ADD_REQUEST, CATEGORIES_ADD_SUCCESS} from '../constants/catagoriesConstants'
+import {CATEGORIES_LIST_REQUEST, CATEGORIES_LIST_SUCCESS, CATEGORIES_LIST_FAIL, CATEGORIES_DELETE_FAIL, CATEGORIES_DELETE_REQUEST, CATEGORIES_DELETE_SUCCESS, CATEGORIES_ADD_FAIL, CATEGORIES_ADD_REQUEST, CATEGORIES_ADD_SUCCESS, CATEGORIES_EDIT_FAIL, CATEGORIES_EDIT_REQUEST, CATEGORIES_EDIT_SUCCESS} from '../constants/catagoriesConstants'
 import axios from 'axios'
 
 
@@ -18,8 +18,12 @@ export const categoriesList = () => async (dispatch) => {
             query: `
                 query{
                     categories{
-                        id
-                        name
+                        edges{
+                            node{
+                                id
+                                name
+                            }
+                        }
                     }
                 }
             `
@@ -27,7 +31,7 @@ export const categoriesList = () => async (dispatch) => {
 
         dispatch({
             type: CATEGORIES_LIST_SUCCESS,
-            payload: data.data
+            payload: data.data.categories.edges
         })
 
         localStorage.setItem('categories', JSON.stringify(data)); 
@@ -66,7 +70,7 @@ export const deleteCategories = (id) => async (dispatch, getState) => {
         const {data} = await axios.post('http://127.0.0.1:8000/graphql', {
             query: `
                 mutation{
-                    deleteCategory(categoryId: ${id}){
+                    deleteCategory(categoryId: "${id}"){
                         success
                         errors
                     }
@@ -128,6 +132,51 @@ export const createCategory = (name) => async (dispatch, getState) => {
     }catch(error){
         dispatch({
             type: CATEGORIES_ADD_FAIL,
+            payload: error.response && error.response.data.detail
+            ? error.response.data.detail
+            : error.message,
+        })
+    }
+}
+
+export const editCategory = (category) => async (dispatch, getState) => {
+    
+    try {
+        dispatch({
+            type: CATEGORIES_EDIT_REQUEST,
+        })
+
+        const {
+            userLogin: {userInfo}
+        } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+            }
+        }
+        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+            query: `
+                mutation{
+                    updateCategory(categoryId: "${category.id}", name: "${category.name}"){
+                        category{
+                            id
+                            name
+                        }
+                    }
+                }
+            `
+        }, config)
+
+
+        dispatch({
+            type: CATEGORIES_EDIT_SUCCESS,
+            payload: data,
+        })
+
+    }catch(error){
+        dispatch({
+            type: CATEGORIES_EDIT_FAIL,
             payload: error.response && error.response.data.detail
             ? error.response.data.detail
             : error.message,

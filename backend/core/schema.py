@@ -7,32 +7,42 @@ from .mutations.categories import CreateCategoryMutation, UpdateCategoryMutation
 from .mutations.comments import CreateCommentMutation, UpdateCommentMutation, DeleteCommentMutation
 from .mutations.subcomments import CreateSubCommentMutation, UpdateSubCommentMutation, DeleteSubCommentMutation
 from .mutations.images import CreateImageMutation
+from graphene_django.filter import DjangoFilterConnectionField
 from .types import UserType, PostType, CategoryType, CommentType, ImageType, SubcommentType
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
+from django.db.models import Q
+from django.db.models import Count
+import base64
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     users = graphene.List(UserType)
     users_by_id = graphene.Field(UserType, id=graphene.ID(required=True))
-    posts = graphene.List(PostType)
-    categories = graphene.List(CategoryType)
+    posts = DjangoFilterConnectionField(PostType)
+    posts_by_id = graphene.Field(PostType, id=graphene.String(required=True))
+    categories = DjangoFilterConnectionField(CategoryType)
     images = graphene.List(ImageType)
     comments = graphene.List(CommentType)
     subcomments = graphene.List(SubcommentType)
 
     def resolve_users(self, info, **kwargs):
-        return User.objects.all()
+        return User.objects.all().order_by('id')
     
     def resolve_users_by_id(self, info, id):
         return User.objects.get(pk=id)
-    
-    def resolve_posts(self, info, **kwargs):
-        return Post.objects.all()
 
     def resolve_categories(self, info, **kwargs):
         return Category.objects.all().order_by('name')
 
+    def resolve_posts(self, info, **kwargs):
+        return Post.objects.all().order_by('-create_time')
+    
+    def resolve_posts_by_id(self, info, id,  **kwargs):
+        post_id = base64.b64decode(id).decode("utf-8").split(':')[1]
+        post_id = int(post_id)
+        return Post.objects.get(pk=post_id)
+    
     def resolve_comments(self, info, **kwargs):
         return Comment.objects.all()
 

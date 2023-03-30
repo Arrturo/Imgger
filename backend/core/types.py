@@ -1,5 +1,6 @@
 from graphene_django import DjangoObjectType
 from .models import User, Post, Category, Comment, Image, Subcomment
+import graphene
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -10,11 +11,25 @@ class PostType(DjangoObjectType):
     class Meta:
         model = Post
         fields = "__all__"
+        filter_fields = {
+            'id': ['exact'],
+            'title': ['exact', 'icontains', 'istartswith'],
+            'description': ['exact', 'icontains', 'istartswith'],
+        }
+        interfaces = (graphene.relay.Node, )
+        
 
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
         fields = "__all__"
+
+        filter_fields = {
+            'name': ['exact', 'icontains', 'istartswith'],
+        }
+
+        interfaces = (graphene.relay.Node, )
+    
 
 
 class CommentType(DjangoObjectType):

@@ -1,3 +1,4 @@
+import base64
 from ..types import CategoryType
 import graphene
 from ..models import Category
@@ -21,7 +22,7 @@ class UpdateCategoryMutation(graphene.Mutation):
     category = graphene.Field(CategoryType)
 
     def mutate(self, info, category_id, name):
-        category = Category.objects.get(id=category_id)
+        category = Category.objects.get(id=base64.b64decode(category_id).decode("utf-8").split(':')[1])
         if name:
             category.name = name
         category.save()
@@ -35,7 +36,7 @@ class DeleteCategoryMutation(graphene.Mutation):
     errors = graphene.List(graphene.String)
 
     def mutate(self, info, category_id):
-        category = Category.objects.get(id=category_id)
+        category = Category.objects.get(id=base64.b64decode(category_id).decode("utf-8").split(':')[1])
         if not category:
             return DeleteCategoryMutation(success=False, errors=["Category not found"])
         try:

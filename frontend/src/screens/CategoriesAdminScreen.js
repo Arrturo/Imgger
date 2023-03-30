@@ -4,7 +4,7 @@ import {Form, Button, Row, Col, Table} from 'react-bootstrap'
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import {useDispatch, useSelector} from 'react-redux'
-import {categoriesList, deleteCategories, createCategory} from '../actions/categoriesActions'
+import {categoriesList, deleteCategories, createCategory, editCategory} from '../actions/categoriesActions'
 
 function CategoriesAdminScreen() {
 
@@ -12,12 +12,17 @@ function CategoriesAdminScreen() {
     const navigate = useNavigate()
 
     const [name, setName] = useState('')
+    const [message, setMessage] = useState('')
 
     const userLogin = useSelector(state => state.userLogin)
     const {userInfo} = userLogin
 
     const CategoriesList = useSelector(state => state.categoriesList)
     const {categories} = CategoriesList
+
+    const [edit, setEdit] = useState(false)
+    const [editName, setEditName] = useState('')
+    const [idEditCategory, setIdEditCategory] = useState(null)
 
     
     useEffect(() => {
@@ -31,10 +36,13 @@ function CategoriesAdminScreen() {
 
     const createCategoryHandler = (e) => {
         e.preventDefault()
-        dispatch(createCategory(name))
-        window.location.reload()
+        if (name === ''){
+            setMessage("Name of category is empty!")
+        }else{
+            dispatch(createCategory(name))
+            window.location.reload()
+        }
     }
-
 
 
     const deleteHandler = (id, name) => {
@@ -44,26 +52,57 @@ function CategoriesAdminScreen() {
         window.location.reload()
     }
 
+    const setEditdata = (id, name) =>{
+        setEditName(name)
+        setIdEditCategory(id)
+    }
+
+
+    const editDataSubmitHandler = (ele) => {
+        ele.preventDefault()
+        dispatch(editCategory({'id': idEditCategory, 'name': editName}))
+        window.location.reload()
+    }
+
+
+
 
   return (
-    <div>
+    <div >
         <Row className="align-items-center gap-40">
             <Col className="flex justify-center" md={6}>
                 <h1 className="text-4xl text-center" >Categories ({categories.length})</h1>
             </Col>
             <Col md={4} className="">
-                <Form onSubmit={createCategoryHandler}>
-                    <h1 className="text-4xl text-center">Add new category</h1>
-                        <Form.Group controlId='name'>
-                            <Form.Label>Name of category</Form.Label>
-                                <Form.Control type='name' placeholder='Enter name of category' value={name} onChange={(e)=>setName(e.target.value)}>
+            {edit === true ? 
+                (<Form onSubmit={editDataSubmitHandler}>
+                    <h1 className="text-4xl text-center">Edit category</h1>
+                    <Form.Group controlId='name'>
+                        <Form.Label>Name of category</Form.Label>
+                            <Form.Control type='name' placeholder='Enter name of category' value={editName} onChange={(ele)=>setEditName(ele.target.value)}>
+
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Button type='submit' variant='primary'  className="mt-4 button-primary" ><i class="fa-solid fa-plus"></i> Save changes</Button>
+                </Form>) :
                     
-                                </Form.Control>
-                        </Form.Group>
+                (<Form onSubmit={createCategoryHandler}>
+                    <h1 className="text-4xl text-center">Add new category</h1>
+                    {message && <Message variant='danger'>{message}</Message>}
+                    <Form.Group controlId='name'>
+                        <Form.Label>Name of category</Form.Label>
+                            <Form.Control type='name' placeholder='Enter name of category' value={name} onChange={(e)=>setName(e.target.value)}>
+                    
+                            </Form.Control>
+                    </Form.Group>
+    
+                    <Button type='submit' variant='primary' className="mt-4 button-primary"><i class="fa-solid fa-plus"></i> Add new</Button>
+                </Form>)
 
-                        <Button type='submit' variant='primary' className="mt-4 button-primary"><i class="fa-solid fa-plus"></i> Add new</Button>
+            }
+                
 
-                </Form>
             </Col>
         </Row>
         <Table striped  hover responsive className="max-w-xl mb-5">
@@ -76,12 +115,12 @@ function CategoriesAdminScreen() {
             </thead>
             <tbody className="text-center">
                 {categories.map((category, index) => (
-                    <tr key={category.id}>
+                    <tr key={category.node.id}>
                         <td>{index + 1}</td>
-                        <td>{category.name}</td>
+                        <td>{category.node.name}</td>
                         <td >
-                            <Button varinat='light' className="btn-m"><i class="fa-regular fa-pen-to-square text-lime-500"></i></Button>
-                            <Button varinat='danger' className="btn-m" onClick={() => deleteHandler(category.id, category.name)}><i class="fa-solid fa-trash-can text-red-500"></i></Button>
+                            <Button varinat='light' className="btn-m" ><i class="fa-regular fa-pen-to-square text-lime-500" onClick={() => {setEdit(true); setEditdata(category.node.id, category.node.name)}}></i></Button>
+                            <Button varinat='danger' className="btn-m" onClick={() => deleteHandler(category.node.id, category.node.name)}><i class="fa-solid fa-trash-can text-red-500"></i></Button>
                         </td>
                     </tr>
                 ))}
