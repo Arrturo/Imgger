@@ -22,6 +22,8 @@ class CreateCommentMutation(graphene.Mutation):
         return CreateCommentMutation(comment=comment)
 
 
+
+
 class UpdateCommentMutation(graphene.Mutation):
     class Arguments:
         comment_id = graphene.ID(required=True)
@@ -44,6 +46,8 @@ class UpdateCommentMutation(graphene.Mutation):
             comment.post = post
         comment.save()
         return UpdateCommentMutation(comment=comment)
+
+
 
 
 class DeleteCommentMutation(graphene.Mutation):

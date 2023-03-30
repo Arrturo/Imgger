@@ -26,9 +26,13 @@ class CreatePostMutation(graphene.Mutation):
         else:
             image = None
         category = Category.objects.get(id=category_id)
-        post = Post(title=title, description=description, user=user, image=image, category=category, likes=likes, dislikes=dislikes)
+        post = Post(title=title, description=description,
+                    user=user, image=image, category=category,
+                    likes=likes, dislikes=dislikes)
         post.save()
         return CreatePostMutation(post=post)
+
+
 
 
 class UpdatePostMutation(graphene.Mutation):
@@ -62,6 +66,8 @@ class UpdatePostMutation(graphene.Mutation):
         return UpdatePostMutation(post=post)
 
 
+
+
 class DeletePostMutation(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
@@ -75,6 +81,8 @@ class DeletePostMutation(graphene.Mutation):
         return DeletePostMutation(post=post)
 
 
+
+
 class like(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
@@ -86,6 +94,8 @@ class like(graphene.Mutation):
         post.likes += 1
         post.save()
         return like(post=post)
+
+
 
 
 class dislike(graphene.Mutation):

@@ -9,7 +9,10 @@ import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen'
 import CategoriesAdminScreen from './screens/CategoriesAdminScreen'; 
 import UserListScreen from './screens/UserListScreen';
-
+import UserEditScreen from './screens/UserEditScreen'
+import CreatingPost from './screens/CreatingPost';
+import PostScreen from './screens/PostScreen';
+import PostsAdminScreen from './screens/PostsAdminScreen';
 
 function App() {
 	return (
@@ -21,9 +24,13 @@ function App() {
 							<Route path='/' element={<HomeScreen />}/>
 							<Route path='/login' element={<LoginScreen />}/>
 							<Route path='/register' element={<RegisterScreen />}/>
-							<Route path='profile' element={<ProfileScreen />}/>
+							<Route path='/profile' element={<ProfileScreen />}/>
+							<Route path='/newpost' element={<CreatingPost />} />
+							<Route path='/post/:id' element={<PostScreen />} />
 							<Route path='/admin/categoriesList' element={<CategoriesAdminScreen />} />
 							<Route path='admin/userlist' element={<UserListScreen />} />
+							<Route path='admin/userlist/:id/edit' element={<UserEditScreen />} />
+							<Route path='admin/postlist' element={<PostsAdminScreen />} />
 						</Routes>
 					</Container>
 				<Footer />

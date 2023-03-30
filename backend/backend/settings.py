@@ -169,7 +169,8 @@ AUTHENTICATION_BACKENDS = [
 
 GRAPHQL_JWT = {
     "JWT_ALLOW_ANY_CLASSES": [
-        "graphql_auth.mutations.Register"
+        "graphql_auth.mutations.Register",
+        "graphql_auth.mutations.VerifyAccount",
     ],
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
@@ -178,8 +179,12 @@ GRAPHQL_JWT = {
     # "JWT_VERIFY": True,
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = '127.0.0.1'
+EMAIL_PORT = '1025'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
+
+CORS_ALLOW_ALL_ORIGINS = True

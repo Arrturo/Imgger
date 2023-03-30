@@ -49,6 +49,9 @@ function Header() {
 									<LinkContainer to='/admin/userlist'>
 										<NavDropdown.Item className="hover:text-amber-400"><i class="fa-solid fa-user-group"></i> Users</NavDropdown.Item>
 									</LinkContainer>
+									<LinkContainer to='/admin/postlist'>
+										<NavDropdown.Item className="hover:text-amber-400"><i class="fa-solid fa-images"></i> Posts</NavDropdown.Item>
+									</LinkContainer>
 								
 							</NavDropdown>
 							)}
