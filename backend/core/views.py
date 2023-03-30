@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from .forms import UploadForm
+from django.http import HttpResponse
+from .schema import schema
 
 # Create your views here.
+
 
 def image_upload_view(request):
     if request.method == 'POST':
@@ -11,3 +14,18 @@ def image_upload_view(request):
     else:
         form = UploadForm()
     return render(request, 'upload.html', {'form': form})
+
+
+def activate(request, token):
+    print(token)
+    mutation = '''
+        mutation {
+            verifyAccount(token: "%s") {
+                success
+                errors
+                }
+            }
+        ''' % token
+    result = schema.execute(mutation)
+    print(result)
+    return HttpResponse(result)

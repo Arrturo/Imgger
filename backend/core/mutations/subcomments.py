@@ -3,6 +3,7 @@ from ..types import CommentType
 import graphene
 from ..models import Comment
 
+
 class CreateSubCommentMutation(graphene.Mutation):
     class Arguments:
         description = graphene.String(required=True)
@@ -14,10 +15,12 @@ class CreateSubCommentMutation(graphene.Mutation):
     def mutate(self, info, description, user_id, comment_id):
         user = get_user_model().objects.get(id=user_id)
         comment = Comment.objects.get(id=comment_id)
-        subcomment = Comment(description=description, user=user, comment=comment)
+        subcomment = Comment(description=description,
+                             user=user, comment=comment)
         subcomment.save()
         return CreateSubCommentMutation(subcomment=subcomment)
-    
+
+
 class UpdateSubCommentMutation(graphene.Mutation):
     class Arguments:
         subcomment_id = graphene.ID(required=True)
@@ -39,7 +42,8 @@ class UpdateSubCommentMutation(graphene.Mutation):
             subcomment.comment = comment
         subcomment.save()
         return UpdateSubCommentMutation(subcomment=subcomment)
-    
+
+
 class DeleteSubCommentMutation(graphene.Mutation):
     class Arguments:
         subcomment_id = graphene.ID(required=True)
