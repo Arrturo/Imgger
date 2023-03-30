@@ -31,7 +31,6 @@ export const postsList = () => async (dispatch) => {
                             createTime
                             image{
                               file
-                              name
                             }
                             user{
                                 username
@@ -79,7 +78,6 @@ export const postsDetails = (id) => async (dispatch) => {
                     image{
                         id
                         file
-                        name
                     }
                     category{
                         id

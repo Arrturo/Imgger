@@ -11,7 +11,8 @@ from .mutations.categories import (CreateCategoryMutation,
                                    UpdateCategoryMutation)
 from .mutations.comments import (CreateCommentMutation, DeleteCommentMutation,
                                  UpdateCommentMutation)
-from .mutations.images import CreateImageMutation, DeleteImageMutation
+from .mutations.images import (CreateImageMutation, DeleteImageMutation,
+                                UpdateImageMutation)
 from .mutations.posts import (CreatePostMutation, DeletePostMutation,
                               UpdatePostMutation, dislike, like)
 from .mutations.subcomments import (CreateSubCommentMutation,
@@ -35,14 +36,12 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
     def resolve_users(self, info, **kwargs):
         return User.objects.all().order_by('id')
-    
+
     def resolve_users_by_id(self, info, id):
         return User.objects.get(pk=id)
 
-    def resolve_post_by_id(self, info, id):
-        post_id = base64.b64decode(id).decode("utf-8").split(':')[1]
-        post_id = int(post_id)
-        return Post.objects.get(pk=post_id)
+    def resolve_posts(self, info, **kwargs):
+        return Post.objects.all().order_by('-create_time')
 
     def resolve_posts_by_category(self, info, **kwargs):
         return Post.objects.filter(category=kwargs['category'])
@@ -53,14 +52,11 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_categories(self, info, **kwargs):
         return Category.objects.all().order_by('name')
 
-    def resolve_posts(self, info, **kwargs):
-        return Post.objects.all().order_by('-create_time')
-    
     def resolve_posts_by_id(self, info, id,  **kwargs):
         post_id = base64.b64decode(id).decode("utf-8").split(':')[1]
         post_id = int(post_id)
         return Post.objects.get(pk=post_id)
-    
+
     def resolve_comments(self, info, **kwargs):
         return Comment.objects.all()
 
@@ -72,6 +68,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
 
 class AuthMutation(graphene.ObjectType):
+    register = mutations.Register.Field()
     verify_account = mutations.VerifyAccount.Field()
     token_auth = mutations.ObtainJSONWebToken.Field()
     refresh_token = mutations.RefreshToken.Field()
@@ -82,32 +79,33 @@ class AuthMutation(graphene.ObjectType):
 
 
 class Mutation(AuthMutation, graphene.ObjectType):
-    register = mutations.Register.Field()
+    create_user = CreateUserMutation.Field()
     # create_user = mutations.Register.Field()
-    update_user = mutations.UpdateAccount.Field()
-    delete_user = mutations.DeleteAccount.Field()
-    
+    update_user = UpdateUserMutation.Field()
+    delete_user = DeleteUserMutation.Field()
+
     create_post = CreatePostMutation.Field()
     update_post = UpdatePostMutation.Field()
     delete_post = DeletePostMutation.Field()
-    
+
     like = like.Field()
     dislike = dislike.Field()
-    
+
     create_category = CreateCategoryMutation.Field()
     update_category = UpdateCategoryMutation.Field()
     delete_category = DeleteCategoryMutation.Field()
-    
+
     create_comment = CreateCommentMutation.Field()
     update_comment = UpdateCommentMutation.Field()
     delete_comment = DeleteCommentMutation.Field()
-    
+
     create_subcomment = CreateSubCommentMutation.Field()
     update_subcomment = UpdateSubCommentMutation.Field()
     delete_subcomment = DeleteSubCommentMutation.Field()
-    
+
     create_image = CreateImageMutation.Field()
     update_imaage = UpdateImageMutation.Field()
     delete_image = DeleteImageMutation.Field()
+
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
