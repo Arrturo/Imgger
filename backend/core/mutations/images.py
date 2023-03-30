@@ -69,7 +69,7 @@ class DeleteImageMutation(graphene.Mutation):
 class UpdateImageMutation(graphene.Mutation):
     class Arguments:
         id = graphene.ID(required=True)
-        input = ImageInput(required=True)
+        input = Upload(required=True)
 
     success = graphene.Boolean()
     errors = graphene.String()
