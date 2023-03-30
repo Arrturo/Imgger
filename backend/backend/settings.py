@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 import os
 import json
@@ -173,6 +174,9 @@ GRAPHQL_JWT = {
     ],
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
+    "JWT_AUTH_TOKEN_EXPIRATION_DELTA": timedelta(minutes=5),
+    "JWT_REFRESH_TOKEN_EXPIRATION_DELTA": timedelta(days=7),
+    # "JWT_VERIFY": True,
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

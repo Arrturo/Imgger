@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from ..types import CommentType
 import graphene
 from ..models import Comment
+from graphql_jwt.decorators import login_required
+
 
 
 class CreateSubCommentMutation(graphene.Mutation):
@@ -12,6 +14,7 @@ class CreateSubCommentMutation(graphene.Mutation):
 
     subcomment = graphene.Field(CommentType)
 
+    @login_required
     def mutate(self, info, description, user_id, comment_id):
         user = get_user_model().objects.get(id=user_id)
         comment = Comment.objects.get(id=comment_id)
@@ -30,6 +33,7 @@ class UpdateSubCommentMutation(graphene.Mutation):
 
     subcomment = graphene.Field(CommentType)
 
+    @login_required
     def mutate(self, info, subcomment_id, description, user_id, comment_id):
         subcomment = Comment.objects.get(id=subcomment_id)
         if description:
@@ -50,6 +54,7 @@ class DeleteSubCommentMutation(graphene.Mutation):
 
     subcomment = graphene.Field(CommentType)
 
+    @login_required
     def mutate(self, info, subcomment_id):
         subcomment = Comment.objects.get(id=subcomment_id)
         subcomment.delete()

@@ -43,6 +43,7 @@ class Comment(models.Model):
         return f"{self.comment[:20]}"
 
 
+
 class Subcomment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)

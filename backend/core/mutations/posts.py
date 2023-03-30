@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from ..types import PostType
 import graphene
 from ..models import Post, Category, Image
+from graphql_jwt.decorators import login_required
 
 
 class CreatePostMutation(graphene.Mutation):
@@ -17,8 +18,8 @@ class CreatePostMutation(graphene.Mutation):
 
     post = graphene.Field(PostType)
 
-    def mutate(self, info, title, description, user_id, image_id, category_id,
-               likes=None, dislikes=None):
+    @login_required
+    def mutate(self, info, title, description, user_id, image_id, category_id, likes=None, dislikes=None):
         user = User.objects.get(id=user_id)
         if image_id:
             image = Image.objects.get(id=image_id)
@@ -32,6 +33,8 @@ class CreatePostMutation(graphene.Mutation):
         return CreatePostMutation(post=post)
 
 
+
+
 class UpdatePostMutation(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
@@ -43,8 +46,8 @@ class UpdatePostMutation(graphene.Mutation):
 
     post = graphene.Field(PostType)
 
-    def mutate(self, info, post_id, title, description,
-               user_id, image_id, category_id):
+    @login_required
+    def mutate(self, info, post_id, title, description, user_id, image_id, category_id):
         post = Post.objects.get(id=post_id)
         if title:
             post.title = title
@@ -63,23 +66,29 @@ class UpdatePostMutation(graphene.Mutation):
         return UpdatePostMutation(post=post)
 
 
+
+
 class DeletePostMutation(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
 
     post = graphene.Field(PostType)
 
+    @login_required
     def mutate(self, info, post_id):
         post = Post.objects.get(id=post_id)
         post.delete()
         return DeletePostMutation(post=post)
 
 
+
+
 class like(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
     post = graphene.Field(PostType)
-
+    
+    @login_required
     def mutate(self, info, post_id):
         post = Post.objects.get(id=post_id)
         post.likes += 1
@@ -87,11 +96,14 @@ class like(graphene.Mutation):
         return like(post=post)
 
 
+
+
 class dislike(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
     post = graphene.Field(PostType)
-
+    
+    @login_required
     def mutate(self, info, post_id):
         post = Post.objects.get(id=post_id)
         post.dislikes += 1
