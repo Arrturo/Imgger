@@ -15,7 +15,7 @@ class CreateUserMutation(graphene.Mutation):
         user = User.objects.create_user(username, email, password)
         user.save()
         return CreateUserMutation(user=user)
-    
+
 
 class UpdateUserMutation(graphene.Mutation):
     class Arguments:
@@ -51,4 +51,3 @@ class DeleteUserMutation(graphene.Mutation):
         user = User.objects.get(id=user_id)
         user.delete()
         return DeleteUserMutation(user=user)
-    
