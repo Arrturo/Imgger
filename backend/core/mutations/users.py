@@ -23,10 +23,11 @@ class UpdateUserMutation(graphene.Mutation):
         username = graphene.String()
         email = graphene.String()
         password = graphene.String()
+        isStaff = graphene.Boolean()
 
     user = graphene.Field(UserType)
 
-    def mutate(self, info, user_id, username, email, password):
+    def mutate(self, info, user_id, username, email, password, isStaff=None):
         user = User.objects.get(id=user_id)
         if username:
             user.username = username
@@ -34,6 +35,8 @@ class UpdateUserMutation(graphene.Mutation):
             user.email = email
         if password:
             user.set_password(password)
+        if isStaff is not None:
+            user.is_staff = isStaff
         user.save()
         return UpdateUserMutation(user=user)
 

@@ -3,7 +3,6 @@ from .models import User, Post, Category, Comment, Image, Subcomment
 from graphene_django.filter import DjangoFilterConnectionField
 import graphene
 
-
 class UserType(DjangoObjectType):
     class Meta:
         model = User
@@ -15,6 +14,7 @@ class PostType(DjangoObjectType):
         model = Post
         fields = "__all__"
         filter_fields = {
+            'id': ['exact'],
             'title': ['exact', 'icontains', 'istartswith'],
             'description': ['exact', 'icontains', 'istartswith'],
         }
@@ -35,6 +35,12 @@ class CategoryType(DjangoObjectType):
     def resolve_posts(self, info, **kwargs):
         return Post.objects.filter(category=self)
 
+        filter_fields = {
+            'name': ['exact', 'icontains', 'istartswith'],
+        }
+
+        interfaces = (graphene.relay.Node, )
+    
 
 class CommentType(DjangoObjectType):
     class Meta:

@@ -75,7 +75,8 @@ function UserListScreen() {
                                     <i class="fa-solid fa-circle-check text-lime-500"></i>
                                     ): <i class="fa-solid fa-circle-minus text-red-500"></i>}</td>
                                 <td>
-                                    <Button varinat='light' className="btn-m"><i class="fa-regular fa-pen-to-square text-lime-500"></i></Button>
+                                    <a href={`/admin/userlist/${user.id}/edit`}><Button varinat='light' className="btn-m"><i class="fa-regular fa-pen-to-square text-lime-500"></i></Button></a>
+                                    
                                     <Button varinat='danger' className="btn-m" onClick={() => deleteHandler(user.id, user.email)} ><i class="fa-solid fa-trash-can text-red-500"></i></Button>
                                 </td>
                             </tr>
