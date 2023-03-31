@@ -58,10 +58,11 @@ function App() {
 				console.log(error);
 			  }
 			} else {
+				console.log("Token is still valid");
 			}
 		  }
 		}
-	  
+		fetchData();
 	  }, []);
 	
 
