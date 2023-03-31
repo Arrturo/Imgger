@@ -14,11 +14,13 @@ export const login = (username, password) => async (dispatch) =>{
             type: USER_LOGIN_REQUEST
         })
 
-        const config = {
-			    headers: {
-				    'Content-type': 'application/json',
-			  },
-		  };
+		const config = {
+			headers: {
+				'Content-type': 'application/json',
+				'Authorization': 'JWT ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjgwMjEwNTI2LCJvcmlnSWF0IjoxNjgwMjEwMjI2fQ.Cf-LRHnQAWjeAKXlkva81bqvP_TZ0qnP6CLjENf7vag",
+			},
+		};
+			
 
         const { data } = await axios.post('http://127.0.0.1:8000/graphql', {
             query: `
@@ -40,6 +42,10 @@ export const login = (username, password) => async (dispatch) =>{
             `,
           }, config)
 
+		  var tokens = data.data.tokenAuth.token.split('.');
+		  var payload = JSON.parse(atob(tokens[1]));
+
+		  console.log(payload)
 
           if(data.data.tokenAuth.success === true){
             dispatch({
@@ -48,6 +54,8 @@ export const login = (username, password) => async (dispatch) =>{
             });
         
             localStorage.setItem('userInfo', JSON.stringify(data.data.tokenAuth));
+			localStorage.setItem('exp', JSON.stringify(payload.exp));
+			localStorage.setItem('refreshToken', JSON.stringify(data.data.tokenAuth.refreshToken));
 
           } else {
             dispatch({

@@ -3,6 +3,7 @@ from ..models import Image
 from graphene_file_upload.scalars import Upload
 from graphql_jwt.decorators import login_required
 
+
 class CreateImageMutation(graphene.Mutation):
     class Arguments:
         input = Upload(required=True)
@@ -11,17 +12,16 @@ class CreateImageMutation(graphene.Mutation):
     errors = graphene.String()
 
     @staticmethod
-    @login_required
     def mutate(root, info, input):
         try:
-            image = Image.objects.create(image=input.image)
+            image = Image(name=input.name, image=input.image)
             image.save()
             success = True
             errors = None
         except Exception as e:
             success = False
             errors = str(e)
-        return CreateImageMutation(succes=success, errors=errors)
+        return CreateImageMutation(success=success, errors=errors)
 
 
 class UpdateImageMutation(graphene.Mutation):

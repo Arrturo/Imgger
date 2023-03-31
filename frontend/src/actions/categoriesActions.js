@@ -11,6 +11,7 @@ export const categoriesList = () => async (dispatch) => {
         const config = {
 			headers: {
 				'Content-type': 'application/json',
+                // Authorization: `Bearer ${userInfo.token}`,
 			},
 		};
 
@@ -33,8 +34,6 @@ export const categoriesList = () => async (dispatch) => {
             type: CATEGORIES_LIST_SUCCESS,
             payload: data.data.categories.edges
         })
-
-        // localStorage.setItem('categories', JSON.stringify(data)); 
 
 
     }catch (error){
@@ -63,8 +62,7 @@ export const deleteCategories = (id) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                Authorization:  `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjgwMTgyNjAwLCJvcmlnSWF0IjoxNjgwMTgyMzAwfQ.bOiiN2M96XqduBtL2nmjZn1tuyVerTiGEB0nZWUijh4`
-
+                'Authorization': `JWT ${userInfo.token}`
             }
         }
 
@@ -109,6 +107,7 @@ export const createCategory = (name) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-type': 'application/json',
+                'Authorization': `JWT ${userInfo.token}`
             }
         }
         const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
@@ -155,6 +154,7 @@ export const editCategory = (category) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-type': 'application/json',
+                'Authorization': `JWT ${userInfo.token}`
             }
         }
         const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {

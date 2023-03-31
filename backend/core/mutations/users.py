@@ -1,6 +1,11 @@
 from django.contrib.auth.models import User
 from ..types import UserType
 import graphene
+from django.contrib.auth import authenticate
+from graphql_jwt.shortcuts import get_token
+import graphene
+from graphql_jwt.decorators import login_required
+from graphql_jwt.shortcuts import get_token
 
 
 class CreateUserMutation(graphene.Mutation):
@@ -51,3 +56,18 @@ class DeleteUserMutation(graphene.Mutation):
         user = User.objects.get(id=user_id)
         user.delete()
         return DeleteUserMutation(user=user)
+
+
+class LoginMutation(graphene.Mutation):
+    class Arguments:
+        username = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    token = graphene.String()
+
+    def mutate(self, info, username, password):
+        user = authenticate(username=username, password=password)
+        if user is None:
+            raise Exception('Invalid credentials')
+        token = get_token(user)
+        return LoginMutation(token=token)

@@ -1,31 +1,32 @@
+import base64
 import graphene
 from django.contrib.auth.models import User
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
-import base64
-
-from .models import Category, Comment, Image, Post, Subcomment
+import graphql_jwt
+from .models import Category, Comment, Image, Post, Subcomment, ExtendUser
 from .mutations.categories import (CreateCategoryMutation,
                                    DeleteCategoryMutation,
                                    UpdateCategoryMutation)
 from .mutations.comments import (CreateCommentMutation, DeleteCommentMutation,
                                  UpdateCommentMutation)
 from .mutations.images import (CreateImageMutation, DeleteImageMutation,
-                                UpdateImageMutation)
+                               UpdateImageMutation)
 from .mutations.posts import (CreatePostMutation, DeletePostMutation,
                               UpdatePostMutation, dislike, like)
 from .mutations.subcomments import (CreateSubCommentMutation,
                                     DeleteSubCommentMutation,
                                     UpdateSubCommentMutation)
-from .mutations.users import (CreateUserMutation, DeleteUserMutation,
-                              UpdateUserMutation)
+from .mutations.users import DeleteUserMutation, UpdateUserMutation, LoginMutation
 from .types import (CategoryType, CommentType, ImageType, PostType,
                     SubcommentType, UserType)
+from graphql_jwt.decorators import staff_member_required
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     users = graphene.List(UserType)
+    me = graphene.Field(UserType)
     users_by_id = graphene.Field(UserType, id=graphene.ID(required=True))
     posts = DjangoFilterConnectionField(PostType)
     posts_by_id = graphene.Field(PostType, id=graphene.String(required=True))
@@ -35,7 +36,13 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     subcomments = DjangoFilterConnectionField(SubcommentType)
 
     def resolve_users(self, info, **kwargs):
-        return User.objects.all().order_by('id')
+        return ExtendUser.objects.all().order_by('id')
+
+    def resolve_me(self, info, **kwargs):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception('Not logged in!')
+        return user
 
     def resolve_users_by_id(self, info, id):
         return User.objects.get(pk=id)
@@ -69,18 +76,19 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
 class AuthMutation(graphene.ObjectType):
     register = mutations.Register.Field()
-    verify_account = mutations.VerifyAccount.Field()
     token_auth = mutations.ObtainJSONWebToken.Field()
+    verify_token = mutations.VerifyToken.Field()
     refresh_token = mutations.RefreshToken.Field()
+    update_account = mutations.UpdateAccount.Field()
     # resend_activation_email = mutations.ResendActivationEmail.Field()
+    verify_token = mutations.VerifyToken.Field()
     send_password_reset_email = mutations.SendPasswordResetEmail.Field()
     password_reset = mutations.PasswordReset.Field()
     password_change = mutations.PasswordChange.Field()
 
 
 class Mutation(AuthMutation, graphene.ObjectType):
-    create_user = CreateUserMutation.Field()
-    # create_user = mutations.Register.Field()
+    login = LoginMutation.Field()
     update_user = UpdateUserMutation.Field()
     delete_user = DeleteUserMutation.Field()
 

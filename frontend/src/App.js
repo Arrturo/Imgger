@@ -13,8 +13,59 @@ import UserEditScreen from './screens/UserEditScreen'
 import CreatingPost from './screens/CreatingPost';
 import PostScreen from './screens/PostScreen';
 import PostsAdminScreen from './screens/PostsAdminScreen';
+import { useEffect } from 'react';
+import axios from 'axios';
+
+
 
 function App() {
+	useEffect(() => {
+		const fetchData = async () => {
+		  if ((localStorage.getItem('userInfo')) && (localStorage.getItem('exp')) && (localStorage.getItem('refreshToken'))) {
+			const exp = localStorage.getItem('exp');
+			const refreshToken = localStorage.getItem('refreshToken');
+			const now = new Date().getTime() / 1000;
+			if (exp < now) {
+			  const config = {
+				headers: {
+				  'Content-type': 'application/json',
+				}
+			  }
+			  try {
+				const { data }  = await axios.post('http://127.0.0.1:8000/graphql', {
+				  query: `
+					mutation {
+					  refreshToken(refreshToken: ${refreshToken}) {
+						success,
+						errors,
+						token,
+						refreshToken
+						payload
+					  }
+					}
+				  `
+				}, config)
+	  
+				if (data.data.refreshToken.success) {
+				  const userData = JSON.parse(localStorage.getItem('userInfo'));
+				  userData.token = data.data.refreshToken.token;
+				  userData.refreshToken = data.data.refreshToken.refreshToken;
+				  localStorage.setItem('userInfo', JSON.stringify(userData));
+				  localStorage.setItem('exp', JSON.stringify(data.data.refreshToken.payload.exp));
+				  localStorage.setItem('refreshToken', JSON.stringify(data.data.refreshToken.refreshToken));
+				}
+			  } catch (error) {
+				console.log(error);
+			  }
+			} else {
+				console.log("Token is still valid");
+			}
+		  }
+		}
+		fetchData();
+	  }, []);
+	
+
 	return (
 		<Router>
 			<main className="min-h-screen">

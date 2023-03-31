@@ -1,23 +1,28 @@
 import base64
-from ..types import CategoryType
-import graphene
-from ..models import Category
-import base64
 
+import graphene
 from graphql_jwt.decorators import login_required, staff_member_required
+
+from ..models import Category
+from ..types import CategoryType
 
 
 class CreateCategoryMutation(graphene.Mutation):
     class Arguments:
         name = graphene.String(required=True)
     category = graphene.Field(CategoryType)
-    
+
+    @staff_member_required
     @login_required
     def mutate(self, info, name):
-        category = Category(name=name)
-        category.save()
-        return CreateCategoryMutation(category=category)
-
+        user = info.context.user
+        print(user)
+        if user.is_authenticated:
+            category = Category(name=name)
+            category.save()
+            return CreateCategoryMutation(category=category)
+        else:
+            raise Exception('Not logged in!')
 
 
 class UpdateCategoryMutation(graphene.Mutation):
@@ -27,7 +32,7 @@ class UpdateCategoryMutation(graphene.Mutation):
 
     category = graphene.Field(CategoryType)
 
-    @staff_member_required
+    @login_required
     def mutate(self, info, category_id, name):
         category = Category.objects.get(id=base64.b64decode(category_id)
                                         .decode("utf-8").split(':')[1])
@@ -35,7 +40,6 @@ class UpdateCategoryMutation(graphene.Mutation):
             category.name = name
         category.save()
         return UpdateCategoryMutation(category=category)
-
 
 
 class DeleteCategoryMutation(graphene.Mutation):
@@ -46,19 +50,25 @@ class DeleteCategoryMutation(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
 
+    @staff_member_required
+    @login_required
     def mutate(self, info, category_id):
-        category = Category.objects.get(id=base64.b64decode(category_id)
-                                        .decode("utf-8").split(':')[1])
-                                        
-        if not category:
-            return DeleteCategoryMutation(
-                success=False,
-                errors=["Category not found"])
-        try:
-            category.delete()
-            success = True
-            errors = None
-        except Exception as e:
-            success = False
-            errors = str(e)
-        return DeleteCategoryMutation(success=success, errors=errors)
+        user = info.context.user
+        print(user)
+        if user.is_authenticated:
+            category = Category.objects.get(id=base64.b64decode(category_id)
+                                            .decode("utf-8").split(':')[1])
+            if not category:
+                return DeleteCategoryMutation(
+                    success=False,
+                    errors=["Category not found"])
+            try:
+                category.delete()
+                success = True
+                errors = None
+            except Exception as e:
+                success = False
+                errors = str(e)
+            return DeleteCategoryMutation(success=success, errors=errors)
+        else:
+            raise Exception('Not logged in!')
