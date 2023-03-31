@@ -11,6 +11,7 @@ export const categoriesList = () => async (dispatch) => {
         const config = {
 			headers: {
 				'Content-type': 'application/json',
+                // Authorization: `Bearer ${userInfo.token}`,
 			},
 		};
 
@@ -63,7 +64,7 @@ export const deleteCategories = (id) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-type': 'application/json',
-
+                'Authorization': `JWT ${userInfo.token}`
             }
         }
 
@@ -107,6 +108,7 @@ export const createCategory = (name) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-type': 'application/json',
+                'Authorization': `JWT ${userInfo.token}`
             }
         }
         const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
@@ -153,6 +155,7 @@ export const editCategory = (category) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-type': 'application/json',
+                'Authorization': `JWT ${userInfo.token}`
             }
         }
         const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {

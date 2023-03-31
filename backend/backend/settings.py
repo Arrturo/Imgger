@@ -155,8 +155,10 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'core.ExtendUser'
+
 GRAPHENE = {
-    'SCHEMA': 'backend.schema.schema',
+    'SCHEMA': 'users.schema.schema',
     'MIDDLEWARE': [
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
     ],
@@ -171,12 +173,12 @@ GRAPHQL_JWT = {
     "JWT_ALLOW_ANY_CLASSES": [
         "graphql_auth.mutations.Register",
         "graphql_auth.mutations.VerifyAccount",
+        "graphql_auth.mutations.ObtainJSONWebToken",
     ],
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
     "JWT_AUTH_TOKEN_EXPIRATION_DELTA": timedelta(minutes=5),
     "JWT_REFRESH_TOKEN_EXPIRATION_DELTA": timedelta(days=7),
-    # "JWT_VERIFY": True,
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
