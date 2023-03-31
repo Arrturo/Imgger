@@ -16,25 +16,18 @@ function CreatingPost() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append('file', file);
+
     try {
-  
       const config = {
         headers: {
-          "Content-type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       };
-  
-      const response = await axios.post(
-        "http://127.0.0.1:8000/graphql", {
-          query: `
-            mutation {
-              createImage(input: ${file}) {
-                success
-                errors
-              }
-            }
-          `}, config);
-  
+
+      const { data } = await axios.post('http://127.0.0.1:8000/upload/', formData, config);
+      console.log(data);
     } catch (error) {
       console.error(error);
     }

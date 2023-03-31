@@ -1,11 +1,11 @@
 import base64
+
 import graphene
-from django.contrib.auth.models import User
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
-import graphql_jwt
-from .models import Category, Comment, Image, Post, Subcomment, ExtendUser
+
+from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 from .mutations.categories import (CreateCategoryMutation,
                                    DeleteCategoryMutation,
                                    UpdateCategoryMutation)
@@ -18,10 +18,10 @@ from .mutations.posts import (CreatePostMutation, DeletePostMutation,
 from .mutations.subcomments import (CreateSubCommentMutation,
                                     DeleteSubCommentMutation,
                                     UpdateSubCommentMutation)
-from .mutations.users import DeleteUserMutation, UpdateUserMutation, LoginMutation
+from .mutations.users import (DeleteUserMutation, LoginMutation,
+                              UpdateUserMutation)
 from .types import (CategoryType, CommentType, ImageType, PostType,
                     SubcommentType, UserType)
-from graphql_jwt.decorators import staff_member_required
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
@@ -45,7 +45,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return user
 
     def resolve_users_by_id(self, info, id):
-        return User.objects.get(pk=id)
+        return ExtendUser.objects.get(pk=id)
 
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all().order_by('-create_time')

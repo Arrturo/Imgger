@@ -49,10 +49,8 @@ function App() {
 				if (data.data.refreshToken.success) {
 				  const userData = JSON.parse(localStorage.getItem('userInfo'));
 				  userData.token = data.data.refreshToken.token;
-				  userData.refreshToken = data.data.refreshToken.refreshToken;
 				  localStorage.setItem('userInfo', JSON.stringify(userData));
 				  localStorage.setItem('exp', JSON.stringify(data.data.refreshToken.payload.exp));
-				  localStorage.setItem('refreshToken', JSON.stringify(data.data.refreshToken.refreshToken));
 				}
 			  } catch (error) {
 				console.log(error);

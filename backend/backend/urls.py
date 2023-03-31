@@ -26,9 +26,9 @@ from graphql_jwt.decorators import jwt_cookie
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('graphql', jwt_cookie(csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True,
-                                                              schema=schema)))),
-    path('upload/', image_upload_view, name='upload'),
+    path('graphql', jwt_cookie(csrf_exempt(FileUploadGraphQLView.as_view
+                                           (graphiql=True, schema=schema)))),
+    path('upload/', csrf_exempt(image_upload_view), name='upload'),
     path('activate/<token>', activate, name='activate'),
 ]
 
