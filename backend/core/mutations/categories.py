@@ -12,8 +12,8 @@ class CreateCategoryMutation(graphene.Mutation):
         name = graphene.String(required=True)
     category = graphene.Field(CategoryType)
 
-    @login_required
     @staff_member_required
+    @login_required
     def mutate(self, info, name):
         user = info.context.user
         print(user)
