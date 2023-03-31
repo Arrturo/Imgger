@@ -35,8 +35,6 @@ export const categoriesList = () => async (dispatch) => {
             payload: data.data.categories.edges
         })
 
-        localStorage.setItem('categories', JSON.stringify(data)); 
-
 
     }catch (error){
         dispatch({
