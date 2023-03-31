@@ -29,6 +29,7 @@ export const login = (username, password) => async (dispatch) =>{
                   success
                   errors
                   token
+				  refreshToken
                   user {
                     pk
                     username
@@ -41,6 +42,10 @@ export const login = (username, password) => async (dispatch) =>{
             `,
           }, config)
 
+		  var tokens = data.data.tokenAuth.token.split('.');
+		  var payload = JSON.parse(atob(tokens[1]));
+
+		  console.log(payload)
 
           if(data.data.tokenAuth.success === true){
             dispatch({
@@ -49,6 +54,8 @@ export const login = (username, password) => async (dispatch) =>{
             });
         
             localStorage.setItem('userInfo', JSON.stringify(data.data.tokenAuth));
+			localStorage.setItem('exp', JSON.stringify(payload.exp));
+			localStorage.setItem('refreshToken', JSON.stringify(data.data.tokenAuth.refreshToken));
 
           } else {
             dispatch({
