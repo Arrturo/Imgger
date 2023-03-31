@@ -46,7 +46,6 @@ class DeleteCategoryMutation(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
 
-    @staff_member_required
     def mutate(self, info, category_id):
         category = Category.objects.get(id=base64.b64decode(category_id)
                                         .decode("utf-8").split(':')[1])

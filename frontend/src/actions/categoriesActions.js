@@ -34,7 +34,7 @@ export const categoriesList = () => async (dispatch) => {
             payload: data.data.categories.edges
         })
 
-        localStorage.setItem('categories', JSON.stringify(data)); 
+        // localStorage.setItem('categories', JSON.stringify(data)); 
 
 
     }catch (error){
@@ -63,9 +63,11 @@ export const deleteCategories = (id) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-type': 'application/json',
+                Authorization:  `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjgwMTgyNjAwLCJvcmlnSWF0IjoxNjgwMTgyMzAwfQ.bOiiN2M96XqduBtL2nmjZn1tuyVerTiGEB0nZWUijh4`
 
             }
         }
+
 
         const {data} = await axios.post('http://127.0.0.1:8000/graphql', {
             query: `

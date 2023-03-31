@@ -13,6 +13,7 @@ class Category(models.Model):
 
 class Image(models.Model):
     file = models.ImageField()
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return f"{self.file}"

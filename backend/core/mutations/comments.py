@@ -56,7 +56,7 @@ class DeleteCommentMutation(graphene.Mutation):
 
     comment = graphene.Field(CommentType)
 
-    @login_required
+    
     def mutate(self, info, comment_id):
         comment = Comment.objects.get(id=comment_id)
         comment.delete()
