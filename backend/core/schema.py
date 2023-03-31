@@ -11,8 +11,6 @@ from .mutations.categories import (CreateCategoryMutation,
                                    UpdateCategoryMutation)
 from .mutations.comments import (CreateCommentMutation, DeleteCommentMutation,
                                  UpdateCommentMutation)
-from .mutations.images import (CreateImageMutation, DeleteImageMutation,
-                               UpdateImageMutation)
 from .mutations.posts import (CreatePostMutation, DeletePostMutation,
                               UpdatePostMutation, dislike, like)
 from .mutations.subcomments import (CreateSubCommentMutation,
@@ -110,10 +108,6 @@ class Mutation(AuthMutation, graphene.ObjectType):
     create_subcomment = CreateSubCommentMutation.Field()
     update_subcomment = UpdateSubCommentMutation.Field()
     delete_subcomment = DeleteSubCommentMutation.Field()
-
-    create_image = CreateImageMutation.Field()
-    update_imaage = UpdateImageMutation.Field()
-    delete_image = DeleteImageMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
