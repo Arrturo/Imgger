@@ -3,6 +3,9 @@ from ..types import UserType
 import graphene
 from django.contrib.auth import authenticate
 from graphql_jwt.shortcuts import get_token
+import graphene
+from graphql_jwt.decorators import login_required
+from graphql_jwt.shortcuts import get_token
 
 
 class CreateUserMutation(graphene.Mutation):

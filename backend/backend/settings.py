@@ -158,7 +158,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.ExtendUser'
 
 GRAPHENE = {
-    'SCHEMA': 'users.schema.schema',
+    'SCHEMA': 'backend.schema.schema',
     'MIDDLEWARE': [
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
     ],
@@ -176,6 +176,7 @@ GRAPHQL_JWT = {
         "graphql_auth.mutations.ObtainJSONWebToken",
     ],
     "JWT_VERIFY_EXPIRATION": True,
+    "JWT_ALLOW_REFRESH": True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
     "JWT_AUTH_TOKEN_EXPIRATION_DELTA": timedelta(minutes=5),
     "JWT_REFRESH_TOKEN_EXPIRATION_DELTA": timedelta(days=7),

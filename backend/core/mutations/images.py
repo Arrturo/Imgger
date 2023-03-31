@@ -14,14 +14,13 @@ class CreateImageMutation(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         try:
-            print(input.image)
-            image = Image.objects.create(name=input.name, image=input.image)
+            image = Image(name=input.name, image=input.image)
             image.save()
             success = True
             errors = None
         except Exception as e:
             success = False
-            errors = e
+            errors = str(e)
         return CreateImageMutation(success=success, errors=errors)
 
 

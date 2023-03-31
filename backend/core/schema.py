@@ -1,12 +1,11 @@
 import base64
-
 import graphene
 from django.contrib.auth.models import User
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
-
-from .models import Category, Comment, Image, Post, Subcomment
+import graphql_jwt
+from .models import Category, Comment, Image, Post, Subcomment, ExtendUser
 from .mutations.categories import (CreateCategoryMutation,
                                    DeleteCategoryMutation,
                                    UpdateCategoryMutation)
@@ -22,6 +21,7 @@ from .mutations.subcomments import (CreateSubCommentMutation,
 from .mutations.users import DeleteUserMutation, UpdateUserMutation, LoginMutation
 from .types import (CategoryType, CommentType, ImageType, PostType,
                     SubcommentType, UserType)
+from graphql_jwt.decorators import staff_member_required
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
@@ -36,7 +36,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     subcomments = DjangoFilterConnectionField(SubcommentType)
 
     def resolve_users(self, info, **kwargs):
-        return User.objects.all().order_by('id')
+        return ExtendUser.objects.all().order_by('id')
 
     def resolve_me(self, info, **kwargs):
         user = info.context.user
@@ -76,10 +76,10 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
 class AuthMutation(graphene.ObjectType):
     register = mutations.Register.Field()
-    updateAccount = mutations.UpdateAccount.Field()
-    verify_account = mutations.VerifyAccount.Field()
     token_auth = mutations.ObtainJSONWebToken.Field()
+    verify_token = mutations.VerifyToken.Field()
     refresh_token = mutations.RefreshToken.Field()
+    update_account = mutations.UpdateAccount.Field()
     # resend_activation_email = mutations.ResendActivationEmail.Field()
     verify_token = mutations.VerifyToken.Field()
     send_password_reset_email = mutations.SendPasswordResetEmail.Field()
