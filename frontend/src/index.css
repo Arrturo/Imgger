@@ -58,4 +58,9 @@ main{
   scale: 1.05
 }
 
-
+.upload-active{
+  background: radial-gradient(circle at 50% 100%, #7cff8d80 5%, #7cff8d 5% 10%, #7cff8d80 10% 15%, #7cff8d 15% 20%, #7cff8d80 20% 25%, #7cff8d 25% 30%, #7cff8d80 30% 35%, #7cff8d 35% 40%, transparent 40%), radial-gradient(circle at 100% 50%, #7cff8d80 5%, #7cff8d 5% 10%, #7cff8d80 10% 15%, #7cff8d 15% 20%, #7cff8d80 20% 25%, #7cff8d 25% 30%, #7cff8d80 30% 35%, #7cff8d 35% 40%, transparent 40%), radial-gradient(circle at 50% 0%, #7cff8d80 5%, #7cff8d 5% 10%, #7cff8d80 10% 15%, #7cff8d 15% 20%, #7cff8d80 20% 25%, #7cff8d 25% 30%, #7cff8d80 30% 35%, #7cff8d 35% 40%, transparent 40%), radial-gradient(circle at 0 50%, #7cff8d80 5%, #7cff8d 5% 10%, #7cff8d80 10% 15%, #7cff8d 15% 20%, #7cff8d80 20% 25%, #7cff8d 25% 30%, #7cff8d80 30% 35%, #7cff8d 35% 40%, transparent 40%);
+  background-size: 3em 3em;
+  background-color: #ffffff;
+  opacity: 1
+}

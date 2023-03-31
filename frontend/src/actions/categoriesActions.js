@@ -66,6 +66,7 @@ export const deleteCategories = (id) => async (dispatch, getState) => {
             }
         }
 
+
         const {data} = await axios.post('http://127.0.0.1:8000/graphql', {
             query: `
                 mutation{
