@@ -1,11 +1,12 @@
 from graphene_django import DjangoObjectType
-from .models import User, Post, Category, Comment, Image, Subcomment
+from .models import ExtendUser, Post, Category, Comment, Image, Subcomment
 from graphene_django.filter import DjangoFilterConnectionField
 import graphene
 
+
 class UserType(DjangoObjectType):
     class Meta:
-        model = User
+        model = ExtendUser
         fields = "__all__"
 
 
