@@ -5,7 +5,8 @@ from django.contrib.auth.models import AbstractUser
 
 
 class ExtendUser(AbstractUser):
-    email = models.EmailField(blank=False, max_length=255, verbose_name="email")
+    email = models.EmailField(blank=False, max_length=255,
+                              verbose_name="email")
 
     USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"
@@ -24,7 +25,6 @@ class Category(models.Model):
 class Image(models.Model):
     name = models.CharField(max_length=255)
     file = models.ImageField()
-    name = models.CharField(max_length=255)
 
     def __str__(self):
         return f"{self.file}"
@@ -53,7 +53,6 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.comment[:20]}"
-
 
 
 class Subcomment(models.Model):

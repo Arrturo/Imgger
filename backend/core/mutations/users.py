@@ -1,25 +1,9 @@
-from django.contrib.auth.models import User
-from ..types import UserType
 import graphene
 from django.contrib.auth import authenticate
 from graphql_jwt.shortcuts import get_token
-import graphene
-from graphql_jwt.decorators import login_required
-from graphql_jwt.shortcuts import get_token
 
-
-class CreateUserMutation(graphene.Mutation):
-    class Arguments:
-        username = graphene.String(required=True)
-        email = graphene.String(required=True)
-        password = graphene.String(required=True)
-
-    user = graphene.Field(UserType)
-
-    def mutate(self, info, username, email, password):
-        user = User.objects.create_user(username, email, password)
-        user.save()
-        return CreateUserMutation(user=user)
+from ..models import ExtendUser
+from ..types import UserType
 
 
 class UpdateUserMutation(graphene.Mutation):
@@ -33,7 +17,7 @@ class UpdateUserMutation(graphene.Mutation):
     user = graphene.Field(UserType)
 
     def mutate(self, info, user_id, username, email, password, isStaff=None):
-        user = User.objects.get(id=user_id)
+        user = ExtendUser.objects.get(id=user_id)
         if username:
             user.username = username
         if email:
@@ -53,7 +37,7 @@ class DeleteUserMutation(graphene.Mutation):
     user = graphene.Field(UserType)
 
     def mutate(self, info, user_id):
-        user = User.objects.get(id=user_id)
+        user = ExtendUser.objects.get(id=user_id)
         user.delete()
         return DeleteUserMutation(user=user)
 

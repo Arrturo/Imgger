@@ -5,7 +5,6 @@ from ..models import Comment
 from graphql_jwt.decorators import login_required
 
 
-
 class CreateSubCommentMutation(graphene.Mutation):
     class Arguments:
         description = graphene.String(required=True)
