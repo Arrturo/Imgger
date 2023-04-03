@@ -17,8 +17,26 @@ function CreatingPost() {
   const submitHandler = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('file', file);
-
+    const operations = {
+      query: `
+        mutation Upload($image: Upload!) {
+          createImage(image: $image) {
+            success
+            errors
+            image{
+              file
+            }
+          }
+        }
+      `,
+      variables: {
+        image: null,
+      },
+      operationName: 'Upload',
+    };
+    formData.append('operations', JSON.stringify(operations));
+    formData.append('map', JSON.stringify({ 0: ['variables.image'] }));
+    formData.append('0', file);
     try {
       const config = {
         headers: {
@@ -26,10 +44,13 @@ function CreatingPost() {
         },
       };
 
-      const { data } = await axios.post('http://127.0.0.1:8000/upload/', formData, config);
+      const { data } = await axios.post('http://127.0.0.1:8000/graphql',
+        formData,
+        config
+      );
       console.log(data);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
   

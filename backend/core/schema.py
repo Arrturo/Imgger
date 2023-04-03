@@ -1,6 +1,7 @@
 import base64
 
 import graphene
+from django.contrib.auth.models import User
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
@@ -11,6 +12,7 @@ from .mutations.categories import (CreateCategoryMutation,
                                    UpdateCategoryMutation)
 from .mutations.comments import (CreateCommentMutation, DeleteCommentMutation,
                                  UpdateCommentMutation)
+from .mutations.images import CreateImageMutation
 from .mutations.posts import (CreatePostMutation, DeletePostMutation,
                               UpdatePostMutation, dislike, like)
 from .mutations.subcomments import (CreateSubCommentMutation,
@@ -43,7 +45,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return user
 
     def resolve_users_by_id(self, info, id):
-        return ExtendUser.objects.get(pk=id)
+        return User.objects.get(pk=id)
 
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all().order_by('-create_time')
@@ -108,6 +110,10 @@ class Mutation(AuthMutation, graphene.ObjectType):
     create_subcomment = CreateSubCommentMutation.Field()
     update_subcomment = UpdateSubCommentMutation.Field()
     delete_subcomment = DeleteSubCommentMutation.Field()
+
+    create_image = CreateImageMutation.Field()
+    # update_imaage = UpdateImageMutation.Field()
+    # delete_image = DeleteImageMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
