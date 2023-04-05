@@ -16,8 +16,7 @@ export const login = (username, password) => async (dispatch) =>{
 
 		const config = {
 			headers: {
-				'Content-type': 'application/json',
-				'Authorization': 'JWT ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjgwMjEwNTI2LCJvcmlnSWF0IjoxNjgwMjEwMjI2fQ.Cf-LRHnQAWjeAKXlkva81bqvP_TZ0qnP6CLjENf7vag",
+				'Content-type': 'application/json'
 			},
 		};
 			
