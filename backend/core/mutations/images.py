@@ -2,6 +2,7 @@ import graphene
 from ..models import Image
 from ..types import ImageType
 from graphene_file_upload.scalars import Upload
+from graphql_jwt.decorators import login_required
 
 
 class CreateImageMutation(graphene.Mutation):
@@ -13,6 +14,7 @@ class CreateImageMutation(graphene.Mutation):
     errors = graphene.String()
 
     @staticmethod
+    @login_required
     def mutate(root, info, image):
         try:
             file = image

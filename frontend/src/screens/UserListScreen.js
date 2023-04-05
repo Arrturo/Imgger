@@ -39,7 +39,10 @@ function UserListScreen() {
     const deleteHandler = (id, email) => {
         if(window.confirm(`Are you sure to delete user with email: ${email} ?`)){
             dispatch(deleteUser(id))
-            window.location.reload()
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000)
+    
         }
 
 

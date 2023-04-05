@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { POST_LIST_FAIL, POST_LIST_REQUEST, POST_LIST_SUCCESS, POST_DETAILS_FAIL, POST_DETAILS_REQUEST, POST_DETAILS_SUCCESS } from "../constants/postConstants";
+import { POST_LIST_FAIL, POST_LIST_REQUEST, POST_LIST_SUCCESS, POST_DETAILS_FAIL, POST_DETAILS_REQUEST, POST_DETAILS_SUCCESS, POST_CREATE_FAIL, POST_CREATE_REQUEST, POST_CREATE_SUCCESS } from "../constants/postConstants";
 
 
 
@@ -106,4 +106,55 @@ export const postsDetails = (id) => async (dispatch) => {
         })
     }
 
+}
+
+
+
+export const createPost = (title, description,  userId, imageId,  categoryId,) => async (dispatch, getState) => {
+    
+    try {
+        dispatch({
+            type: POST_CREATE_REQUEST,
+        })
+
+        const {
+            userLogin: {userInfo}
+        } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `JWT ${userInfo.token}`
+            }
+        }
+        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+            query: `
+                mutation{
+                   createPost(title: "${title}", description: "${description}", userId: ${userId}, imageId: "${imageId}", 
+                   categoryId: "${categoryId}"){
+                        success
+                        errors
+                        post{
+                            id
+                            title
+                        }
+                   }
+                }
+            `
+        }, config)
+        
+
+        dispatch({
+            type: POST_CREATE_SUCCESS,
+            payload: data.data.createPost,
+        })
+
+    }catch(error){
+        dispatch({
+            type: POST_CREATE_FAIL,
+            payload: error.response && error.response.data.detail
+            ? error.response.data.detail
+            : error.message,
+        })
+    }
 }

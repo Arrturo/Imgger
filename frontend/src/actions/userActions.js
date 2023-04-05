@@ -174,7 +174,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				Authorization: `Bearer ${userInfo.token}`,
+				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 
@@ -237,7 +237,7 @@ export const listUsers = () => async (dispatch, getState) => {
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				// Authorization: `Bearer ${userInfo.token}`,
+				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 
@@ -290,7 +290,7 @@ export const deleteUser = (id) => async (dispatch, getState) => {
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				// Authorization: `Bearer ${userInfo.token}`,
+				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 
@@ -336,7 +336,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				// Authorization: `Bearer ${userInfo.token}`,
+				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 
@@ -389,7 +389,7 @@ export const updateUserProfileByAdmin = (user) => async (dispatch, getState) => 
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				Authorization: `Bearer ${userInfo.token}`,
+				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 

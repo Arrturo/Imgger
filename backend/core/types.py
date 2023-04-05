@@ -31,18 +31,7 @@ class CategoryType(DjangoObjectType):
         }
         interfaces = (graphene.relay.Node, )
 
-    posts = DjangoFilterConnectionField(PostType)
-
-    def resolve_posts(self, info, **kwargs):
-        return Post.objects.filter(category=self)
-
-        filter_fields = {
-            'name': ['exact', 'icontains', 'istartswith'],
-        }
-
-        interfaces = (graphene.relay.Node, )
     
-
 class CommentType(DjangoObjectType):
     class Meta:
         model = Comment

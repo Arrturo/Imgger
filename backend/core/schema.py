@@ -45,7 +45,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return user
 
     def resolve_users_by_id(self, info, id):
-        return User.objects.get(pk=id)
+        return ExtendUser.objects.get(pk=id)
 
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all().order_by('-create_time')

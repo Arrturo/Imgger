@@ -11,8 +11,8 @@ class CreatePostMutation(graphene.Mutation):
         title = graphene.String(required=True)
         description = graphene.String()
         user_id = graphene.ID(required=True)
-        image_id = graphene.ID()
-        category_id = graphene.String(required=True)
+        image_id = graphene.String(required=True)
+        category_id = graphene.ID(required=True)
         likes = graphene.Int()
         dislikes = graphene.Int()
 
@@ -21,27 +21,24 @@ class CreatePostMutation(graphene.Mutation):
     post = graphene.Field(PostType)
 
     @login_required
-    def mutate(self, info, title, description, user_id, image_id, category_id,
-               likes=None, dislikes=None):
+    def mutate(self, info, title, description, user_id, image_id, category_id):
         try:
             user = ExtendUser.objects.get(id=user_id)
-            category_id = base64.b64decode(category_id).decode('utf-8').split(
-                ':')[1]
-            category_id = Category.objects.get(id=category_id)
+            category_id = Category.objects.get(id=base64.b64decode(category_id)
+                                        .decode("utf-8").split(':')[1])
             if image_id:
                 image = Image.objects.get(id=image_id)
                 post = Post(title=title, description=description, user=user,
-                            image=image, category=category_id, likes=likes,
-                            dislikes=dislikes)
+                            image=image, category=category_id, likes=0,
+                            dislikes=0)
             else:
                 post = Post(title=title, description=description, user=user,
-                            category=category_id, likes=likes,
-                            dislikes=dislikes)
+                            category=category_id, likes=0,
+                            dislikes=0)
             post.save()
             return CreatePostMutation(success=True, post=post)
         except Exception as e:
             return CreatePostMutation(success=False, errors=str(e))
-
 
 class UpdatePostMutation(graphene.Mutation):
     class Arguments:
