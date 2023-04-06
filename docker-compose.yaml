@@ -1,14 +1,25 @@
 version: "3.2"
 services:
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
   backend:
+    restart: always
+    container_name: backend
     build: ./backend
     volumes:
       - ./backend:/core/backend
     ports:
       - "8000:8000"
     command: python3 manage.py runserver 0.0.0.0:8000
+    links:
+      - mailhog
   frontend:
     build: ./frontend
+    container_name: frontend
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -19,3 +30,5 @@ services:
     depends_on:
       - backend
     command: npm start
+      
+    
