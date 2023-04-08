@@ -183,7 +183,8 @@ GRAPHQL_JWT = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = '127.0.0.1'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'mailhog'
 EMAIL_PORT = '1025'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

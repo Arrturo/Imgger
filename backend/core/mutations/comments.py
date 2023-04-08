@@ -22,8 +22,6 @@ class CreateCommentMutation(graphene.Mutation):
         return CreateCommentMutation(comment=comment)
 
 
-
-
 class UpdateCommentMutation(graphene.Mutation):
     class Arguments:
         comment_id = graphene.ID(required=True)
@@ -48,15 +46,13 @@ class UpdateCommentMutation(graphene.Mutation):
         return UpdateCommentMutation(comment=comment)
 
 
-
-
 class DeleteCommentMutation(graphene.Mutation):
     class Arguments:
         comment_id = graphene.ID(required=True)
 
     comment = graphene.Field(CommentType)
 
-    
+    @login_required
     def mutate(self, info, comment_id):
         comment = Comment.objects.get(id=comment_id)
         comment.delete()
