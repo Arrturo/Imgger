@@ -30,5 +30,3 @@ services:
     depends_on:
       - backend
     command: npm start
-      
-    

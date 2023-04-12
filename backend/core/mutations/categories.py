@@ -1,8 +1,6 @@
 import base64
-
 import graphene
 from graphql_jwt.decorators import login_required, staff_member_required
-
 from ..models import Category
 from ..types import CategoryType
 
