@@ -1,6 +1,5 @@
 from graphene_django import DjangoObjectType
 from .models import ExtendUser, Post, Category, Comment, Image, Subcomment
-from graphene_django.filter import DjangoFilterConnectionField
 import graphene
 
 
@@ -21,6 +20,29 @@ class PostType(DjangoObjectType):
         }
         interfaces = (graphene.relay.Node, )
 
+    likes = graphene.Int()
+    dislikes = graphene.Int()
+    is_liked = graphene.Boolean()
+    is_disliked = graphene.Boolean()
+
+    def resolve_likes(self, info, **kwargs):
+        return self.likes.count()
+
+    def resolve_dislikes(self, info, **kwargs):
+        return self.dislikes.count()
+
+    def resolve_is_liked(self, info, **kwargs):
+        user = info.context.user
+        if user.is_anonymous:
+            return False
+        return self.likes.filter(id=user.id).exists()
+
+    def resolve_is_disliked(self, info, **kwargs):
+        user = info.context.user
+        if user.is_anonymous:
+            return False
+        return self.dislikes.filter(id=user.id).exists()
+
 
 class CategoryType(DjangoObjectType):
     class Meta:
@@ -31,7 +53,7 @@ class CategoryType(DjangoObjectType):
         }
         interfaces = (graphene.relay.Node, )
 
-    
+
 class CommentType(DjangoObjectType):
     class Meta:
         model = Comment
