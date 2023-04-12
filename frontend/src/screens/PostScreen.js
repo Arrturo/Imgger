@@ -4,10 +4,9 @@ import { Row, Col, Image, ListGroup, Button, Card, Form, FormLabel, FormGroup } 
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 import {useDispatch, useSelector} from 'react-redux'
+import { likePost, dislikePost } from '../actions/postActions'
 import { postsDetails, postsList } from '../actions/postActions'
 import CategoryItem from '../components/CategoryItem'
-
-
 
 
 function PostScreen() {
@@ -26,7 +25,16 @@ function PostScreen() {
     const postList = useSelector(state => state.postList)
 	  const {posts} = postList
 
-
+    const likePostHandler = (id) => {
+      dispatch(likePost(id))
+      window.location.reload()
+    }
+  
+    const dislikePostHandler = (id) => {
+      dispatch(dislikePost(id))
+      window.location.reload()
+    }
+  
     useEffect(() => {
       dispatch(postsDetails(id))
       dispatch(postsList())
@@ -39,6 +47,7 @@ function PostScreen() {
     const nextPost = posts[nextPostIndex]?.node?.id
     const previousPostIndex = currentPostIndex - 1 >= 0 ? currentPostIndex - 1 : posts.length - 1;
     const previousPost = posts[previousPostIndex]?.node?.id
+
 
   return (
     <div>
@@ -54,10 +63,12 @@ function PostScreen() {
             <Row>
               <Col md={1} className="text-2xl grid gap-16 content-center ">
                 <ListGroup.Item>
-                  <Button variant="outline-success" > <i class="fa-regular fa-thumbs-up"></i> {post.likes} </Button>
+                  {post.isLiked ? <Button variant="outline-success" active='true' onClick={() => likePostHandler(id)}> <i class="fa-solid fa-thumbs-up"></i> {post.likes} </Button> : <Button variant="outline-success" onClick={() => likePostHandler(id)}> <i class="fa-regular fa-thumbs-up"></i> {post.likes} </Button>
+                  }
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Button variant="outline-danger"> <i class="fa-regular fa-thumbs-down"></i> {post.dislikes} </Button>
+                {post.isDisliked ? <Button variant="outline-danger" active='true' onClick={() => dislikePostHandler(id)}> <i class="fa-solid fa-thumbs-down"></i> {post.dislikes} </Button> : <Button variant="outline-danger" onClick={() => dislikePostHandler(id)}> <i class="fa-regular fa-thumbs-down"></i> {post.dislikes} </Button>
+                  }
                 </ListGroup.Item>
               </Col>
               

@@ -32,8 +32,10 @@ class Image(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=25, null=False)
-    likes = models.IntegerField(default=0)
-    dislikes = models.IntegerField(default=0)
+    likes = models.ManyToManyField(ExtendUser, related_name="likes",
+                                   blank=True)
+    dislikes = models.ManyToManyField(ExtendUser, related_name="dislikes",
+                                      blank=True)
     description = models.TextField(max_length=255, null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(ExtendUser, null=False, on_delete=models.CASCADE)

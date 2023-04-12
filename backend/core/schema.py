@@ -1,7 +1,6 @@
 import base64
 
 import graphene
-from django.contrib.auth.models import User
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
@@ -81,7 +80,7 @@ class AuthMutation(graphene.ObjectType):
     refresh_token = mutations.RefreshToken.Field()
     update_account = mutations.UpdateAccount.Field()
     # resend_activation_email = mutations.ResendActivationEmail.Field()
-    verify_token = mutations.VerifyToken.Field()
+    verify_account = mutations.VerifyAccount.Field()
     send_password_reset_email = mutations.SendPasswordResetEmail.Field()
     password_reset = mutations.PasswordReset.Field()
     password_change = mutations.PasswordChange.Field()
