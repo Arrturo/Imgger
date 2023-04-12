@@ -1,18 +1,16 @@
 import base64
-
 import graphene
 from django.contrib.auth.models import User
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
-
 from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 from .mutations.categories import (CreateCategoryMutation,
                                    DeleteCategoryMutation,
                                    UpdateCategoryMutation)
 from .mutations.comments import (CreateCommentMutation, DeleteCommentMutation,
                                  UpdateCommentMutation)
-from .mutations.images import CreateImageMutation
+from .mutations.images import CreateImageMutation, UpdateImageMutation, DeleteImageMutation
 from .mutations.posts import (CreatePostMutation, DeletePostMutation,
                               UpdatePostMutation, dislike, like)
 from .mutations.subcomments import (CreateSubCommentMutation,
@@ -81,7 +79,7 @@ class AuthMutation(graphene.ObjectType):
     refresh_token = mutations.RefreshToken.Field()
     update_account = mutations.UpdateAccount.Field()
     # resend_activation_email = mutations.ResendActivationEmail.Field()
-    verify_token = mutations.VerifyToken.Field()
+    verify_account = mutations.VerifyAccount.Field()
     send_password_reset_email = mutations.SendPasswordResetEmail.Field()
     password_reset = mutations.PasswordReset.Field()
     password_change = mutations.PasswordChange.Field()
@@ -112,8 +110,8 @@ class Mutation(AuthMutation, graphene.ObjectType):
     delete_subcomment = DeleteSubCommentMutation.Field()
 
     create_image = CreateImageMutation.Field()
-    # update_imaage = UpdateImageMutation.Field()
-    # delete_image = DeleteImageMutation.Field()
+    update_imaage = UpdateImageMutation.Field()
+    delete_image = DeleteImageMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
