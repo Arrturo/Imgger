@@ -13,8 +13,6 @@ class CreatePostMutation(graphene.Mutation):
         user_id = graphene.ID(required=True)
         image_id = graphene.String(required=True)
         category_id = graphene.ID(required=True)
-        likes = graphene.Int()
-        dislikes = graphene.Int()
 
     success = graphene.Boolean()
     errors = graphene.String()
@@ -25,20 +23,20 @@ class CreatePostMutation(graphene.Mutation):
         try:
             user = ExtendUser.objects.get(id=user_id)
             category_id = Category.objects.get(id=base64.b64decode(category_id)
-                                        .decode("utf-8").split(':')[1])
+                                               .decode("utf-8").split(':')[1])
             if image_id:
                 image = Image.objects.get(id=image_id)
                 post = Post(title=title, description=description, user=user,
-                            image=image, category=category_id, likes=0,
-                            dislikes=0)
+                            image=image, category=category_id)
             else:
                 post = Post(title=title, description=description, user=user,
-                            category=category_id, likes=0,
-                            dislikes=0)
+                            category=category_id)
             post.save()
+            print(post)
             return CreatePostMutation(success=True, post=post)
         except Exception as e:
             return CreatePostMutation(success=False, errors=str(e))
+
 
 class UpdatePostMutation(graphene.Mutation):
     class Arguments:
@@ -87,25 +85,47 @@ class DeletePostMutation(graphene.Mutation):
 
 class like(graphene.Mutation):
     class Arguments:
-        post_id = graphene.ID(required=True)
-    post = graphene.Field(PostType)
+        post_id = graphene.String(required=True)
 
-    @login_required
+    success = graphene.Boolean()
+    errors = graphene.String()
+
     def mutate(self, info, post_id):
-        post = Post.objects.get(id=post_id)
-        post.likes += 1
+        user = info.context.user
+
+        if not user.is_authenticated:
+            return like(success=False, errors="User not logged in")
+
+        post = Post.objects.get(id=base64.b64decode(post_id)
+                                .decode("utf-8").split(':')[1])
+
+        if user in post.likes.all():
+            post.likes.remove(user)
+        else:
+            post.likes.add(user)
         post.save()
-        return like(post=post)
+        return like(success=True)
 
 
 class dislike(graphene.Mutation):
     class Arguments:
-        post_id = graphene.ID(required=True)
-    post = graphene.Field(PostType)
+        post_id = graphene.String(required=True)
 
-    @login_required
+    success = graphene.Boolean()
+    errors = graphene.String()
+
     def mutate(self, info, post_id):
-        post = Post.objects.get(id=post_id)
-        post.dislikes += 1
+        user = info.context.user
+
+        if not user.is_authenticated:
+            return dislike(success=False, errors="User not logged in")
+
+        post = Post.objects.get(id=base64.b64decode(post_id)
+                                .decode("utf-8").split(':')[1])
+
+        if user in post.dislikes.all():
+            post.dislikes.remove(user)
+        else:
+            post.dislikes.add(user)
         post.save()
-        return dislike(post=post)
+        return dislike(success=True)

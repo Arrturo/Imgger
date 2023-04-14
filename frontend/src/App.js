@@ -15,16 +15,20 @@ import PostScreen from './screens/PostScreen';
 import PostsAdminScreen from './screens/PostsAdminScreen';
 import { useEffect } from 'react';
 import axios from 'axios';
+import { USER_LOGIN_SUCCESS } from './constants/userConstants';
+import { useDispatch } from 'react-redux';
 
 
 
 function App() {
+	const dispatch = useDispatch();
+	
 	useEffect(() => {
 		const fetchData = async () => {
 		  if ((localStorage.getItem('userInfo')) && (localStorage.getItem('exp')) && (localStorage.getItem('refreshToken'))) {
 			const exp = localStorage.getItem('exp');
 			const refreshToken = localStorage.getItem('refreshToken');
-			const now = new Date().getTime() / 1000;
+			const now = new Date().getTime() / 1000 - 60;
 			if (exp < now) {
 			  const config = {
 				headers: {
@@ -51,6 +55,10 @@ function App() {
 				  userData.token = data.data.refreshToken.token;
 				  localStorage.setItem('userInfo', JSON.stringify(userData));
 				  localStorage.setItem('exp', JSON.stringify(data.data.refreshToken.payload.exp));
+				  dispatch({
+					type: USER_LOGIN_SUCCESS,
+					payload: userData,
+				  });
 				}
 			  } catch (error) {
 				console.log(error);
