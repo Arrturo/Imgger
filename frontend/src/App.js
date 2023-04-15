@@ -28,7 +28,7 @@ function App() {
 		  if ((localStorage.getItem('userInfo')) && (localStorage.getItem('exp')) && (localStorage.getItem('refreshToken'))) {
 			const exp = localStorage.getItem('exp');
 			const refreshToken = localStorage.getItem('refreshToken');
-			const now = new Date().getTime() / 1000;
+			const now = new Date().getTime() / 1000 - 60;
 			if (exp < now) {
 			  const config = {
 				headers: {

@@ -1,6 +1,5 @@
 import base64
 import graphene
-from django.contrib.auth.models import User
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
