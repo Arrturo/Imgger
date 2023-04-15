@@ -1,56 +1,114 @@
-import React, {useState, useEffect} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
-import CategoryItem from '../components/CategoryItem'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import PostList from "../components/PostList";
+import Loader from "../components/Loader";
 import { categoriesList } from '../actions/categoriesActions'
-import {postsList} from '../actions/postActions'
-import Message from '../components/Message'
-import Loader from '../components/Loader'
-import Post from '../components/Post'
-import {Row, Col} from 'react-bootstrap'
-
-function HomeScreen() {
-
-  const dispatch = useDispatch()
-  const userLogin = useSelector(state => state.userLogin)
-  const {userInfo} = userLogin
-
-  const CategoriesList = useSelector(state => state.categoriesList)
-  const {loading, error, categories} = CategoriesList
-
-	const postList = useSelector(state => state.postList)
-	const {posts} = postList
+import CategoryItem from '../components/CategoryItem'
+import { useDispatch, useSelector } from "react-redux";
 
 
-  useEffect(() =>{
-    dispatch(categoriesList())
-    dispatch(postsList())
+const PAGE_NUMBER = 0;
 
-  },[dispatch])
+const HomeScreen = () => {
+    const dispatch = useDispatch()
+
+    const [postData, setPostData] = useState([]);
+    const [page, setPage] = useState(PAGE_NUMBER);
+    const [loading, setLoading] = useState(false);
+
+    const [hasNextPage, setHasNextPage] = useState(true);
+    
+    const CategoriesList = useSelector(state => state.categoriesList)
+    const {error, categories} = CategoriesList
+
+    useEffect(() =>{
+      dispatch(categoriesList())
+    },[dispatch])
+
+    useEffect(() => {
+        setTimeout(async () => {
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+            },
+        };
+
+        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+            query:`
+            query{
+              posts(first: 12, offset: ${page}){
+                  edges{
+                    node{
+                      id
+                      title
+                      description
+                      likes
+                      dislikes
+                      createTime
+                      isLiked
+                      isDisliked
+                      image{
+                        file
+                      }
+                      user{
+                          username
+                      }
+                    }
+                  }
+pageInfo{
+hasNextPage
+}
+                }
+}
+                `
+        }, config);
+
+        if (!data.data.posts.pageInfo.hasNextPage) {
+            setHasNextPage(false);
+        }
+        if (data.data.posts.edges.length > 0) {
+            setPostData((prev) => [...prev, ...data.data.posts.edges]);
+        }
+        setLoading(false);
+    }, 1000);
+    }, [page]);
 
 
+    useEffect(() => {
+        if (hasNextPage) {
+            window.addEventListener("scroll", handleScroll);
+        } else {
+            window.removeEventListener("scroll", handleScroll);
+        }
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [hasNextPage]);
 
 
-  return (
-    <div>
-      EXPLORE TAGS <br></br>
-      {categories.map(category => (
+    const handleScroll = async () => {
+        if (
+            window.innerHeight + document.documentElement.scrollTop + 1 >=
+            document.documentElement.scrollHeight
+        ) {
+            setLoading(true);
+            setPage((prev) => prev + 12);
+        }
+    };
+
+
+    return (
+        <div className='app'>
+            EXPLORE TAGS <br></br>
+                <div className='categories'>
+                {categories.map(category => (
         <CategoryItem name={category.node.name} />))
       }
+                </div>
 
-      <div className="py-5">
-        {loading ? <Loader />
-        : <Row >
-          {posts.map(post => (
-            <Col sm={12} md={6} lg={4} xl={3} >
-              <Post post={post} />
-            </Col>
-          ))}
-        </Row>
-        }
-      </div>
+            <PostList posts={postData} />
+            {loading && <Loader />}
+        </div>
+    );
+};
 
-    </div>
-  )
-}
-
-export default HomeScreen
+export default HomeScreen;
