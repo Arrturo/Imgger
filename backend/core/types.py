@@ -10,6 +10,16 @@ class UserType(DjangoObjectType):
         fields = "__all__"
 
 
+class CommentType(DjangoObjectType):
+    class Meta:
+        model = Comment
+        fields = "__all__"
+        filter_fields = {
+            "comment": ["exact", "icontains", "istartswith"],
+        }
+        interfaces = (graphene.relay.Node,)
+
+
 class PostType(DjangoObjectType):
     class Meta:
         model = Post
@@ -25,6 +35,7 @@ class PostType(DjangoObjectType):
     dislikes = graphene.Int()
     is_liked = graphene.Boolean()
     is_disliked = graphene.Boolean()
+    comments_count = graphene.Int()
 
     def resolve_likes(self, info, **kwargs):
         return self.likes.count()
@@ -44,6 +55,9 @@ class PostType(DjangoObjectType):
             return False
         return self.dislikes.filter(id=user.id).exists()
 
+    def resolve_comments_count(self, info, **kwargs):
+        return Comment.objects.filter(post=self.id).count()
+
 
 class CategoryType(DjangoObjectType):
     class Meta:
@@ -51,16 +65,6 @@ class CategoryType(DjangoObjectType):
         fields = "__all__"
         filter_fields = {
             "name": ["exact", "icontains", "istartswith"],
-        }
-        interfaces = (graphene.relay.Node,)
-
-
-class CommentType(DjangoObjectType):
-    class Meta:
-        model = Comment
-        fields = "__all__"
-        filter_fields = {
-            "comment": ["exact", "icontains", "istartswith"],
         }
         interfaces = (graphene.relay.Node,)
 
