@@ -1,6 +1,8 @@
 import base64
+
 import graphene
 from graphql_jwt.decorators import login_required, staff_member_required
+
 from ..models import Category
 from ..types import CategoryType
 
@@ -8,6 +10,7 @@ from ..types import CategoryType
 class CreateCategoryMutation(graphene.Mutation):
     class Arguments:
         name = graphene.String(required=True)
+
     category = graphene.Field(CategoryType)
 
     @staff_member_required
@@ -20,7 +23,7 @@ class CreateCategoryMutation(graphene.Mutation):
             category.save()
             return CreateCategoryMutation(category=category)
         else:
-            raise Exception('Not logged in!')
+            raise Exception("Not logged in!")
 
 
 class UpdateCategoryMutation(graphene.Mutation):
@@ -33,8 +36,9 @@ class UpdateCategoryMutation(graphene.Mutation):
     @login_required
     @staff_member_required
     def mutate(self, info, category_id, name):
-        category = Category.objects.get(id=base64.b64decode(category_id)
-                                        .decode("utf-8").split(':')[1])
+        category = Category.objects.get(
+            id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
+        )
         if name:
             category.name = name
         category.save()
@@ -42,7 +46,6 @@ class UpdateCategoryMutation(graphene.Mutation):
 
 
 class DeleteCategoryMutation(graphene.Mutation):
-
     class Arguments:
         category_id = graphene.ID(required=True)
 
@@ -55,12 +58,13 @@ class DeleteCategoryMutation(graphene.Mutation):
         user = info.context.user
         print(user)
         if user.is_authenticated:
-            category = Category.objects.get(id=base64.b64decode(category_id)
-                                            .decode("utf-8").split(':')[1])
+            category = Category.objects.get(
+                id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
+            )
             if not category:
                 return DeleteCategoryMutation(
-                    success=False,
-                    errors=["Category not found"])
+                    success=False, errors=["Category not found"]
+                )
             try:
                 category.delete()
                 success = True
@@ -70,4 +74,4 @@ class DeleteCategoryMutation(graphene.Mutation):
                 errors = str(e)
             return DeleteCategoryMutation(success=success, errors=errors)
         else:
-            raise Exception('Not logged in!')
+            raise Exception("Not logged in!")
