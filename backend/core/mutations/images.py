@@ -1,8 +1,10 @@
 import graphene
-from ..models import Image
-from ..types import ImageType
+from firebase_admin import storage
 from graphene_file_upload.scalars import Upload
 from graphql_jwt.decorators import login_required
+
+from ..models import Image
+from ..types import ImageType
 
 
 class CreateImageMutation(graphene.Mutation):
@@ -17,9 +19,12 @@ class CreateImageMutation(graphene.Mutation):
     @login_required
     def mutate(root, info, image):
         try:
-            file = image
-            image = Image.objects.create(file=file)
-            return CreateImageMutation(success=True, image=image)
+            bucket = storage.bucket()
+            blob = bucket.blob(image.name)
+            blob.upload_from_string(image.read(), content_type=image.content_type)
+
+            image_obj = Image.objects.create(url=blob.public_url, name=image.name)
+            return CreateImageMutation(success=True, image=image_obj)
         except Exception as e:
             return CreateImageMutation(success=False, errors=str(e))
 
