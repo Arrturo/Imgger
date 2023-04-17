@@ -1,8 +1,9 @@
-from django.contrib.auth import get_user_model
-from ..types import CommentType
 import graphene
-from ..models import Post, Comment
+from django.contrib.auth import get_user_model
 from graphql_jwt.decorators import login_required
+
+from ..models import Comment, Post
+from ..types import CommentType
 
 
 class CreateCommentMutation(graphene.Mutation):
