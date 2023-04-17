@@ -6,6 +6,7 @@ from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 # Register your models here.
 
 
+
 admin.site.register(Post)
 admin.site.register(Category)
 admin.site.register(Image)
