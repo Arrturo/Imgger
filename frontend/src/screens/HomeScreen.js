@@ -56,11 +56,11 @@ const HomeScreen = () => {
                       }
                     }
                   }
-pageInfo{
-hasNextPage
-}
+                    pageInfo{
+                    hasNextPage
+                    }
                 }
-}
+                }
                 `
         }, config);
 

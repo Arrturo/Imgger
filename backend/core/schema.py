@@ -58,9 +58,6 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_categories_by_id(self, info, id):
         return Category.objects.get(pk=id)
 
-    def resolve_categories(self, info, **kwargs):
-        return Category.objects.all().order_by("create_time")
-
     def resolve_posts_by_id(self, info, id, **kwargs):
         post_id = base64.b64decode(id).decode("utf-8").split(":")[1]
         post_id = int(post_id)
@@ -72,7 +69,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_comments_by_post(self, info, post_id, **kwargs):
         post_id = base64.b64decode(post_id).decode("utf-8").split(":")[1]
         post_id = int(post_id)
-        return Comment.objects.filter(post=post_id)
+        return Comment.objects.filter(post=post_id).order_by("create_time")
 
     def resolve_subcomments(self, info, **kwargs):
         return Subcomment.objects.all()

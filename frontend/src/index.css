@@ -64,3 +64,24 @@ main{
   background-color: #ffffff;
   opacity: 1
 }
+
+.com:hover{
+  background-color: #fff6b0;
+}
+
+.reply-btn{
+  background-color: greenyellow;
+  color: black;
+  font-weight: bold;
+  font-size: small;
+}
+
+.edit-btn{
+  color: black;
+  font-weight: bold;
+  font-size: large;
+}
+
+.edit-btn:hover{
+  color: #ff0000;
+}

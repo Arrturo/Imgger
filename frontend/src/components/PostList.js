@@ -1,12 +1,15 @@
 import Post from '../components/Post'
+import {Row, Col} from 'react-bootstrap'
 
 function PostList({posts}) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Row className="mt-5">
             {posts.map(post => (
-                <Post key={post.node.id} post={post} />
+                <Col key={post.node.id} sm={12} md={6} lg={4} xl={3} >
+                    <Post key={post.node.id} post={post} />
+                </Col>
             ))}
-        </div>
+        </Row>
     )
 }
 
