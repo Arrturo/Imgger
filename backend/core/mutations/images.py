@@ -18,12 +18,9 @@ class CreateImageMutation(graphene.Mutation):
     @login_required
     def mutate(root, info, image):
         try:
-            bucket = storage.bucket()
-            blob = bucket.blob(image.name)
-            blob.upload_from_string(image.read(), content_type=image.content_type)
-
-            image_obj = Image.objects.create(url=blob.public_url, name=image.name)
-            return CreateImageMutation(success=True, image=image_obj)
+            file = image
+            image = Image.objects.create(file=file)
+            return CreateImageMutation(success=True, image=image)
         except Exception as e:
             return CreateImageMutation(success=False, errors=str(e))
 

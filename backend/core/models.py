@@ -26,7 +26,7 @@ class Image(models.Model):
     file = models.ImageField(upload_to="images/")
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.file}"
 
 
 class Post(models.Model):

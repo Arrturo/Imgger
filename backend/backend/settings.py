@@ -15,9 +15,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
-import firebase_admin
 from django.core.exceptions import ImproperlyConfigured
-from firebase_admin import credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,11 +30,6 @@ def get_secret(setting, secrets=secrets):
         return secrets[setting]
     except KeyError:
         raise ImproperlyConfigured("Set the {} setting".format(setting))
-
-
-# Authenticate with Firebase using your private key file
-cred = credentials.Certificate("backend/secrets.json")
-firebase_admin.initialize_app(cred, {"storageBucket": get_secret("storageBucket")})
 
 
 # Quick-start development settings - unsuitable for production
@@ -110,21 +103,14 @@ CSRF_COOKIE_SECURE = True
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',
-#         'USER': 'postgres',
-#         'PASSWORD': get_secret('DB_PASSWORD'),
-#         'HOST': get_secret('DB_HOST'),
-#         'PORT': '5432',
-#     }
-# }
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": get_secret("DB_PASSWORD"),
+        "HOST": get_secret("DB_HOST"),
+        "PORT": "5432",
     }
 }
 

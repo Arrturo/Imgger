@@ -7,10 +7,6 @@ from .schema import schema
 # Create your views here.
 
 
-def check(request):
-    return render(request, "check.html")
-
-
 def image_upload_view(request):
     if request.method == "POST":
         form = UploadForm(request.POST, request.FILES)
