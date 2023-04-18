@@ -131,7 +131,7 @@ function PostScreen() {
                         <p className="mb-2 text-sm"> 
                           <strong className='text-base text-amber-800 pr-2'>{com.node.user.username}</strong>
                           {dayjs(com.node.createTime).fromNow()}
-                          {com.node.user.id == userInfo.user.pk ? <button className='edit-btn float-right'><i class="fa-solid fa-pencil"></i></button> : null}
+                          {com.node.user.id == userInfo.user.pk || userInfo.user.isStaff === true ? <button className='edit-btn float-right'><i class="fa-solid fa-pencil"></i></button> : null}
                         </p>
                         <p className='text-xl flex justify-between pr-5'>
                           {com.node.comment}

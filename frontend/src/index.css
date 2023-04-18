@@ -67,6 +67,7 @@ main{
 
 .com:hover{
   background-color: #fff6b0;
+  cursor: pointer;
 }
 
 .reply-btn{
@@ -74,6 +75,7 @@ main{
   color: black;
   font-weight: bold;
   font-size: small;
+  border-radius: 10px;
 }
 
 .edit-btn{
@@ -85,3 +87,5 @@ main{
 .edit-btn:hover{
   color: #ff0000;
 }
+
+
