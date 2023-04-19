@@ -85,26 +85,6 @@ const HomeScreen = () => {
     }, 1000);
     }, [page]);
 
-
-    useEffect(() => {
-        if (hasNextPage) {
-            window.addEventListener("scroll", handleScroll);
-        } else {
-            window.removeEventListener("scroll", handleScroll);
-        }
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [hasNextPage]);
-
-      if (!data.data.posts.pageInfo.hasNextPage) {
-        setHasNextPage(false);
-      }
-      if (data.data.posts.edges.length > 0) {
-        setPostData((prev) => [...prev, ...data.data.posts.edges]);
-      }
-      setLoading(false);
-    }, 1000);
-  }, [page]);
-
   useEffect(() => {
     if (hasNextPage) {
       window.addEventListener("scroll", handleScroll);

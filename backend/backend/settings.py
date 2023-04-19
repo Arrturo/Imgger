@@ -15,7 +15,9 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import firebase_admin
 from django.core.exceptions import ImproperlyConfigured
+from firebase_admin import credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +32,11 @@ def get_secret(setting, secrets=secrets):
         return secrets[setting]
     except KeyError:
         raise ImproperlyConfigured("Set the {} setting".format(setting))
+
+
+cred = credentials.Certificate("backend/secrets.json")
+firebase_admin.initialize_app(
+    cred, {"storageBucket": get_secret("storageBucket")})
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/

@@ -56,7 +56,11 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     categories = DjangoFilterConnectionField(CategoryType)
     images = graphene.List(ImageType)
     comments = DjangoFilterConnectionField(CommentType)
+    comments_by_post = DjangoFilterConnectionField(
+        CommentType, post_id=graphene.String(required=True)
+    )
     subcomments = DjangoFilterConnectionField(SubcommentType)
+
 
     def resolve_users(self, info, **kwargs):
         return ExtendUser.objects.all().order_by('id')
