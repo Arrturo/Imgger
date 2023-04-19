@@ -1,7 +1,6 @@
-import graphene
 from graphene_django import DjangoObjectType
-
-from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
+from .models import ExtendUser, Post, Category, Comment, Image, Subcomment
+import graphene
 
 
 class UserType(DjangoObjectType):
@@ -10,32 +9,21 @@ class UserType(DjangoObjectType):
         fields = "__all__"
 
 
-class CommentType(DjangoObjectType):
-    class Meta:
-        model = Comment
-        fields = "__all__"
-        filter_fields = {
-            "comment": ["exact", "icontains", "istartswith"],
-        }
-        interfaces = (graphene.relay.Node,)
-
-
 class PostType(DjangoObjectType):
     class Meta:
         model = Post
         fields = "__all__"
         filter_fields = {
-            "id": ["exact"],
-            "title": ["exact", "icontains", "istartswith"],
-            "description": ["exact", "icontains", "istartswith"],
+            'id': ['exact'],
+            'title': ['exact', 'icontains', 'istartswith'],
+            'description': ['exact', 'icontains', 'istartswith'],
         }
-        interfaces = (graphene.relay.Node,)
+        interfaces = (graphene.relay.Node, )
 
     likes = graphene.Int()
     dislikes = graphene.Int()
     is_liked = graphene.Boolean()
     is_disliked = graphene.Boolean()
-    comments_count = graphene.Int()
 
     def resolve_likes(self, info, **kwargs):
         return self.likes.count()
@@ -55,18 +43,25 @@ class PostType(DjangoObjectType):
             return False
         return self.dislikes.filter(id=user.id).exists()
 
-    def resolve_comments_count(self, info, **kwargs):
-        return Comment.objects.filter(post=self.id).count()
-
 
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
         fields = "__all__"
         filter_fields = {
-            "name": ["exact", "icontains", "istartswith"],
+            'name': ['exact', 'icontains', 'istartswith'],
         }
-        interfaces = (graphene.relay.Node,)
+        interfaces = (graphene.relay.Node, )
+
+
+class CommentType(DjangoObjectType):
+    class Meta:
+        model = Comment
+        fields = "__all__"
+        filter_fields = {
+            'comment': ['exact', 'icontains', 'istartswith'],
+        }
+        interfaces = (graphene.relay.Node, )
 
 
 class ImageType(DjangoObjectType):
@@ -80,6 +75,6 @@ class SubcommentType(DjangoObjectType):
         model = Subcomment
         fields = "__all__"
         filter_fields = {
-            "content": ["exact", "icontains", "istartswith"],
+            'content': ['exact', 'icontains', 'istartswith'],
         }
-        interfaces = (graphene.relay.Node,)
+        interfaces = (graphene.relay.Node, )

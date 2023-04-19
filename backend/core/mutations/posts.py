@@ -1,11 +1,9 @@
-import base64
-
-import graphene
 from django.contrib.auth import get_user_model
-from graphql_jwt.decorators import login_required
-
-from ..models import Category, ExtendUser, Image, Post
 from ..types import PostType
+import graphene
+from ..models import Post, Category, Image, ExtendUser
+from graphql_jwt.decorators import login_required
+import base64
 
 
 class CreatePostMutation(graphene.Mutation):
@@ -24,25 +22,15 @@ class CreatePostMutation(graphene.Mutation):
     def mutate(self, info, title, description, user_id, image_id, category_id):
         try:
             user = ExtendUser.objects.get(id=user_id)
-            category_id = Category.objects.get(
-                id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
-            )
+            category_id = Category.objects.get(id=base64.b64decode(category_id)
+                                               .decode("utf-8").split(':')[1])
             if image_id:
                 image = Image.objects.get(id=image_id)
-                post = Post(
-                    title=title,
-                    description=description,
-                    user=user,
-                    image=image,
-                    category=category_id,
-                )
+                post = Post(title=title, description=description, user=user,
+                            image=image, category=category_id)
             else:
-                post = Post(
-                    title=title,
-                    description=description,
-                    user=user,
-                    category=category_id,
-                )
+                post = Post(title=title, description=description, user=user,
+                            category=category_id)
             post.save()
             print(post)
             return CreatePostMutation(success=True, post=post)
@@ -62,7 +50,8 @@ class UpdatePostMutation(graphene.Mutation):
     post = graphene.Field(PostType)
 
     @login_required
-    def mutate(self, info, post_id, title, description, user_id, image_id, category_id):
+    def mutate(self, info, post_id, title, description, user_id, image_id,
+               category_id):
         post = Post.objects.get(id=post_id)
         if title:
             post.title = title
@@ -107,9 +96,8 @@ class like(graphene.Mutation):
         if not user.is_authenticated:
             return like(success=False, errors="User not logged in")
 
-        post = Post.objects.get(
-            id=base64.b64decode(post_id).decode("utf-8").split(":")[1]
-        )
+        post = Post.objects.get(id=base64.b64decode(post_id)
+                                .decode("utf-8").split(':')[1])
 
         if user in post.likes.all():
             post.likes.remove(user)
@@ -132,9 +120,8 @@ class dislike(graphene.Mutation):
         if not user.is_authenticated:
             return dislike(success=False, errors="User not logged in")
 
-        post = Post.objects.get(
-            id=base64.b64decode(post_id).decode("utf-8").split(":")[1]
-        )
+        post = Post.objects.get(id=base64.b64decode(post_id)
+                                .decode("utf-8").split(':')[1])
 
         if user in post.dislikes.all():
             post.dislikes.remove(user)
