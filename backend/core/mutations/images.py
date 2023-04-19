@@ -1,4 +1,5 @@
 import random
+
 import graphene
 from firebase_admin import storage
 from graphene_file_upload.scalars import Upload
@@ -21,13 +22,11 @@ class CreateImageMutation(graphene.Mutation):
     def mutate(root, info, image):
         try:
             bucket = storage.bucket()
-            blob = bucket.blob(f'{random.random()}.{image.name}')
-            blob.upload_from_string(
-                image.read(), content_type=image.content_type)
+            blob = bucket.blob(f"{random.random()}.{image.name}")
+            blob.upload_from_string(image.read(), content_type=image.content_type)
             blob.make_public()
 
-            image_obj = Image.objects.create(
-                url=blob.public_url, name=image.name)
+            image_obj = Image.objects.create(url=blob.public_url, name=image.name)
             return CreateImageMutation(success=True, image=image_obj)
         except Exception as e:
             return CreateImageMutation(success=False, errors=str(e))
@@ -49,9 +48,8 @@ class UpdateImageMutation(graphene.Mutation):
             image_obj = Image.objects.get(id=image_id)
             if image_obj:
                 bucket = storage.bucket()
-                blob = bucket.blob(f'{image.name}{random.random()}')
-                blob.upload_from_string(
-                    image.read(), content_type=image.content_type)
+                blob = bucket.blob(f"{image.name}{random.random()}")
+                blob.upload_from_string(image.read(), content_type=image.content_type)
                 blob.make_public()
 
                 image_obj.url = blob.public_url
@@ -76,7 +74,7 @@ class DeleteImageMutation(graphene.Mutation):
             image_obj = Image.objects.get(id=image_id)
             if image_obj:
                 bucket = storage.bucket()
-                url = image_obj.url.split('/')[-1]
+                url = image_obj.url.split("/")[-1]
                 blob = bucket.blob(url)
                 blob.delete()
                 image_obj.delete()

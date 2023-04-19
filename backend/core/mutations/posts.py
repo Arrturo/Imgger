@@ -1,8 +1,8 @@
 import base64
-from firebase_admin import storage
 
 import graphene
 from django.contrib.auth import get_user_model
+from firebase_admin import storage
 from graphql_jwt.decorators import login_required, staff_member_required
 
 from ..models import Category, ExtendUser, Image, Post
@@ -100,7 +100,7 @@ class DeletePostMutation(graphene.Mutation):
             post.delete()
             if image:
                 bucket = storage.bucket()
-                url = image.url.split('/')[-1]
+                url = image.url.split("/")[-1]
                 blob = bucket.blob(url)
                 blob.delete()
                 image.delete()
