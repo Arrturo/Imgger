@@ -73,13 +73,12 @@ function CreatingPost() {
       const config = {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `JWT ${userInfo.token}`
         },
       };
 
-      const { data } = await axios.post('http://127.0.0.1:8000/graphql',
+      const { data } = await axios.post('http://localhost:8000/graphql',
         formData,
-        config
+        config,
       );
 
       if(data?.data?.createImage?.success === true){

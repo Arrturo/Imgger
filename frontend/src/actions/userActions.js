@@ -8,29 +8,24 @@ import {USER_LOGIN_REQUEST, USER_LOGIN_SUCCESS, USER_LOGIN_FAIL, USER_REGISTER_R
 	USER_DELETE_SUCCESS, USER_DETAILS_FAIL, USER_DETAILS_REQUEST, USER_DETAILS_SUCCESS} from '../constants/userConstants'
 import axios from 'axios'
 
+axios.defaults.withCredentials = true;
+
 export const login = (username, password) => async (dispatch) =>{
     try{
         dispatch({
             type: USER_LOGIN_REQUEST
         })
+	
 
-		const config = {
-			headers: {
-				'Content-type': 'application/json'
-			},
-		};
-			
-
-        const { data } = await axios.post('http://127.0.0.1:8000/graphql', {
+        const { data } = await axios.post('http://localhost:8000/graphql', {
             query: `
               mutation {
-                tokenAuth(username: "${username}", password: "${password}") {
+                login(username: "${username}", password: "${password}") {
                   success
                   errors
-                  token
-				  refreshToken
+				  expirationTime
                   user {
-                    pk
+                    id
                     username
                     email
                     isStaff
@@ -38,25 +33,24 @@ export const login = (username, password) => async (dispatch) =>{
                   }
                 }
               }
-            `,
-          }, config)
+            `, 
+          }, {
+			headers: {
+				'Content-type': 'application/json',
+				
+			},
+		  })
 
-		  var tokens = data?.data?.tokenAuth?.token?.split('.');
-		  if (tokens){
-			var payload = JSON.parse(atob(tokens[1]));
-		  }
-		  
+		  console.log(data)
 
-
-          if(data.data.tokenAuth.success === true){
+          if(data.data.login.success === true){
             dispatch({
                 type: USER_LOGIN_SUCCESS,
-                payload: data.data.tokenAuth,
+                payload: data.data.login,
             });
         
-            localStorage.setItem('userInfo', JSON.stringify(data.data.tokenAuth));
-			localStorage.setItem('exp', JSON.stringify(payload.exp));
-			localStorage.setItem('refreshToken', JSON.stringify(data.data.tokenAuth.refreshToken));
+            localStorage.setItem('userInfo', JSON.stringify(data.data.login));
+			localStorage.setItem('expiresIn', JSON.stringify(data.data.login.expirationTime));
 
           } else {
             dispatch({
@@ -76,7 +70,6 @@ export const login = (username, password) => async (dispatch) =>{
         })
     }
 }
-
 
 export const logout = () => (dispatch) => {
 	localStorage.removeItem('userInfo');
@@ -102,7 +95,7 @@ export const register = (username, email, password, confirmPassword) => async (d
 			},
 		};
 
-		const { data } = await axios.post('http://127.0.0.1:8000/graphql', {
+		const { data } = await axios.post('http://localhost:8000/graphql', {
       query: `
        mutation {
         register(
@@ -117,9 +110,11 @@ export const register = (username, email, password, confirmPassword) => async (d
           refreshToken
         }
       }
-      
-       `}
-		);
+	  `,
+		}, config);
+
+
+      console.log(data)
       
       if (data.data.register.success) { 
         dispatch({
@@ -165,7 +160,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 			},
 		};
 
-		const { data } = await axios.post(`http://127.0.0.1:8000/graphql`,{
+		const { data } = await axios.post(`http://localhost:8000/graphql`,{
       query: `
         mutation{
           updateUser(userId: ${user.id}, username: "${user.username}", email: "${user.email}", password: "${user.password}"){
@@ -217,18 +212,13 @@ export const listUsers = () => async (dispatch, getState) => {
 			type: USER_LIST_REQUEST,
 		});
 
-		const {
-			userLogin: { userInfo },
-		} = getState();
-
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 
-		const { data } = await axios.post(`http://127.0.0.1:8000/graphql`,{
+		const { data } = await axios.post(`http://localhost:8000/graphql`,{
       query: `
         query{
           users{
@@ -270,18 +260,13 @@ export const deleteUser = (id) => async (dispatch, getState) => {
 			type: USER_DELETE_REQUEST,
 		});
 
-		const {
-			userLogin: { userInfo },
-		} = getState();
-
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 
-		const { data } = await axios.post(`http://127.0.0.1:8000/graphql`, {
+		const { data } = await axios.post(`http:/localhost:8000/graphql`, {
       query: `
         mutation{
           deleteUser(userId: ${id}){
@@ -323,11 +308,10 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 
-		const { data } = await axios.post(`http://127.0.0.1:8000/graphql`, {
+		const { data } = await axios.post(`http://localhost:8000/graphql`, {
       query: `
         query{
           usersById(id: ${id}){
@@ -376,11 +360,10 @@ export const updateUserProfileByAdmin = (user) => async (dispatch, getState) => 
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 
-		const { data } = await axios.post(`http://127.0.0.1:8000/graphql`,{
+		const { data } = await axios.post(`http://localhost:8000/graphql`,{
       query: `
         mutation{
           updateUser(userId: ${user.id}, username: "${user.username}", email: "${user.email}", password: "", isStaff: ${user.isStaff}){

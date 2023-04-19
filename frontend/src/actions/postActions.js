@@ -23,20 +23,14 @@ export const postsList = () => async (dispatch, getState) => {
       userLogin: { userInfo },
     } = getState();
 
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+            },
+        };
 
-    if (userInfo) {
-      config.headers["Authorization"] = `JWT ${userInfo.token}`;
-    }
-
-    const { data } = await axios.post(
-      `http://127.0.0.1:8000/graphql`,
-      {
-        query: `
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+            query:`
                 query{
                     posts(first: 10, offset: 0){
                         edges{
@@ -82,26 +76,16 @@ export const postsList = () => async (dispatch, getState) => {
 };
 
 export const postsDetails = (id) => async (dispatch, getState) => {
-  try {
-    const {
-      userLogin: { userInfo },
-    } = getState();
+    try{
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+            },
+        };
 
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
-
-    if (userInfo) {
-      config.headers["Authorization"] = `JWT ${userInfo.token}`;
-    }
-
-    dispatch({ type: POST_DETAILS_REQUEST });
-    const { data } = await axios.post(
-      `http://127.0.0.1:8000/graphql`,
-      {
-        query: `
+        dispatch({type: POST_DETAILS_REQUEST})
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+            query: `
                 query{
                     postsById(id: "${id}"){
                         id
@@ -112,6 +96,12 @@ export const postsDetails = (id) => async (dispatch, getState) => {
                         isLiked
                         isDisliked
                         createTime
+                        nextPost{
+                            id
+                        }
+                        previousPost{
+                            id
+                        }
                         image{
                             id
                             url
@@ -347,17 +337,12 @@ export const addComment = (postId, userId, comment) => async (dispatch, getState
             type: ADD_COMMENT_REQUEST,
         })
 
-        const {
-            userLogin: {userInfo}
-        } = getState()
-
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                'Authorization': `JWT ${userInfo.token}`
-            }
+            },
         }
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
                 mutation{
                    createComment(postId: "${postId}", userId: ${userId}, comment: "${comment}"){
@@ -398,12 +383,9 @@ export const deleteComment = (commentId) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                'Authorization': `JWT ${userInfo.token}`
-            }
-        }
+            }}
 
-
-        const {data} = await axios.post('http://127.0.0.1:8000/graphql', {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
                 mutation{
                     deleteComment(commentId: "${commentId}"){
@@ -443,10 +425,9 @@ export const editComment = (comment) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                'Authorization': `JWT ${userInfo.token}`
-            }
-        }
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+            }}
+
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
             mutation{
                 updateComment(commentId: "${comment.id}", content: "${comment.content}") {
