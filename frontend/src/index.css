@@ -76,6 +76,10 @@ main{
   font-weight: bold;
   font-size: small;
   border-radius: 10px;
+  max-height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .edit-btn{
@@ -89,3 +93,8 @@ main{
 }
 
 
+.save-button{
+  background-color: rgb(25, 167, 0);
+  color: black;
+  font-weight: bold;
+}

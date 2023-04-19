@@ -1,5 +1,6 @@
 import { POST_LIST_FAIL, POST_LIST_REQUEST, POST_LIST_SUCCESS, POST_DETAILS_FAIL, POST_DETAILS_REQUEST, POST_DETAILS_SUCCESS, POST_CREATE_FAIL, POST_CREATE_REQUEST, POST_CREATE_SUCCESS, POST_CREATE_RESET, 
-POST_COMMENTS_FAIL, POST_COMMENTS_REQUEST, POST_COMMENTS_RESET, POST_COMMENTS_SUCCESS, ADD_COMMENT_FAIL, ADD_COMMENT_REQUEST, ADD_COMMENT_RESET, ADD_COMMENT_SUCCESS } from "../constants/postConstants";
+POST_COMMENTS_FAIL, POST_COMMENTS_REQUEST, POST_COMMENTS_RESET, POST_COMMENTS_SUCCESS, ADD_COMMENT_FAIL, ADD_COMMENT_REQUEST, ADD_COMMENT_RESET, ADD_COMMENT_SUCCESS,
+DELETE_COMMENT_FAIL, DELETE_COMMENT_REQUEST, DELETE_COMMENT_SUCCESS, EDIT_COMMENT_FAIL, EDIT_COMMENT_REQUEST, EDIT_COMMENT_SUCCESS } from "../constants/postConstants";
 
 
 
@@ -92,6 +93,42 @@ export const addCommentReducers = (state = {}, action) => {
 
         case ADD_COMMENT_RESET:
             return {product: {}}
+        
+        default:
+            return state 
+
+    }
+}
+
+
+export const commentDeleteReducer = (state = {}, action) => {
+    switch(action.type){
+        case DELETE_COMMENT_REQUEST:
+            return {loading: true}
+        
+        case DELETE_COMMENT_SUCCESS:
+            return {loading: false, success: true}
+        
+        case DELETE_COMMENT_FAIL:
+            return {loading: false, error: action.payload}
+        
+        default:
+            return state 
+    }
+}
+
+
+
+export const commentEditeReducers = (state = {}, action) => {
+    switch(action.type){
+        case EDIT_COMMENT_REQUEST:
+            return {loading: true}
+        
+        case EDIT_COMMENT_SUCCESS:
+            return {loading: false, success: true, comment:action.payload}
+
+        case EDIT_COMMENT_FAIL:
+            return {loading: false, error: action.payload}
         
         default:
             return state 

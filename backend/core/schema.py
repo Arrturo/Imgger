@@ -9,7 +9,7 @@ from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 from .mutations.categories import (CreateCategoryMutation,
                                    DeleteCategoryMutation,
                                    UpdateCategoryMutation)
-from .mutations.comments import CreateCommentMutation
+from .mutations.comments import CreateCommentMutation, DeleteCommentMutation, UpdateCommentMutation
 from .mutations.images import (CreateImageMutation, DeleteImageMutation,
                                UpdateImageMutation)
 from .mutations.posts import (CreatePostMutation, DeletePostMutation,
@@ -108,6 +108,8 @@ class Mutation(AuthMutation, graphene.ObjectType):
     delete_category = DeleteCategoryMutation.Field()
 
     create_comment = CreateCommentMutation.Field()
+    delete_comment = DeleteCommentMutation.Field()
+    update_comment = UpdateCommentMutation.Field()
 
     create_subcomment = CreateSubCommentMutation.Field()
     update_subcomment = UpdateSubCommentMutation.Field()

@@ -5,7 +5,7 @@ import Loader from '../components/Loader'
 import Message from '../components/Message'
 import {useDispatch, useSelector} from 'react-redux'
 import { likePost, dislikePost } from '../actions/postActions'
-import { postsDetails, postsList, postComments, addComment } from '../actions/postActions'
+import { postsDetails, postsList, postComments, addComment, deleteComment, editComment } from '../actions/postActions'
 import CategoryItem from '../components/CategoryItem'
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -34,6 +34,12 @@ function PostScreen() {
     const [comment, setComment] = useState('')
 
     const [hoveredItemId, setHoveredItemId] = useState(null)
+    const [clickedItemId, setClickedItemId] = useState(null)
+
+    const [editMode, setEditMode] = useState(false);
+    const [editedComment, setEditedComment] = useState('');
+
+
 
     const handleItemMouseEnter = (itemId) => {
       setHoveredItemId(itemId);
@@ -70,11 +76,23 @@ function PostScreen() {
 
     const submitHandler = (e) => {
       e.preventDefault()
-      dispatch(addComment(id, userInfo.user.pk, comment))
+      dispatch(addComment(id, userInfo?.user?.pk, comment))
       window.location.reload()
-  } 
+  }
+
+    const deleteHandler = (id, name) => {
+      if(window.confirm(`Are you sure to delete comment: "${name}" and all subcomments of this comment ?`)){
+          dispatch(deleteComment(id))
+      }
+      window.location.reload()
+    }
 
 
+  const saveChangesHandler = (event) => {
+    event.preventDefault()
+    dispatch(editComment({'id': clickedItemId, 'content': editedComment}))
+    window.location.reload()
+}
 
   return (
     <div>
@@ -127,16 +145,28 @@ function PostScreen() {
 
                   <div className='my-5 '>
                     {comments.map((com) => (
-                      <div key={com.node.id} className='py-3 border-b-2 p-2 com' onMouseEnter={() => handleItemMouseEnter(com.node.id)} onMouseLeave ={handleItemMouseLeave}>
+                      <div key={com.node.id} className=' border-b-2 p-3 com' onMouseEnter={() => (handleItemMouseEnter(com.node.id))} onMouseLeave ={handleItemMouseLeave}>
                         <p className="mb-2 text-sm"> 
                           <strong className='text-base text-amber-800 pr-2'>{com.node.user.username}</strong>
                           {dayjs(com.node.createTime).fromNow()}
-                          {com.node.user.id == userInfo.user.pk || userInfo.user.isStaff === true ? <button className='edit-btn float-right'><i class="fa-solid fa-pencil"></i></button> : null}
+                          {com.node.user.id == userInfo?.user?.pk || userInfo?.user?.isStaff === true ? 
+                            <button className='edit-btn float-right px-3' onClick={() => deleteHandler(com.node.id, com.node.comment)}><i class="fa-solid fa-trash"></i></button> 
+                            : null
+                          }
+                          {com.node.user.id == userInfo?.user?.pk || userInfo?.user?.isStaff === true ? <button onClick={() => (setEditMode(true), setEditedComment(com.node.comment), setClickedItemId(com.node.id)) } className='edit-btn float-right'><i class="fa-solid fa-pencil" ></i></button> : null}
                         </p>
                         <p className='text-xl flex justify-between pr-5'>
-                          {com.node.comment}
+                          {editMode &&  com.node.id === clickedItemId ? 
+                          (<div>
+                            <input className="border-2 p-2" type="text" value={editedComment} 
+                              onChange={(event) => setEditedComment(event.target.value)}/>
+                            <Button className='save-button' onClick={saveChangesHandler}><i class="fa-solid fa-save"></i> save</Button>
+                          </div>
+                          ):
+                          (
+                            <p>{com.node.comment}</p>
+                            )}
                           {com.node.id === hoveredItemId ? (<Button type='submit' variant='primary' className="reply-btn"><i class="fa-solid fa-reply"></i> Reply</Button>) : null}  
-                          
                         </p>
 
                       </div>

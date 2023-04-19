@@ -1,7 +1,8 @@
 import axios from "axios";
 
 import { POST_LIST_FAIL, POST_LIST_REQUEST, POST_LIST_SUCCESS, POST_DETAILS_FAIL, POST_DETAILS_REQUEST, POST_DETAILS_SUCCESS, POST_CREATE_FAIL, POST_CREATE_REQUEST, POST_CREATE_SUCCESS, POST_LIKE_REQUEST, POST_LIKE_FAIL, POST_LIKE_SUCCESS, 
-    POST_COMMENTS_FAIL, POST_COMMENTS_REQUEST, POST_COMMENTS_RESET, POST_COMMENTS_SUCCESS, ADD_COMMENT_FAIL, ADD_COMMENT_REQUEST, ADD_COMMENT_RESET, ADD_COMMENT_SUCCESS} from "../constants/postConstants";
+    POST_COMMENTS_FAIL, POST_COMMENTS_REQUEST, POST_COMMENTS_RESET, POST_COMMENTS_SUCCESS, ADD_COMMENT_FAIL, ADD_COMMENT_REQUEST, ADD_COMMENT_RESET, ADD_COMMENT_SUCCESS,
+DELETE_COMMENT_FAIL, DELETE_COMMENT_REQUEST, DELETE_COMMENT_SUCCESS, EDIT_COMMENT_FAIL, EDIT_COMMENT_REQUEST, EDIT_COMMENT_SUCCESS} from "../constants/postConstants";
 
 
 
@@ -360,6 +361,95 @@ export const addComment = (postId, userId, comment) => async (dispatch, getState
     }catch(error){
         dispatch({
             type: ADD_COMMENT_FAIL,
+            payload: error.response && error.response.data.detail
+            ? error.response.data.detail
+            : error.message,
+        })
+    }
+}
+
+
+export const deleteComment = (commentId) => async (dispatch, getState) => {
+    try {
+        dispatch({
+            type: DELETE_COMMENT_REQUEST,
+        })
+
+        const {
+            userLogin: {userInfo}
+        } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `JWT ${userInfo.token}`
+            }
+        }
+
+
+        const {data} = await axios.post('http://127.0.0.1:8000/graphql', {
+            query: `
+                mutation{
+                    deleteComment(commentId: "${commentId}"){
+                        success
+                        errors
+                    }
+                }
+            `
+        }, config)
+        
+        dispatch({
+            type: DELETE_COMMENT_SUCCESS,
+        })
+
+    }catch(error){
+        dispatch({
+            type: DELETE_COMMENT_FAIL,
+            payload: error.response && error.response.data.detail
+            ? error.response.data.detail
+            : error.message,
+        })
+    }
+}
+
+
+export const editComment = (comment) => async (dispatch, getState) => {
+    
+    try {
+        dispatch({
+            type: EDIT_COMMENT_REQUEST,
+        })
+
+        const {
+            userLogin: {userInfo}
+        } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `JWT ${userInfo.token}`
+            }
+        }
+        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+            query: `
+            mutation{
+                updateComment(commentId: "${comment.id}", content: "${comment.content}") {
+                  success
+                  errors
+                }
+              }
+            `
+        }, config)
+
+
+        dispatch({
+            type: EDIT_COMMENT_SUCCESS,
+            payload: data,
+        })
+
+    }catch(error){
+        dispatch({
+            type: EDIT_COMMENT_FAIL,
             payload: error.response && error.response.data.detail
             ? error.response.data.detail
             : error.message,
