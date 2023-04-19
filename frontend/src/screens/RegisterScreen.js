@@ -34,7 +34,7 @@ function RegisterScreen() {
         }
     }, [navigate, userInfo])
 
-    
+
     
     const submitHandler = (e) => {
         e.preventDefault()
@@ -50,7 +50,7 @@ function RegisterScreen() {
         <FormContainer >
             <h1 className="text-5xl text-center mb-5 underline decoration-double decoration-amber-500">Sign up</h1>
             {message && <Message variant='danger'>{message}</Message>}
-            {error && <Message variant='danger'>{error}</Message>}
+            {error ? error.map((err => (<Message variant='danger'>{err.message}</Message>))) : null}
             {loading && <Loader />}
             <Form onSubmit={submitHandler} className="text-2xl">
 

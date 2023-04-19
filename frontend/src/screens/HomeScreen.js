@@ -14,7 +14,7 @@ const HomeScreen = () => {
 
     const [postData, setPostData] = useState([]);
     const [page, setPage] = useState(PAGE_NUMBER);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const [hasNextPage, setHasNextPage] = useState(true);
     
@@ -48,6 +48,7 @@ const HomeScreen = () => {
                       createTime
                       isLiked
                       isDisliked
+                      commentsCount
                       image{
                         file
                       }
@@ -56,11 +57,11 @@ const HomeScreen = () => {
                       }
                     }
                   }
-pageInfo{
-hasNextPage
-}
+                    pageInfo{
+                    hasNextPage
+                    }
                 }
-}
+                }
                 `
         }, config);
 
