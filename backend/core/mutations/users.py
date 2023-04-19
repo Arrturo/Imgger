@@ -1,8 +1,7 @@
 import graphene
 from django.contrib.auth import authenticate
-from graphql_jwt.decorators import login_required
 from graphql_jwt.shortcuts import get_token
-
+from graphql_jwt.decorators import login_required
 from ..models import ExtendUser
 from ..types import UserType
 
@@ -55,6 +54,6 @@ class LoginMutation(graphene.Mutation):
     def mutate(self, info, username, password):
         user = authenticate(username=username, password=password)
         if user is None:
-            raise Exception("Invalid credentials")
+            raise Exception('Invalid credentials')
         token = get_token(user)
         return LoginMutation(token=token)

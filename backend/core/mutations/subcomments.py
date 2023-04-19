@@ -1,9 +1,8 @@
-import graphene
 from django.contrib.auth import get_user_model
-from graphql_jwt.decorators import login_required
-
-from ..models import Comment
 from ..types import CommentType
+import graphene
+from ..models import Comment
+from graphql_jwt.decorators import login_required
 
 
 class CreateSubCommentMutation(graphene.Mutation):
@@ -18,7 +17,8 @@ class CreateSubCommentMutation(graphene.Mutation):
     def mutate(self, info, description, user_id, comment_id):
         user = get_user_model().objects.get(id=user_id)
         comment = Comment.objects.get(id=comment_id)
-        subcomment = Comment(description=description, user=user, comment=comment)
+        subcomment = Comment(description=description,
+                             user=user, comment=comment)
         subcomment.save()
         return CreateSubCommentMutation(subcomment=subcomment)
 

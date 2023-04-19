@@ -2,40 +2,50 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import PostList from "../components/PostList";
 import Loader from "../components/Loader";
-import { categoriesList } from '../actions/categoriesActions'
-import CategoryItem from '../components/CategoryItem'
+import { categoriesList } from "../actions/categoriesActions";
+import CategoryItem from "../components/CategoryItem";
 import { useDispatch, useSelector } from "react-redux";
 
-
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import "firebase/auth";
+import firebaseConfig from "../firebaseConfig.json";
+import "firebase/firestore";
+import "firebase/storage";
 const PAGE_NUMBER = 0;
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
 const HomeScreen = () => {
-    const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
     const [postData, setPostData] = useState([]);
     const [page, setPage] = useState(PAGE_NUMBER);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    const [hasNextPage, setHasNextPage] = useState(true);
-    
-    const CategoriesList = useSelector(state => state.categoriesList)
-    const {error, categories} = CategoriesList
+  const [hasNextPage, setHasNextPage] = useState(true);
 
-    useEffect(() =>{
-      dispatch(categoriesList())
-    },[dispatch])
+  const CategoriesList = useSelector((state) => state.categoriesList);
+  const { error, categories } = CategoriesList;
 
-    useEffect(() => {
-        setTimeout(async () => {
+  useEffect(() => {
+    dispatch(categoriesList());
+  }, [dispatch]);
 
-        const config = {
-            headers: {
-                'Content-type': 'application/json',
-            },
-        };
+  useEffect(() => {
+    setTimeout(async () => {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
 
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
-            query:`
+      const { data } = await axios.post(
+        `http://127.0.0.1:8000/graphql`,
+        {
+          query: `
             query{
               posts(first: 12, offset: ${page}){
                   edges{
@@ -48,19 +58,20 @@ const HomeScreen = () => {
                       createTime
                       isLiked
                       isDisliked
+                      commentsCount
                       image{
-                        file
+                        url
                       }
                       user{
                           username
                       }
                     }
                   }
-pageInfo{
-hasNextPage
-}
+                    pageInfo{
+                    hasNextPage
+                    }
                 }
-}
+                }
                 `
         }, config);
 
@@ -84,31 +95,47 @@ hasNextPage
         return () => window.removeEventListener("scroll", handleScroll);
     }, [hasNextPage]);
 
-
-    const handleScroll = async () => {
-        if (
-            window.innerHeight + document.documentElement.scrollTop + 1 >=
-            document.documentElement.scrollHeight
-        ) {
-            setLoading(true);
-            setPage((prev) => prev + 12);
-        }
-    };
-
-
-    return (
-        <div className='app'>
-            EXPLORE TAGS <br></br>
-                <div className='categories'>
-                {categories.map(category => (
-        <CategoryItem name={category.node.name} />))
+      if (!data.data.posts.pageInfo.hasNextPage) {
+        setHasNextPage(false);
       }
-                </div>
+      if (data.data.posts.edges.length > 0) {
+        setPostData((prev) => [...prev, ...data.data.posts.edges]);
+      }
+      setLoading(false);
+    }, 1000);
+  }, [page]);
 
-            <PostList posts={postData} />
-            {loading && <Loader />}
-        </div>
-    );
+  useEffect(() => {
+    if (hasNextPage) {
+      window.addEventListener("scroll", handleScroll);
+    } else {
+      window.removeEventListener("scroll", handleScroll);
+    }
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasNextPage]);
+
+  const handleScroll = async () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop + 1 >=
+      document.documentElement.scrollHeight
+    ) {
+      setLoading(true);
+      setPage((prev) => prev + 12);
+    }
+  };
+
+  return (
+    <div className="app">
+      EXPLORE TAGS <br></br>
+      <div className="categories">
+        {categories.map((category) => (
+          <CategoryItem name={category.node.name} />
+        ))}
+      </div>
+      <PostList posts={postData} />
+      {loading && <Loader />}
+    </div>
+  );
 };
 
 export default HomeScreen;

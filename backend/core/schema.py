@@ -1,15 +1,13 @@
 import base64
-
 import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
-
 from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 from .mutations.categories import (CreateCategoryMutation,
                                    DeleteCategoryMutation,
                                    UpdateCategoryMutation)
-from .mutations.comments import CreateCommentMutation
+from .mutations.comments import CreateCommentMutation, DeleteCommentMutation, UpdateCommentMutation
 from .mutations.images import (CreateImageMutation, DeleteImageMutation,
                                UpdateImageMutation)
 from .mutations.posts import (CreatePostMutation, DeletePostMutation,
@@ -32,34 +30,28 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     categories = DjangoFilterConnectionField(CategoryType)
     images = graphene.List(ImageType)
     comments = DjangoFilterConnectionField(CommentType)
-    comments_by_post = DjangoFilterConnectionField(
-        CommentType, post_id=graphene.ID(required=True)
-    )
     subcomments = DjangoFilterConnectionField(SubcommentType)
 
     def resolve_users(self, info, **kwargs):
-        return ExtendUser.objects.all().order_by("id")
+        return ExtendUser.objects.all().order_by('id')
 
     def resolve_me(self, info, **kwargs):
         user = info.context.user
         if user.is_anonymous:
-            raise Exception("Not logged in!")
+            raise Exception('Not logged in!')
         return user
 
     def resolve_users_by_id(self, info, id):
         return ExtendUser.objects.get(pk=id)
 
     def resolve_posts(self, info, **kwargs):
-        return Post.objects.all().order_by("-create_time")
+        return Post.objects.all().order_by('-create_time')
 
     def resolve_posts_by_category(self, info, **kwargs):
-        return Post.objects.filter(category=kwargs["category"])
+        return Post.objects.filter(category=kwargs['category'])
 
     def resolve_categories_by_id(self, info, id):
         return Category.objects.get(pk=id)
-
-    def resolve_categories(self, info, **kwargs):
-        return Category.objects.all().order_by("create_time")
 
     def resolve_posts_by_id(self, info, id, **kwargs):
         post_id = base64.b64decode(id).decode("utf-8").split(":")[1]
@@ -72,7 +64,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_comments_by_post(self, info, post_id, **kwargs):
         post_id = base64.b64decode(post_id).decode("utf-8").split(":")[1]
         post_id = int(post_id)
-        return Comment.objects.filter(post=post_id)
+        return Comment.objects.filter(post=post_id).order_by("create_time")
 
     def resolve_subcomments(self, info, **kwargs):
         return Subcomment.objects.all()
@@ -111,6 +103,8 @@ class Mutation(AuthMutation, graphene.ObjectType):
     delete_category = DeleteCategoryMutation.Field()
 
     create_comment = CreateCommentMutation.Field()
+    delete_comment = DeleteCommentMutation.Field()
+    update_comment = UpdateCommentMutation.Field()
 
     create_subcomment = CreateSubCommentMutation.Field()
     update_subcomment = UpdateSubCommentMutation.Field()
