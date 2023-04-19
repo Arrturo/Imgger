@@ -14,7 +14,6 @@ class CreateCategoryMutation(graphene.Mutation):
     @login_required
     def mutate(self, info, name):
         user = info.context.user
-        print(user)
         if user.is_authenticated:
             category = Category(name=name)
             category.save()

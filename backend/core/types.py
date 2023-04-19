@@ -24,6 +24,9 @@ class PostType(DjangoObjectType):
     dislikes = graphene.Int()
     is_liked = graphene.Boolean()
     is_disliked = graphene.Boolean()
+    comments_count = graphene.Int()
+    previous_post = graphene.Field(lambda: PostType)
+    next_post = graphene.Field(lambda: PostType)
 
     def resolve_likes(self, info, **kwargs):
         return self.likes.count()
@@ -42,6 +45,29 @@ class PostType(DjangoObjectType):
         if user.is_anonymous:
             return False
         return self.dislikes.filter(id=user.id).exists()
+
+    def resolve_comments_count(self, info, **kwargs):
+        return Comment.objects.filter(post=self.id).count()
+
+    def resolve_previous_post(self, info, **kwargs):
+        previous_post = (
+            Post.objects.filter(id__gt=self.id).order_by("create_time").first()
+        )
+        if previous_post:
+            return previous_post
+        else:
+            previous_post = Post.objects.order_by("create_time").first()
+            return previous_post
+
+    def resolve_next_post(self, info, **kwargs):
+        next_post = (
+            Post.objects.filter(id__lt=self.id).order_by("-create_time").first()
+        )
+        if next_post:
+            return next_post
+        else:
+            next_post = Post.objects.order_by("-create_time").first()
+            return next_post
 
 
 class CategoryType(DjangoObjectType):

@@ -25,47 +25,34 @@ function App() {
 	
 	useEffect(() => {
 		const fetchData = async () => {
-		  if ((localStorage.getItem('userInfo')) && (localStorage.getItem('exp')) && (localStorage.getItem('refreshToken'))) {
-			const exp = localStorage.getItem('exp');
-			const refreshToken = localStorage.getItem('refreshToken');
+		  if ((localStorage.getItem('userInfo')) && (localStorage.getItem('expiresIn'))) {
+			const exp = localStorage.getItem('expiresIn');
 			const now = new Date().getTime() / 1000 - 60;
 			if (exp < now) {
-			  const config = {
-				headers: {
-				  'Content-type': 'application/json',
-				}
-			  }
 			  try {
-				const { data }  = await axios.post('http://127.0.0.1:8000/graphql', {
-				  query: `
+				const { data } = await axios.post('http://localhost:8000/graphql', {
+					query: `
 					mutation {
-					  refreshToken(refreshToken: ${refreshToken}) {
-						success,
-						errors,
-						token,
-						refreshToken
-						payload
-					  }
+						refresh {
+							success
+							errors
+							exp
+						}
 					}
-				  `
-				}, config)
+					`, 
+				}, {
+					headers: {
+						'Content-type': 'application/json',
+					},
+				})
 	  
-				if (data.data.refreshToken.success) {
-				  const userData = JSON.parse(localStorage.getItem('userInfo'));
-				  userData.token = data.data.refreshToken.token;
-				  localStorage.setItem('userInfo', JSON.stringify(userData));
-				  localStorage.setItem('exp', JSON.stringify(data.data.refreshToken.payload.exp));
-				  dispatch({
-					type: USER_LOGIN_SUCCESS,
-					payload: userData,
-				  });
+				if (data.data.refresh.success) {
+				  localStorage.setItem('expiresIn', JSON.stringify(data.data.refresh.exp));
 				}
 			  } catch (error) {
 				console.log(error);
 			  }
-			} else {
-				console.log("Token is still valid");
-			}
+			} 
 		  }
 		}
 		fetchData();
