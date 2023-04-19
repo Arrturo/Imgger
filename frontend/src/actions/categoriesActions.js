@@ -11,11 +11,10 @@ export const categoriesList = () => async (dispatch) => {
         const config = {
 			headers: {
 				'Content-type': 'application/json',
-                // Authorization: `Bearer ${userInfo.token}`,
 			},
 		};
 
-        const {data} = await axios.post('http://127.0.0.1:8000/graphql', {
+        const {data} = await axios.post('http://localhost:8000/graphql', {
             query: `
                 query{
                     categories{
@@ -55,19 +54,17 @@ export const deleteCategories = (id) => async (dispatch, getState) => {
             type: CATEGORIES_DELETE_REQUEST,
         })
 
-        const {
-            userLogin: {userInfo}
-        } = getState()
-
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                'Authorization': `JWT ${userInfo.token}`
+                'Sec-Fetch-Dest': 'empty',
+				'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'same-origin',
             }
         }
 
 
-        const {data} = await axios.post('http://127.0.0.1:8000/graphql', {
+        const {data} = await axios.post('http://localhost:8000/graphql', {
             query: `
                 mutation{
                     deleteCategory(categoryId: "${id}"){
@@ -76,7 +73,9 @@ export const deleteCategories = (id) => async (dispatch, getState) => {
                     }
                 }
             `
-        }, config)
+        }, config, {
+            withCredentials: true
+            })
         
         dispatch({
             type: CATEGORIES_DELETE_SUCCESS,
@@ -100,17 +99,15 @@ export const createCategory = (name) => async (dispatch, getState) => {
             type: CATEGORIES_ADD_REQUEST,
         })
 
-        const {
-            userLogin: {userInfo}
-        } = getState()
-
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                'Authorization': `JWT ${userInfo.token}`
+				'Sec-Fetch-Dest': 'empty',
+				'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'same-origin',
             }
         }
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
                 mutation{
                     createCategory(name: "${name}"){
@@ -121,7 +118,9 @@ export const createCategory = (name) => async (dispatch, getState) => {
                     }
                 }
             `
-        }, config)
+        }, config, {
+            withCredentials: true
+            })
         
         console.log(data)
 
@@ -154,10 +153,9 @@ export const editCategory = (category) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                'Authorization': `JWT ${userInfo.token}`
             }
         }
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
                 mutation{
                     updateCategory(categoryId: "${category.id}", name: "${category.name}"){

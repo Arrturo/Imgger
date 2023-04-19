@@ -22,9 +22,6 @@ function PostScreen() {
     const postDetails = useSelector(state => state.postDetails)
     const {loading, error, post} = postDetails
 
-    const postList = useSelector(state => state.postList)
-	  const {posts} = postList
-
     const likePostHandler = (id) => {
       dispatch(likePost(id))
       window.location.reload()
@@ -37,16 +34,10 @@ function PostScreen() {
   
     useEffect(() => {
       dispatch(postsDetails(id))
-      dispatch(postsList())
-      
     }, [dispatch])
-    
-    const currentPostIndex = posts.findIndex(post => post?.node?.id === id);
 
-    const nextPostIndex = currentPostIndex + 1 < posts.length ? currentPostIndex + 1 : 0;
-    const nextPost = posts[nextPostIndex]?.node?.id
-    const previousPostIndex = currentPostIndex - 1 >= 0 ? currentPostIndex - 1 : posts.length - 1;
-    const previousPost = posts[previousPostIndex]?.node?.id
+    const nextPost = post.nextPost?.id
+    const previousPost = post.previousPost?.id
 
 
   return (

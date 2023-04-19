@@ -18,12 +18,8 @@ export const postsList = () => async (dispatch, getState) => {
                 'Content-type': 'application/json',
             },
         };
-        
-        if(userInfo){
-            config.headers['Authorization'] = `JWT ${userInfo.token}`
-        }
 
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query:`
                 query{
                     posts(first: 10, offset: 0){
@@ -73,22 +69,14 @@ export const postsList = () => async (dispatch, getState) => {
 
 export const postsDetails = (id) => async (dispatch, getState) => {
     try{
-        const {
-            userLogin: { userInfo },
-        } = getState();
-
         const config = {
             headers: {
                 'Content-type': 'application/json',
             },
         };
-        
-        if(userInfo){
-            config.headers['Authorization'] = `JWT ${userInfo.token}`
-        }
 
         dispatch({type: POST_DETAILS_REQUEST})
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
                 query{
                     postsById(id: "${id}"){
@@ -100,6 +88,12 @@ export const postsDetails = (id) => async (dispatch, getState) => {
                         isLiked
                         isDisliked
                         createTime
+                        nextPost{
+                            id
+                        }
+                        previousPost{
+                            id
+                        }
                         image{
                             id
                             file
@@ -142,17 +136,12 @@ export const createPost = (title, description,  userId, imageId,  categoryId,) =
             type: POST_CREATE_REQUEST,
         })
 
-        const {
-            userLogin: {userInfo}
-        } = getState()
-
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                'Authorization': `JWT ${userInfo.token}`
-            }
+            },
         }
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
                 mutation{
                    createPost(title: "${title}", description: "${description}", userId: ${userId}, imageId: "${imageId}", 
@@ -189,17 +178,12 @@ export const likePost = (id) => async (dispatch, getState) => {
     try{
         dispatch({type: POST_LIKE_REQUEST})
 
-        const {
-            userLogin: {userInfo}
-        } = getState()
-
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                Authorization : `JWT ${userInfo.token}`
             }}
 
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
                 mutation{
                     like(postId: "${id}"){
@@ -231,17 +215,12 @@ export const dislikePost = (id) => async (dispatch, getState) => {
     try{
         dispatch({type: POST_LIKE_REQUEST})
 
-        const {
-            userLogin: {userInfo}
-        } = getState()
-
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                Authorization : `JWT ${userInfo.token}`
             }}
 
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
                 mutation{
                     dislike(postId: "${id}"){

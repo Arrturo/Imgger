@@ -62,7 +62,9 @@ class UpdatePostMutation(graphene.Mutation):
     post = graphene.Field(PostType)
 
     @login_required
-    def mutate(self, info, post_id, title, description, user_id, image_id, category_id):
+    def mutate(
+        self, info, post_id, title, description, user_id, image_id, category_id
+    ):
         post = Post.objects.get(id=post_id)
         if title:
             post.title = title

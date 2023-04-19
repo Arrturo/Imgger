@@ -34,7 +34,9 @@ class ExtendUserGraphQLTestCase(GraphQLTestCase):
         }"""
 
         # Make the request
-        response = self.client.post("/graphql", data={"query": query}, headers=headers)
+        response = self.client.post(
+            "/graphql", data={"query": query}, headers=headers
+        )
 
         # Check the response
         self.assertEqual(response.status_code, 200)

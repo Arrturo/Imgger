@@ -29,6 +29,37 @@ class CreateCommentMutation(graphene.Mutation):
             return CreateCommentMutation(success=False, errors=str(e))
 
 
+class UpdateCommentMutation(graphene.Mutation):
+    class Arguments:
+        comment_id = graphene.ID()
+        content = graphene.String()
+
+    success = graphene.Boolean()
+    errors = graphene.String()
+
+    @login_required
+    def mutate(self, info, comment_id, content):
+        user = info.context.user
+        try:
+            if user.is_authenticated:
+                comment = Comment.objects.get(
+                    id=base64.b64decode(comment_id).decode("utf-8").split(":")[1]
+                )
+                if (
+                    comment.user.id != user.id
+                    and not user.is_superuser
+                    and not user.is_staff
+                ):
+                    raise Exception("You can only edit your own comments!")
+                comment.comment = content
+                comment.save()
+                return UpdateCommentMutation(success=True, errors=None)
+            else:
+                raise Exception("Not logged in!")
+        except Exception as e:
+            return UpdateCommentMutation(success=False, errors=str(e))
+
+
 class DeleteCommentMutation(graphene.Mutation):
     class Arguments:
         comment_id = graphene.ID()
@@ -42,8 +73,7 @@ class DeleteCommentMutation(graphene.Mutation):
         try:
             if user.is_authenticated:
                 comment = Comment.objects.get(
-                    id=base64.b64decode(
-                        comment_id).decode("utf-8").split(":")[1]
+                    id=base64.b64decode(comment_id).decode("utf-8").split(":")[1]
                 )
                 if (
                     comment.user.id != user.id

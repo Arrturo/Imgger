@@ -99,6 +99,11 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ["*"]
 CSRF_COOKIE_SECURE = True
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+]
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = True
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -185,7 +190,7 @@ GRAPHQL_JWT = {
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "mailhog"
+EMAIL_HOST = "localhost"
 EMAIL_PORT = "1025"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

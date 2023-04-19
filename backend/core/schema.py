@@ -6,21 +6,47 @@ from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
 
 from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
-from .mutations.categories import (CreateCategoryMutation,
-                                   DeleteCategoryMutation,
-                                   UpdateCategoryMutation)
-from .mutations.comments import CreateCommentMutation
-from .mutations.images import (CreateImageMutation, DeleteImageMutation,
-                               UpdateImageMutation)
-from .mutations.posts import (CreatePostMutation, DeletePostMutation,
-                              UpdatePostMutation, dislike, like)
-from .mutations.subcomments import (CreateSubCommentMutation,
-                                    DeleteSubCommentMutation,
-                                    UpdateSubCommentMutation)
-from .mutations.users import (DeleteUserMutation, LoginMutation,
-                              UpdateUserMutation)
-from .types import (CategoryType, CommentType, ImageType, PostType,
-                    SubcommentType, UserType)
+from .mutations.categories import (
+    CreateCategoryMutation,
+    DeleteCategoryMutation,
+    UpdateCategoryMutation,
+)
+from .mutations.comments import (
+    CreateCommentMutation,
+    DeleteCommentMutation,
+    UpdateCommentMutation,
+)
+from .mutations.images import (
+    CreateImageMutation,
+    DeleteImageMutation,
+    UpdateImageMutation,
+)
+from .mutations.posts import (
+    CreatePostMutation,
+    DeletePostMutation,
+    UpdatePostMutation,
+    dislike,
+    like,
+)
+from .mutations.subcomments import (
+    CreateSubCommentMutation,
+    DeleteSubCommentMutation,
+    UpdateSubCommentMutation,
+)
+from .mutations.users import (
+    DeleteUserMutation,
+    LoginMutation,
+    RefreshMutation,
+    UpdateUserMutation,
+)
+from .types import (
+    CategoryType,
+    CommentType,
+    ImageType,
+    PostType,
+    SubcommentType,
+    UserType,
+)
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
@@ -59,7 +85,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return Category.objects.get(pk=id)
 
     def resolve_categories(self, info, **kwargs):
-        return Category.objects.all().order_by("create_time")
+        return Category.objects.all()
 
     def resolve_posts_by_id(self, info, id, **kwargs):
         post_id = base64.b64decode(id).decode("utf-8").split(":")[1]
@@ -96,6 +122,7 @@ class AuthMutation(graphene.ObjectType):
 
 class Mutation(AuthMutation, graphene.ObjectType):
     login = LoginMutation.Field()
+    refresh = RefreshMutation.Field()
     update_user = UpdateUserMutation.Field()
     delete_user = DeleteUserMutation.Field()
 
@@ -111,6 +138,8 @@ class Mutation(AuthMutation, graphene.ObjectType):
     delete_category = DeleteCategoryMutation.Field()
 
     create_comment = CreateCommentMutation.Field()
+    update_comment = UpdateCommentMutation.Field()
+    delete_comment = DeleteCommentMutation.Field()
 
     create_subcomment = CreateSubCommentMutation.Field()
     update_subcomment = UpdateSubCommentMutation.Field()
