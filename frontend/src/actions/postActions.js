@@ -1,30 +1,42 @@
 import axios from "axios";
 
-import { POST_LIST_FAIL, POST_LIST_REQUEST, POST_LIST_SUCCESS, POST_DETAILS_FAIL, POST_DETAILS_REQUEST, POST_DETAILS_SUCCESS, POST_CREATE_FAIL, POST_CREATE_REQUEST, POST_CREATE_SUCCESS, POST_LIKE_REQUEST, POST_LIKE_FAIL, POST_LIKE_SUCCESS} from "../constants/postConstants";
-
-
-
+import {
+  POST_LIST_FAIL,
+  POST_LIST_REQUEST,
+  POST_LIST_SUCCESS,
+  POST_DETAILS_FAIL,
+  POST_DETAILS_REQUEST,
+  POST_DETAILS_SUCCESS,
+  POST_CREATE_FAIL,
+  POST_CREATE_REQUEST,
+  POST_CREATE_SUCCESS,
+  POST_LIKE_REQUEST,
+  POST_LIKE_FAIL,
+  POST_LIKE_SUCCESS,
+} from "../constants/postConstants";
 
 export const postsList = () => async (dispatch, getState) => {
-    try{
-        dispatch({type: POST_LIST_REQUEST})
+  try {
+    dispatch({ type: POST_LIST_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+    const {
+      userLogin: { userInfo },
+    } = getState();
 
-        const config = {
-            headers: {
-                'Content-type': 'application/json',
-            },
-        };
-        
-        if(userInfo){
-            config.headers['Authorization'] = `JWT ${userInfo.token}`
-        }
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+      },
+    };
 
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
-            query:`
+    if (userInfo) {
+      config.headers["Authorization"] = `JWT ${userInfo.token}`;
+    }
+
+    const { data } = await axios.post(
+      `http://127.0.0.1:8000/graphql`,
+      {
+        query: `
                 query{
                     posts(first: 10, offset: 0){
                         edges{
@@ -38,7 +50,8 @@ export const postsList = () => async (dispatch, getState) => {
                             isLiked
                             isDisliked
                             image{
-                              file
+                                id
+                                url
                             }
                             user{
                                 username
@@ -48,48 +61,47 @@ export const postsList = () => async (dispatch, getState) => {
                         }
                       }
                 }
-                `
-        }, config)
+                `,
+      },
+      config
+    );
 
-
-        dispatch({
-            type: POST_LIST_SUCCESS,
-            payload: data.data.posts.edges
-        })
-
-
-    }catch(error){
-        dispatch({
-            type: POST_LIST_FAIL,
-            payload: error.respone && error.response.data.detail
-            ? error.response.data.detail
-            : error.message,
-        })
-    }
-
-}
-
-
+    dispatch({
+      type: POST_LIST_SUCCESS,
+      payload: data.data.posts.edges,
+    });
+  } catch (error) {
+    dispatch({
+      type: POST_LIST_FAIL,
+      payload:
+        error.respone && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};
 
 export const postsDetails = (id) => async (dispatch, getState) => {
-    try{
-        const {
-            userLogin: { userInfo },
-        } = getState();
+  try {
+    const {
+      userLogin: { userInfo },
+    } = getState();
 
-        const config = {
-            headers: {
-                'Content-type': 'application/json',
-            },
-        };
-        
-        if(userInfo){
-            config.headers['Authorization'] = `JWT ${userInfo.token}`
-        }
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+      },
+    };
 
-        dispatch({type: POST_DETAILS_REQUEST})
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
-            query: `
+    if (userInfo) {
+      config.headers["Authorization"] = `JWT ${userInfo.token}`;
+    }
+
+    dispatch({ type: POST_DETAILS_REQUEST });
+    const { data } = await axios.post(
+      `http://127.0.0.1:8000/graphql`,
+      {
+        query: `
                 query{
                     postsById(id: "${id}"){
                         id
@@ -102,7 +114,7 @@ export const postsDetails = (id) => async (dispatch, getState) => {
                         createTime
                         image{
                             id
-                            file
+                            url
                         }
                         category{
                             id
@@ -113,47 +125,48 @@ export const postsDetails = (id) => async (dispatch, getState) => {
                         }
                 }  
             }
-            `
-        }, config)
+            `,
+      },
+      config
+    );
 
-        dispatch({
-            type: POST_DETAILS_SUCCESS,
-            payload: data.data.postsById
-        })
+    dispatch({
+      type: POST_DETAILS_SUCCESS,
+      payload: data.data.postsById,
+    });
+  } catch (error) {
+    dispatch({
+      type: POST_DETAILS_FAIL,
+      payload:
+        error.respone && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};
 
-
-    }catch(error){
-        dispatch({
-            type: POST_DETAILS_FAIL,
-            payload: error.respone && error.response.data.detail
-            ? error.response.data.detail
-            : error.message,
-        })
-    }
-
-}
-
-
-
-export const createPost = (title, description,  userId, imageId,  categoryId,) => async (dispatch, getState) => {
-    
+export const createPost =
+  (title, description, userId, imageId, categoryId) =>
+  async (dispatch, getState) => {
     try {
-        dispatch({
-            type: POST_CREATE_REQUEST,
-        })
+      dispatch({
+        type: POST_CREATE_REQUEST,
+      });
 
-        const {
-            userLogin: {userInfo}
-        } = getState()
+      const {
+        userLogin: { userInfo },
+      } = getState();
 
-        const config = {
-            headers: {
-                'Content-type': 'application/json',
-                'Authorization': `JWT ${userInfo.token}`
-            }
-        }
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
-            query: `
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `JWT ${userInfo.token}`,
+        },
+      };
+      const { data } = await axios.post(
+        `http://127.0.0.1:8000/graphql`,
+        {
+          query: `
                 mutation{
                    createPost(title: "${title}", description: "${description}", userId: ${userId}, imageId: "${imageId}", 
                    categoryId: "${categoryId}"){
@@ -165,104 +178,110 @@ export const createPost = (title, description,  userId, imageId,  categoryId,) =
                         }
                    }
                 }
-            `
-        }, config)
-        
+            `,
+        },
+        config
+      );
 
-        dispatch({
-            type: POST_CREATE_SUCCESS,
-            payload: data.data.createPost,
-        })
-
-    }catch(error){
-        dispatch({
-            type: POST_CREATE_FAIL,
-            payload: error.response && error.response.data.detail
+      dispatch({
+        type: POST_CREATE_SUCCESS,
+        payload: data.data.createPost,
+      });
+    } catch (error) {
+      dispatch({
+        type: POST_CREATE_FAIL,
+        payload:
+          error.response && error.response.data.detail
             ? error.response.data.detail
             : error.message,
-        })
+      });
     }
-}
+  };
 
 export const likePost = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: POST_LIKE_REQUEST });
 
-    try{
-        dispatch({type: POST_LIKE_REQUEST})
+    const {
+      userLogin: { userInfo },
+    } = getState();
 
-        const {
-            userLogin: {userInfo}
-        } = getState()
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `JWT ${userInfo.token}`,
+      },
+    };
 
-        const config = {
-            headers: {
-                'Content-type': 'application/json',
-                Authorization : `JWT ${userInfo.token}`
-            }}
-
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
-            query: `
+    const { data } = await axios.post(
+      `http://127.0.0.1:8000/graphql`,
+      {
+        query: `
                 mutation{
                     like(postId: "${id}"){
                         success
                         errors
                     }
-                }`
-        }, config)
+                }`,
+      },
+      config
+    );
 
-        dispatch({
-            type: POST_LIKE_SUCCESS,
-            payload: data.data.likePost
-        })
-
-    }catch(error){
-        dispatch({
-            type: POST_LIKE_FAIL,
-            payload: error.response && error.response.data.detail
-            ? error.response.data.detail
-            : error.message,
-        })
-        
-    }
-}
-
+    dispatch({
+      type: POST_LIKE_SUCCESS,
+      payload: data.data.likePost,
+    });
+  } catch (error) {
+    dispatch({
+      type: POST_LIKE_FAIL,
+      payload:
+        error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};
 
 export const dislikePost = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: POST_LIKE_REQUEST });
 
-    try{
-        dispatch({type: POST_LIKE_REQUEST})
+    const {
+      userLogin: { userInfo },
+    } = getState();
 
-        const {
-            userLogin: {userInfo}
-        } = getState()
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `JWT ${userInfo.token}`,
+      },
+    };
 
-        const config = {
-            headers: {
-                'Content-type': 'application/json',
-                Authorization : `JWT ${userInfo.token}`
-            }}
-
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
-            query: `
+    const { data } = await axios.post(
+      `http://127.0.0.1:8000/graphql`,
+      {
+        query: `
                 mutation{
                     dislike(postId: "${id}"){
                         success
                         errors
                     }
-                }`
-        }, config)
+                }`,
+      },
+      config
+    );
 
-        dispatch({
-            type: POST_LIKE_SUCCESS,
-            payload: data.data.dislikePost
-        })
-
-    }catch(error){
-        dispatch({
-            type: POST_LIKE_FAIL,
-            payload: error.response && error.response.data.detail
-            ? error.response.data.detail
-            : error.message,
-        })
-        
-    }
-}
+    dispatch({
+      type: POST_LIKE_SUCCESS,
+      payload: data.data.dislikePost,
+    });
+  } catch (error) {
+    dispatch({
+      type: POST_LIKE_FAIL,
+      payload:
+        error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};

@@ -23,7 +23,6 @@ class Category(models.Model):
 
 class Image(models.Model):
     name = models.CharField(max_length=255)
-    file = models.ImageField()
     url = models.CharField(max_length=255, null=False)
 
     def __str__(self):
