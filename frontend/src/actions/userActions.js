@@ -41,10 +41,12 @@ export const login = (username, password) => async (dispatch) =>{
             `,
           }, config)
 
-		  var tokens = data.data.tokenAuth.token.split('.');
-		  var payload = JSON.parse(atob(tokens[1]));
+		  var tokens = data?.data?.tokenAuth?.token?.split('.');
+		  if (tokens){
+			var payload = JSON.parse(atob(tokens[1]));
+		  }
+		  
 
-		  console.log(payload)
 
           if(data.data.tokenAuth.success === true){
             dispatch({
@@ -118,8 +120,6 @@ export const register = (username, email, password, confirmPassword) => async (d
       
        `}
 		);
-
-      console.log(data)
       
       if (data.data.register.success) { 
         dispatch({
@@ -127,22 +127,10 @@ export const register = (username, email, password, confirmPassword) => async (d
           payload: data,
         });
       }else{
-        if (data?.data?.register?.errors?.username[0]?.message || data?.data?.register?.errors?.password2[0]?.message){
-          const errorMessages = [
-            data?.data?.register?.errors?.username[0]?.message,
-            data?.data?.register?.errors?.password2[0]?.message,
-            
-          ];
-          const filteredMessages = errorMessages.filter(message => message);
-          const payload = filteredMessages.join(` \u2022 `);
-
-          if (payload) {
-            dispatch({
-              type: USER_REGISTER_FAIL,
-              payload: payload 
-            });
-          }
-        }
+        dispatch({
+			type: USER_REGISTER_FAIL,
+			payload: data.data.register.errors.username || data.data.register.errors.password1 || data.data.register.errors.password2
+		  });
       }
 
 

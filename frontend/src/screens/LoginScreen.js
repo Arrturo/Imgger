@@ -88,12 +88,6 @@ function LoginScreen() {
                     </Link>
                 </Form.Group>
 
-                <Form.Group controlId='google-login'>
-                    <Link to={'/'} className="text-5xl hover:text-red-500">
-                        <i class="fa-brands fa-google-plus"></i>
-                    </Link>
-                </Form.Group>
-
                 <Form.Group controlId='apple-login'>
                     <Link to={'/'} className="text-5xl hover:text-stone-500">
                         <i class="fa-brands fa-apple"></i>

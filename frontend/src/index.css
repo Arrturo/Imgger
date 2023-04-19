@@ -64,3 +64,37 @@ main{
   background-color: #ffffff;
   opacity: 1
 }
+
+.com:hover{
+  background-color: #fff6b0;
+  cursor: pointer;
+}
+
+.reply-btn{
+  background-color: greenyellow;
+  color: black;
+  font-weight: bold;
+  font-size: small;
+  border-radius: 10px;
+  max-height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn{
+  color: black;
+  font-weight: bold;
+  font-size: large;
+}
+
+.edit-btn:hover{
+  color: #ff0000;
+}
+
+
+.save-button{
+  background-color: rgb(25, 167, 0);
+  color: black;
+  font-weight: bold;
+}

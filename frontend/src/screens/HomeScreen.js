@@ -21,9 +21,9 @@ const analytics = getAnalytics(app);
 const HomeScreen = () => {
   const dispatch = useDispatch();
 
-  const [postData, setPostData] = useState([]);
-  const [page, setPage] = useState(PAGE_NUMBER);
-  const [loading, setLoading] = useState(false);
+    const [postData, setPostData] = useState([]);
+    const [page, setPage] = useState(PAGE_NUMBER);
+    const [loading, setLoading] = useState(true);
 
   const [hasNextPage, setHasNextPage] = useState(true);
 
@@ -58,6 +58,7 @@ const HomeScreen = () => {
                       createTime
                       isLiked
                       isDisliked
+                      commentsCount
                       image{
                         url
                       }
@@ -66,15 +67,33 @@ const HomeScreen = () => {
                       }
                     }
                   }
-pageInfo{
-hasNextPage
-}
+                    pageInfo{
+                    hasNextPage
+                    }
                 }
-}
-                `,
-        },
-        config
-      );
+                }
+                `
+        }, config);
+
+        if (!data.data.posts.pageInfo.hasNextPage) {
+            setHasNextPage(false);
+        }
+        if (data.data.posts.edges.length > 0) {
+            setPostData((prev) => [...prev, ...data.data.posts.edges]);
+        }
+        setLoading(false);
+    }, 1000);
+    }, [page]);
+
+
+    useEffect(() => {
+        if (hasNextPage) {
+            window.addEventListener("scroll", handleScroll);
+        } else {
+            window.removeEventListener("scroll", handleScroll);
+        }
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [hasNextPage]);
 
       if (!data.data.posts.pageInfo.hasNextPage) {
         setHasNextPage(false);
