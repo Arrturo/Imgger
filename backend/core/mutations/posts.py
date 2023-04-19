@@ -1,8 +1,11 @@
 from django.contrib.auth import get_user_model
+from firebase_admin import storage
+from graphql_jwt.decorators import login_required, staff_member_required
+
+from ..models import Category, ExtendUser, Image, Post
 from ..types import PostType
 import graphene
 from ..models import Post, Category, Image, ExtendUser
-from graphql_jwt.decorators import login_required
 import base64
 
 
@@ -74,13 +77,27 @@ class DeletePostMutation(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
 
-    post = graphene.Field(PostType)
+    success = graphene.Boolean()
+    errors = graphene.String()
 
+    @staff_member_required
     @login_required
     def mutate(self, info, post_id):
-        post = Post.objects.get(id=post_id)
-        post.delete()
-        return DeletePostMutation(post=post)
+        try:
+            id = base64.b64decode(post_id).decode("utf-8").split(":")[1]
+            post = Post.objects.get(id=id)
+            if post.image:
+                image = post.image
+            post.delete()
+            if image:
+                bucket = storage.bucket()
+                url = image.url.split("/")[-1]
+                blob = bucket.blob(url)
+                blob.delete()
+                image.delete()
+            return DeletePostMutation(success=True)
+        except Exception as e:
+            return DeletePostMutation(success=False, errors=str(e))
 
 
 class like(graphene.Mutation):

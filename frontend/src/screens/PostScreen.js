@@ -73,6 +73,12 @@ function PostScreen() {
     const previousPostIndex = currentPostIndex - 1 >= 0 ? currentPostIndex - 1 : posts.length - 1;
     const previousPost = posts[previousPostIndex]?.node?.id
 
+  const nextPostIndex =
+    currentPostIndex + 1 < posts.length ? currentPostIndex + 1 : 0;
+  const nextPost = posts[nextPostIndex]?.node?.id;
+  const previousPostIndex =
+    currentPostIndex - 1 >= 0 ? currentPostIndex - 1 : posts.length - 1;
+  const previousPost = posts[previousPostIndex]?.node?.id;
 
     const submitHandler = (e) => {
       e.preventDefault()
@@ -97,9 +103,24 @@ function PostScreen() {
   return (
     <div>
       <Col className="flex justify-between mb-20 border-b-4">
-        <a href={`/post/${previousPost}`} className="btn font-bold bg-amber-300 hover:bg-amber-500 rounded-full my-3"><i class="fa-solid fa-circle-chevron-left"></i> Previous</a>
-        <a href='/' className="btn font-bold bg-lime-500 hover:bg-lime-700 my-3"><i class="fa-solid fa-house"></i></a>
-        <a href={`/post/${nextPost}`} className="btn font-bold bg-amber-300 hover:bg-amber-500 rounded-full my-3">Next <i class="fa-solid fa-circle-chevron-right"></i></a>
+        <a
+          href={`/post/${previousPost}`}
+          className="btn font-bold bg-amber-300 hover:bg-amber-500 rounded-full my-3"
+        >
+          <i class="fa-solid fa-circle-chevron-left"></i> Previous
+        </a>
+        <a
+          href="/"
+          className="btn font-bold bg-lime-500 hover:bg-lime-700 my-3"
+        >
+          <i class="fa-solid fa-house"></i>
+        </a>
+        <a
+          href={`/post/${nextPost}`}
+          className="btn font-bold bg-amber-300 hover:bg-amber-500 rounded-full my-3"
+        >
+          Next <i class="fa-solid fa-circle-chevron-right"></i>
+        </a>
       </Col>
       {loading ? <Loader />
       : error ? <Message variant='danger' children={error} /> 
@@ -119,7 +140,7 @@ function PostScreen() {
               
               <Col md={6}>
                 <p className="text-xl">Added by: <span className="text-purple-500">{post?.user?.username}</span> at {(post?.createTime)?.substring(0, 10)} {(post?.createTime)?.substring(15, 19)}</p>
-                <Image src={`http://127.0.0.1:8000/media/${post?.image?.file}`} alt={post.title} fluid />
+                <Image src={post?.image?.url} alt={post.title} fluid />
               </Col>
               
               <Col md={5} >
@@ -193,7 +214,7 @@ function PostScreen() {
           </div>
         }
     </div>
-  )
+  );
 }
 
-export default PostScreen
+export default PostScreen;

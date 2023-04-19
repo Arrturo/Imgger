@@ -24,7 +24,7 @@ class Category(models.Model):
 
 class Image(models.Model):
     name = models.CharField(max_length=255)
-    file = models.ImageField(upload_to='images/')
+    url = models.CharField(max_length=255, null=False)
 
     def __str__(self):
         return f"{self.file}"

@@ -56,7 +56,7 @@ function CreatingPost() {
             errors
             image{
               id
-              file
+              url
             }
           }
         }
@@ -116,7 +116,7 @@ function CreatingPost() {
             <h1 className="text-5xl text-center">Add post</h1>
             <Row className="px-5 py-5">
               <Col>
-                <Image src={`http://127.0.0.1:8000/media/${uploadedImage?.image?.file}`} alt={`${uploadedImage?.image?.name}`} 
+                <Image src={`${uploadedImage.image?.url}`} alt={`${uploadedImage?.image?.name}`} 
                 className="max-h-96 mt-5"/>
               </Col>
               <Col md={4}>
