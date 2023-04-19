@@ -5,8 +5,11 @@ import Loader from '../components/Loader'
 import Message from '../components/Message'
 import {useDispatch, useSelector} from 'react-redux'
 import { likePost, dislikePost } from '../actions/postActions'
-import { postsDetails, postsList } from '../actions/postActions'
+import { postsDetails, postsList, postComments, addComment, deleteComment, editComment } from '../actions/postActions'
 import CategoryItem from '../components/CategoryItem'
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 
 function PostScreen() {
@@ -25,6 +28,27 @@ function PostScreen() {
     const postList = useSelector(state => state.postList)
 	  const {posts} = postList
 
+    const PostComments = useSelector(state => state.postComments)
+    const {comments} = PostComments
+
+    const [comment, setComment] = useState('')
+
+    const [hoveredItemId, setHoveredItemId] = useState(null)
+    const [clickedItemId, setClickedItemId] = useState(null)
+
+    const [editMode, setEditMode] = useState(false);
+    const [editedComment, setEditedComment] = useState('');
+
+
+
+    const handleItemMouseEnter = (itemId) => {
+      setHoveredItemId(itemId);
+    };
+  
+    const handleItemMouseLeave = () => {
+      setHoveredItemId(null);
+    };
+
     const likePostHandler = (id) => {
       dispatch(likePost(id))
       window.location.reload()
@@ -38,6 +62,7 @@ function PostScreen() {
     useEffect(() => {
       dispatch(postsDetails(id))
       dispatch(postsList())
+      dispatch(postComments(id))
       
     }, [dispatch])
     
@@ -48,6 +73,26 @@ function PostScreen() {
     const previousPostIndex = currentPostIndex - 1 >= 0 ? currentPostIndex - 1 : posts.length - 1;
     const previousPost = posts[previousPostIndex]?.node?.id
 
+
+    const submitHandler = (e) => {
+      e.preventDefault()
+      dispatch(addComment(id, userInfo?.user?.pk, comment))
+      window.location.reload()
+  }
+
+    const deleteHandler = (id, name) => {
+      if(window.confirm(`Are you sure to delete comment: "${name}" and all subcomments of this comment ?`)){
+          dispatch(deleteComment(id))
+      }
+      window.location.reload()
+    }
+
+
+  const saveChangesHandler = (event) => {
+    event.preventDefault()
+    dispatch(editComment({'id': clickedItemId, 'content': editedComment}))
+    window.location.reload()
+}
 
   return (
     <div>
@@ -95,29 +140,56 @@ function PostScreen() {
 
             <Row className="flex justify-center">
               <Col md={8}>
-                <h1 className="text-3xl my-5">Comments:</h1>
-                {true && <Message varing='info' >Users have not added any comments yet</Message>}
+                  <h1 className="text-3xl my-5 border-b-2 p-2">{comments.length} Comments:</h1>
+                  {comments.length === 0 && <Message varing='info' >Users have not added any comments yet</Message>}
+
+                  <div className='my-5 '>
+                    {comments.map((com) => (
+                      <div key={com.node.id} className=' border-b-2 p-3 com' onMouseEnter={() => (handleItemMouseEnter(com.node.id))} onMouseLeave ={handleItemMouseLeave}>
+                        <p className="mb-2 text-sm"> 
+                          <strong className='text-base text-amber-800 pr-2'>{com.node.user.username}</strong>
+                          {dayjs(com.node.createTime).fromNow()}
+                          {com.node.user.id == userInfo?.user?.pk || userInfo?.user?.isStaff === true ? 
+                            <button className='edit-btn float-right px-3' onClick={() => deleteHandler(com.node.id, com.node.comment)}><i class="fa-solid fa-trash"></i></button> 
+                            : null
+                          }
+                          {com.node.user.id == userInfo?.user?.pk || userInfo?.user?.isStaff === true ? <button onClick={() => (setEditMode(true), setEditedComment(com.node.comment), setClickedItemId(com.node.id)) } className='edit-btn float-right'><i class="fa-solid fa-pencil" ></i></button> : null}
+                        </p>
+                        <p className='text-xl flex justify-between pr-5'>
+                          {editMode &&  com.node.id === clickedItemId ? 
+                          (<div>
+                            <input className="border-2 p-2" type="text" value={editedComment} 
+                              onChange={(event) => setEditedComment(event.target.value)}/>
+                            <Button className='save-button' onClick={saveChangesHandler}><i class="fa-solid fa-save"></i> save</Button>
+                          </div>
+                          ):
+                          (
+                            <p>{com.node.comment}</p>
+                            )}
+                          {com.node.id === hoveredItemId ? (<Button type='submit' variant='primary' className="reply-btn"><i class="fa-solid fa-reply"></i> Reply</Button>) : null}  
+                        </p>
+
+                      </div>
+                    ))}
+                  </div>
 
                   <h4 className="text-xl text-center mt-5">Add comment</h4>
-
-                  
                   {userInfo ? (
-                    <Form >
+                    <Form onSubmit={submitHandler}>
                       <FormGroup controlId='comment' className="mt-1">
                         <Form.Label>Message</Form.Label>
-                        <Form.Control as='textarea' row='5' value={null} placeholer='Enter a comment'></Form.Control>
+                        <Form.Control as='textarea' row='5' value={comment} onChange={(e) =>setComment(e.target.value)} placeholer='Enter a comment'></Form.Control>
                       </FormGroup>
 
-                      <Button type='submit' variant='primary' className="button-primary mt-3 mb-10">Share</Button> 
+                      <Button type='submit' variant='primary' className="button-primary mt-3 mb-5"><i class="fa-solid fa-share-nodes"></i> Share</Button> 
 
                     </Form>
                   ): (
                     <Message variant='info'>You must be <Link to='/login' className="text-red-700">logged in </Link> to add a comment</Message>
-                  )}
+                    )}
 
               </Col>
             </Row>
-
           </div>
         }
     </div>

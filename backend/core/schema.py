@@ -9,7 +9,7 @@ from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 from .mutations.categories import (CreateCategoryMutation,
                                    DeleteCategoryMutation,
                                    UpdateCategoryMutation)
-from .mutations.comments import CreateCommentMutation
+from .mutations.comments import CreateCommentMutation, DeleteCommentMutation, UpdateCommentMutation
 from .mutations.images import (CreateImageMutation, DeleteImageMutation,
                                UpdateImageMutation)
 from .mutations.posts import (CreatePostMutation, DeletePostMutation,
@@ -58,9 +58,6 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_categories_by_id(self, info, id):
         return Category.objects.get(pk=id)
 
-    def resolve_categories(self, info, **kwargs):
-        return Category.objects.all().order_by("create_time")
-
     def resolve_posts_by_id(self, info, id, **kwargs):
         post_id = base64.b64decode(id).decode("utf-8").split(":")[1]
         post_id = int(post_id)
@@ -72,7 +69,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_comments_by_post(self, info, post_id, **kwargs):
         post_id = base64.b64decode(post_id).decode("utf-8").split(":")[1]
         post_id = int(post_id)
-        return Comment.objects.filter(post=post_id)
+        return Comment.objects.filter(post=post_id).order_by("create_time")
 
     def resolve_subcomments(self, info, **kwargs):
         return Subcomment.objects.all()
@@ -111,6 +108,8 @@ class Mutation(AuthMutation, graphene.ObjectType):
     delete_category = DeleteCategoryMutation.Field()
 
     create_comment = CreateCommentMutation.Field()
+    delete_comment = DeleteCommentMutation.Field()
+    update_comment = UpdateCommentMutation.Field()
 
     create_subcomment = CreateSubCommentMutation.Field()
     update_subcomment = UpdateSubCommentMutation.Field()

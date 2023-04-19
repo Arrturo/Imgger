@@ -19,7 +19,7 @@ function Post({post}) {
           <div className="my-3 text-xl flex justify-between px-4">
             <p className=""><i class="fa-regular fa-thumbs-up"></i> {post.node.likes}</p> 
             <p> <i class="fa-regular fa-thumbs-down"></i> {post.node.dislikes}</p>
-            <p><i class="fa-regular fa-comment-dots"></i> </p>
+            <p><i class="fa-regular fa-comment-dots"></i> {post.node.commentsCount}</p>
           </div>
         </Card.Text>
 

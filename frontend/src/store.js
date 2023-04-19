@@ -3,7 +3,7 @@ import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import { userLoginReducer, userRegisterReducer, userUpdateProfileRecuder, userListReducer, userDeleteReducer, userDetailsReducer} from './reducers/userReducers'
 import { categoriesListReducers, categoryDeleteReducer, categoriesCreateReducers, categoriesEditeReducers } from './reducers/categoriesReducers'
-import { postListReducers, potsDetailsReducers, postCreateReducers } from './reducers/postReducers'
+import { postListReducers, potsDetailsReducers, postCreateReducers, postCommentsReducers, addCommentReducers, commentDeleteReducer, commentEditeReducers } from './reducers/postReducers'
 
 
 
@@ -20,6 +20,10 @@ const reducer = combineReducers({
     categoriesEdit: categoriesEditeReducers,
     postList: postListReducers,
     postDetails: potsDetailsReducers,
+    postComments: postCommentsReducers,
+    addComment: addCommentReducers,
+    deleteComment: commentDeleteReducer,
+    editComment: commentEditeReducers,
     postCreate: postCreateReducers,
 
 })
