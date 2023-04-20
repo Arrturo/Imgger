@@ -20,7 +20,7 @@ from graphene_file_upload.django import FileUploadGraphQLView
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.conf.urls.static import static
-from core.views import image_upload_view, activate
+from core.views import activate
 from graphql_jwt.decorators import jwt_cookie
 
 
@@ -28,7 +28,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('graphql', jwt_cookie(csrf_exempt(FileUploadGraphQLView.as_view
                                            (graphiql=True, schema=schema)))),
-    path('upload/', csrf_exempt(image_upload_view), name='upload'),
     path('activate/<token>', activate, name='activate'),
 ]
 

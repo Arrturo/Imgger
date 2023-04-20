@@ -164,11 +164,10 @@ export const createPost =
       const config = {
         headers: {
           "Content-type": "application/json",
-          Authorization: `JWT ${userInfo.token}`,
         },
       };
       const { data } = await axios.post(
-        `http://127.0.0.1:8000/graphql`,
+        `http://localhost:8000/graphql`,
         {
           query: `
                 mutation{
@@ -213,12 +212,11 @@ export const likePost = (id) => async (dispatch, getState) => {
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `JWT ${userInfo.token}`,
       },
     };
 
     const { data } = await axios.post(
-      `http://127.0.0.1:8000/graphql`,
+      `http://localhost:8000/graphql`,
       {
         query: `
                 mutation{
@@ -257,12 +255,11 @@ export const dislikePost = (id) => async (dispatch, getState) => {
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `JWT ${userInfo.token}`,
       },
     };
 
     const { data } = await axios.post(
-      `http://127.0.0.1:8000/graphql`,
+      `http://localhost:8000/graphql`,
       {
         query: `
                 mutation{
@@ -304,7 +301,7 @@ export const postComments = (postId) => async (dispatch, getState) => {
         
 
         dispatch({type: POST_COMMENTS_REQUEST})
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
                 query{
                     commentsByPost(postId: "${postId}"){
