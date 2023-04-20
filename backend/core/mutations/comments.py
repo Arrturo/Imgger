@@ -42,8 +42,7 @@ class DeleteCommentMutation(graphene.Mutation):
         try:
             if user.is_authenticated:
                 comment = Comment.objects.get(
-                    id=base64.b64decode(
-                        comment_id).decode("utf-8").split(":")[1]
+                    id=base64.b64decode(comment_id).decode("utf-8").split(":")[1]
                 )
                 if (
                     comment.user.id != user.id
@@ -73,8 +72,7 @@ class UpdateCommentMutation(graphene.Mutation):
         try:
             if user.is_authenticated:
                 comment = Comment.objects.get(
-                    id=base64.b64decode(comment_id).decode(
-                        "utf-8").split(":")[1]
+                    id=base64.b64decode(comment_id).decode("utf-8").split(":")[1]
                 )
                 if (
                     comment.user.id != user.id

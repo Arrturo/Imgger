@@ -23,7 +23,6 @@ export const login = (username, password) => async (dispatch) =>{
                 login(username: "${username}", password: "${password}") {
                   success
                   errors
-				  expirationTime
                   user {
                     id
                     username
@@ -50,7 +49,6 @@ export const login = (username, password) => async (dispatch) =>{
             });
         
             localStorage.setItem('userInfo', JSON.stringify(data.data.login));
-			localStorage.setItem('expiresIn', JSON.stringify(data.data.login.expirationTime));
 
           } else {
             dispatch({

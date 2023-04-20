@@ -1,5 +1,6 @@
 import graphene
 from django.contrib.auth import authenticate
+from django.utils.deprecation import MiddlewareMixin
 from graphql_auth import mutations
 from graphql_jwt.decorators import login_required
 from graphql_jwt.shortcuts import create_refresh_token, get_payload, get_token
@@ -116,3 +117,24 @@ class RefreshMutation(graphene.Mutation, AuthMutation):
                 return RefreshMutation(success=False, errors=str(e))
         else:
             return RefreshMutation(success=False, errors="No refresh token")
+
+
+class RefreshTokenMiddleware(MiddlewareMixin):
+    def process_request(self, request):
+        print("middleware")
+        if request.COOKIES.get("JWT-refresh-token"):
+            schema = graphene.Schema(mutation=AuthMutation)
+            result = schema.execute(
+                '''
+                mutation {
+                    refreshToken(refreshToken: "'''
+                + request.COOKIES.get("JWT-refresh-token")
+                + """")
+                            {
+                                token
+                                }
+                            }
+                        """
+            )
+            print(result.data.get("refreshToken").get("token"))
+            request.jwt_token = result.data.get("refreshToken").get("token")
