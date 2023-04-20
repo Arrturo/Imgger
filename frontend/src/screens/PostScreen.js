@@ -67,7 +67,7 @@ function PostScreen() {
 
   const likePostHandler = (id) => {
     dispatch(likePost(id));
-    window.location.reload();
+    // window.location.reload();
   };
 
   const dislikePostHandler = (id) => {
@@ -227,7 +227,7 @@ function PostScreen() {
                   >
                     <p className="mb-2 text-sm">
                       <strong className="text-base text-amber-800 pr-2">
-                        {com.node.user.username}
+                        {com.node.user.id == post?.user?.id ? <span className="text-gray-900"><span className="text-purple-500">{com.node.user.username}</span> (Author)</span> : <span>{com.node.user.username}</span>}
                       </strong>
                       {dayjs(com.node.createTime).fromNow()}
                       {com.node.user.id == userInfo?.user?.id ||
@@ -274,7 +274,13 @@ function PostScreen() {
                           </Button>
                         </div>
                       ) : (
-                        <p>{com.node.comment}</p>
+                        <div>
+                          <p>{com.node.comment}</p>
+                          <p className="text-base">
+                            <button className="mt-2 px-3 hover:text-lime-600 ease-in duration-75"> <i class="fa-solid fa-thumbs-up"></i> 3 </button>
+                            <button className="mt-2 hover:text-red-500 ease-in duration-75"> <i class="fa-solid fa-thumbs-down"></i> 1 </button>
+                          </p>
+                        </div>
                       )}
                       {com.node.id === hoveredItemId ? (
                         <Button

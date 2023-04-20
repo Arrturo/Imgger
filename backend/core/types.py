@@ -27,6 +27,7 @@ class PostType(DjangoObjectType):
     comments_count = graphene.Int()
     previous_post = graphene.Field(lambda: PostType)
     next_post = graphene.Field(lambda: PostType)
+    
 
     def resolve_likes(self, info, **kwargs):
         return self.likes.count()
@@ -68,6 +69,7 @@ class PostType(DjangoObjectType):
         else:
             next_post = Post.objects.order_by("-create_time").first()
             return next_post
+    
 
 
 class CategoryType(DjangoObjectType):
@@ -78,6 +80,11 @@ class CategoryType(DjangoObjectType):
             'name': ['exact', 'icontains', 'istartswith'],
         }
         interfaces = (graphene.relay.Node, )
+    posts_count = graphene.Int()
+
+    def resolve_posts_count(self, info, **kwargs):
+        return Post.objects.filter(category=self.id).count()
+    
 
 
 class CommentType(DjangoObjectType):

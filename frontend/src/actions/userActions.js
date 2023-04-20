@@ -156,7 +156,6 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 

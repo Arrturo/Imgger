@@ -26,6 +26,9 @@ import {
   EDIT_COMMENT_FAIL,
   EDIT_COMMENT_REQUEST,
   EDIT_COMMENT_SUCCESS,
+  MY_POST_LIST_FAIL,
+  MY_POST_LIST_REQUEST,
+  MY_POST_LIST_SUCCESS
 } from "../constants/postConstants";
 
 
@@ -125,6 +128,7 @@ export const postsDetails = (id) => async (dispatch, getState) => {
                             name
                         }
                         user{
+                            id
                             username
                         }
                 }  
@@ -164,11 +168,10 @@ export const createPost =
       const config = {
         headers: {
           "Content-type": "application/json",
-          Authorization: `JWT ${userInfo.token}`,
         },
       };
       const { data } = await axios.post(
-        `http://127.0.0.1:8000/graphql`,
+        `http://localhost:8000/graphql`,
         {
           query: `
                 mutation{
@@ -213,12 +216,11 @@ export const likePost = (id) => async (dispatch, getState) => {
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `JWT ${userInfo.token}`,
       },
     };
 
     const { data } = await axios.post(
-      `http://127.0.0.1:8000/graphql`,
+      `http://localhost:8000/graphql`,
       {
         query: `
                 mutation{
@@ -257,12 +259,11 @@ export const dislikePost = (id) => async (dispatch, getState) => {
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `JWT ${userInfo.token}`,
       },
     };
 
     const { data } = await axios.post(
-      `http://127.0.0.1:8000/graphql`,
+      `http://localhost:8000/graphql`,
       {
         query: `
                 mutation{
@@ -304,7 +305,7 @@ export const postComments = (postId) => async (dispatch, getState) => {
         
 
         dispatch({type: POST_COMMENTS_REQUEST})
-        const {data} = await axios.post(`http://127.0.0.1:8000/graphql`, {
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
             query: `
                 query{
                     commentsByPost(postId: "${postId}"){
@@ -467,3 +468,64 @@ export const editComment = (comment) => async (dispatch, getState) => {
         })
     }
 }
+
+
+export const myPostsList = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: POST_LIST_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+            },
+        };
+
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+            query:`
+                query{
+                    postsByUser(userId: ${id}){
+                        edges{
+                          node{
+                            id
+                            title
+                            description
+                            likes
+                            dislikes
+                            createTime
+                            isLiked
+                            isDisliked
+                            image{
+                                id
+                                url
+                            }
+                            user{
+                                username
+                            }
+                          }
+                          cursor
+                        }
+                      }
+                }
+                `,
+      },
+      config
+    );
+
+    dispatch({
+      type: POST_LIST_SUCCESS,
+      payload: data?.data?.postsByUser?.edges,
+    });
+  } catch (error) {
+    dispatch({
+      type: POST_LIST_FAIL,
+      payload:
+        error.respone && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};

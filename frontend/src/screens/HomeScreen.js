@@ -109,7 +109,7 @@ const HomeScreen = () => {
       EXPLORE TAGS <br></br>
       <div className="categories">
         {categories.map((category) => (
-          <CategoryItem name={category.node.name} />
+          <CategoryItem name={category.node.name} postsCount={category.node.postsCount} />
         ))}
       </div>
       <PostList posts={postData} />

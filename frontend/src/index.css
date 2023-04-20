@@ -98,3 +98,63 @@ main{
   color: black;
   font-weight: bold;
 }
+
+*::-webkit-scrollbar {
+  width: 20px;
+}
+
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #d8ad00;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #a35400;
+}
+
+
+*::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background-color: #fffbdf;
+}
+
+.myposts-bg{
+  background: #FFF6BD;
+  background: repeating-radial-gradient(circle farthest-corner at center center, #FFF6BD 95%, #FFF8D4 100%);
+  min-height: 20vh;
+}
+
+.delete-btn{
+  background-color: rgb(255, 0, 0);
+  color: black;
+  font-weight: bold;
+}
+
+.edit-btn{
+  background-color: yellow;
+  color: black;
+  font-weight: bold;
+}
+
+
+.card-my{
+  position: relative;
+  z-index: 1;
+}
+
+
+.centering{
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  display: inline-block;
+  text-align: center;
+}
+
+
+.section-button{
+  
+}

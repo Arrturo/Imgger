@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { USER_LOGIN_SUCCESS } from './constants/userConstants';
 import { useDispatch } from 'react-redux';
+import MyPostsScreen from './screens/MyPostsScreen';
 
 
 
@@ -69,6 +70,7 @@ function App() {
 							<Route path='/login' element={<LoginScreen />}/>
 							<Route path='/register' element={<RegisterScreen />}/>
 							<Route path='/profile' element={<ProfileScreen />}/>
+							<Route path='/myposts' element={<MyPostsScreen />}/>
 							<Route path='/newpost' element={<CreatingPost />} />
 							<Route path='/post/:id' element={<PostScreen />} />
 							<Route path='/admin/categoriesList' element={<CategoriesAdminScreen />} />
