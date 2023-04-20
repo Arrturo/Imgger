@@ -21,44 +21,6 @@ import { useDispatch } from 'react-redux';
 
 
 function App() {
-	const dispatch = useDispatch();
-	
-	useEffect(() => {
-		const fetchData = async () => {
-		  if ((localStorage.getItem('userInfo')) && (localStorage.getItem('expiresIn'))) {
-			const exp = localStorage.getItem('expiresIn');
-			const now = new Date().getTime() / 1000 - 60;
-			if (exp < now) {
-			  try {
-				const { data } = await axios.post('http://localhost:8000/graphql', {
-					query: `
-					mutation {
-						refresh {
-							success
-							errors
-							exp
-						}
-					}
-					`, 
-				}, {
-					headers: {
-						'Content-type': 'application/json',
-					},
-				})
-	  
-				if (data.data.refresh.success) {
-				  localStorage.setItem('expiresIn', JSON.stringify(data.data.refresh.exp));
-				}
-			  } catch (error) {
-				console.log(error);
-			  }
-			} 
-		  }
-		}
-		fetchData();
-	  }, []);
-	
-
 	return (
 		<Router>
 			<main className="min-h-screen">
