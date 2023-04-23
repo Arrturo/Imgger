@@ -22,7 +22,7 @@ from graphene_file_upload.django import FileUploadGraphQLView
 from graphql_jwt.decorators import jwt_cookie
 
 from core.schema import schema
-from core.views import activate, image_upload_view
+from core.views import activate, image_upload_view, logout_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -34,6 +34,7 @@ urlpatterns = [
     ),
     path("upload/", csrf_exempt(image_upload_view), name="upload"),
     path("activate/<token>", activate, name="activate"),
+    path("logout/", csrf_exempt(logout_view), name="logout"),
 ]
 
 if settings.DEBUG:

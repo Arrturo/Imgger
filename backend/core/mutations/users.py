@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.utils.deprecation import MiddlewareMixin
 from graphql_auth import mutations
 from graphql_jwt.decorators import login_required
-from graphql_jwt.shortcuts import create_refresh_token, get_payload, get_token
+from graphql_jwt.shortcuts import create_refresh_token, get_token
 
 from ..models import ExtendUser
 from ..types import UserType
@@ -60,9 +60,6 @@ class LoginMutation(graphene.Mutation):
     user = graphene.Field(UserType)
     success = graphene.Boolean()
     errors = graphene.String()
-    expiration_time = graphene.Int()
-    token = graphene.String()
-    refresh_token = graphene.String()
 
     @classmethod
     def mutate(cls, root, info, username, password, **kwargs):
@@ -74,12 +71,10 @@ class LoginMutation(graphene.Mutation):
                 context.jwt_refresh_token = create_refresh_token(user)
                 context.jwt_token = get_token(user)
                 context.user = user
-                expiration_time = get_payload(context.jwt_token).get("exp")
                 return cls(
                     user=user,
                     success=True,
                     errors=None,
-                    expiration_time=expiration_time,
                 )
             else:
                 return cls(user=None, success=False, errors="Invalid credentials")
@@ -87,42 +82,9 @@ class LoginMutation(graphene.Mutation):
             return cls(success=False, errors=str(e))
 
 
-class RefreshMutation(graphene.Mutation, AuthMutation):
-    success = graphene.Boolean()
-    errors = graphene.String()
-    exp = graphene.Int()
-
-    def mutate(self, info, **kwargs):
-        refresh_token = info.context.COOKIES.get("JWT-refresh-token")
-        if refresh_token:
-            try:
-                schema = graphene.Schema(mutation=AuthMutation)
-                result = schema.execute(
-                    '''
-                    mutation {
-                        refreshToken(refreshToken: "'''
-                    + refresh_token
-                    + """")
-                          {
-                            token
-                            payload
-                            }
-                        }
-                    """
-                )
-                info.context.jwt_token = result.data.get("refreshToken").get("token")
-                exp = result.data.get("refreshToken").get("payload").get("exp")
-                return RefreshMutation(success=True, errors=None, exp=exp)
-            except Exception as e:
-                return RefreshMutation(success=False, errors=str(e))
-        else:
-            return RefreshMutation(success=False, errors="No refresh token")
-
-
 class RefreshTokenMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        print("middleware")
-        if request.COOKIES.get("JWT-refresh-token"):
+        if request.COOKIES.get("JWT-refresh-token") and request.COOKIES.get("JWT-token") is None:
             schema = graphene.Schema(mutation=AuthMutation)
             result = schema.execute(
                 '''
@@ -136,5 +98,4 @@ class RefreshTokenMiddleware(MiddlewareMixin):
                             }
                         """
             )
-            print(result.data.get("refreshToken").get("token"))
             request.jwt_token = result.data.get("refreshToken").get("token")

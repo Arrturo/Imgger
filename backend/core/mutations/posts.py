@@ -22,28 +22,51 @@ class CreatePostMutation(graphene.Mutation):
     post = graphene.Field(PostType)
 
     @login_required
-    def mutate(self, info, title, description, user_id, image_id, category_id):
+    def mutate(self, info, title, description, image_id, category_id):
         try:
-            user = ExtendUser.objects.get(id=user_id)
-            category_id = Category.objects.get(
-                id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
-            )
-            if image_id:
-                image = Image.objects.get(id=image_id)
-                post = Post(
-                    title=title,
-                    description=description,
-                    user=user,
-                    image=image,
-                    category=category_id,
+            user = info.context.user
+            if not user.is_anonymous:
+                category_id = Category.objects.get(
+                    id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
                 )
+                if image_id:
+                    image = Image.objects.get(id=image_id)
+                    post = Post(
+                        title=title,
+                        description=description,
+                        user=info.context.user,
+                        image=image,
+                        category=category_id,
+                    )
+                else:
+                    post = Post(
+                        title=title,
+                        description=description,
+                        user=user,
+                        category=category_id,
+                    )
             else:
-                post = Post(
-                    title=title,
-                    description=description,
-                    user=user,
-                    category=category_id,
+                category_id = Category.objects.get(
+                    id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
                 )
+                if image_id:
+                    image = Image.objects.get(id=image_id)
+                    post = Post(
+                        title=title,
+                        description=description,
+                        user=None,
+                        image=image,
+                        category=category_id,
+                        is_private=True,
+                    )
+                else:
+                    post = Post(
+                        title=title,
+                        description=description,
+                        user=None,
+                        category=category_id,
+                        is_private=True,
+                    )
             post.save()
             print(post)
             return CreatePostMutation(success=True, post=post)
