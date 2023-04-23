@@ -28,7 +28,10 @@ import {
   EDIT_COMMENT_SUCCESS,
   MY_POST_LIST_FAIL,
   MY_POST_LIST_REQUEST,
-  MY_POST_LIST_SUCCESS
+  MY_POST_LIST_SUCCESS,
+  LIKED_POST_LIST_FAIL, 
+  LIKED_POST_LIST_REQUEST,
+  LIKED_POST_LIST_SUCCESS,
 } from "../constants/postConstants";
 
 
@@ -161,9 +164,6 @@ export const createPost =
         type: POST_CREATE_REQUEST,
       });
 
-      const {
-        userLogin: { userInfo },
-      } = getState();
 
       const config = {
         headers: {
@@ -209,10 +209,6 @@ export const likePost = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: POST_LIKE_REQUEST });
 
-    const {
-      userLogin: { userInfo },
-    } = getState();
-
     const config = {
       headers: {
         "Content-type": "application/json",
@@ -251,10 +247,6 @@ export const likePost = (id) => async (dispatch, getState) => {
 export const dislikePost = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: POST_LIKE_REQUEST });
-
-    const {
-      userLogin: { userInfo },
-    } = getState();
 
     const config = {
       headers: {
@@ -472,7 +464,7 @@ export const editComment = (comment) => async (dispatch, getState) => {
 
 export const myPostsList = (id) => async (dispatch, getState) => {
   try {
-    dispatch({ type: POST_LIST_REQUEST });
+    dispatch({ type: MY_POST_LIST_REQUEST });
 
     const {
       userLogin: { userInfo },
@@ -516,12 +508,72 @@ export const myPostsList = (id) => async (dispatch, getState) => {
     );
 
     dispatch({
-      type: POST_LIST_SUCCESS,
+      type: MY_POST_LIST_SUCCESS,
       payload: data?.data?.postsByUser?.edges,
     });
   } catch (error) {
     dispatch({
-      type: POST_LIST_FAIL,
+      type: MY_POST_LIST_FAIL,
+      payload:
+        error.respone && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};
+
+
+export const likedPostsList = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: LIKED_POST_LIST_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+            },
+        };
+
+        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+            query:`
+                query{
+                    me{
+                      likes{
+                        edges{
+                          node{
+                            id
+                            title
+                            description
+                            likes
+                            dislikes
+                            image{
+                              id
+                              url
+                            }
+                            user{
+                              id
+                              username
+                            }
+                          }
+                        }
+                      }
+                    }
+                }
+                `,
+      },
+      config
+    );
+
+    dispatch({
+      type: LIKED_POST_LIST_SUCCESS,
+      payload: data?.data?.me?.likes?.edges
+    });
+  } catch (error) {
+    dispatch({
+      type: LIKED_POST_LIST_FAIL,
       payload:
         error.respone && error.response.data.detail
           ? error.response.data.detail

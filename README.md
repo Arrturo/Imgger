@@ -23,8 +23,9 @@ This is a web application built with Django, GraphQL API, React and PostgreSQL. 
 2. GraphQL
 3. React
 4. PostgreSQL
-5. Mailhog
-6. Docker
+5. Firebase
+6. Mailhog
+7. Docker
 
 ## Installation
 1. Clone the repository to your local machine using the command: 

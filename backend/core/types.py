@@ -1,6 +1,7 @@
-from graphene_django import DjangoObjectType
-from .models import ExtendUser, Post, Category, Comment, Image, Subcomment
 import graphene
+from graphene_django import DjangoObjectType
+
+from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 
 
 class UserType(DjangoObjectType):
@@ -14,11 +15,11 @@ class PostType(DjangoObjectType):
         model = Post
         fields = "__all__"
         filter_fields = {
-            'id': ['exact'],
-            'title': ['exact', 'icontains', 'istartswith'],
-            'description': ['exact', 'icontains', 'istartswith'],
+            "id": ["exact"],
+            "title": ["exact", "icontains", "istartswith"],
+            "description": ["exact", "icontains", "istartswith"],
         }
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)
 
     likes = graphene.Int()
     dislikes = graphene.Int()
@@ -27,6 +28,7 @@ class PostType(DjangoObjectType):
     comments_count = graphene.Int()
     previous_post = graphene.Field(lambda: PostType)
     next_post = graphene.Field(lambda: PostType)
+    
     
 
     def resolve_likes(self, info, **kwargs):
@@ -61,9 +63,7 @@ class PostType(DjangoObjectType):
             return previous_post
 
     def resolve_next_post(self, info, **kwargs):
-        next_post = (
-            Post.objects.filter(id__lt=self.id).order_by("-create_time").first()
-        )
+        next_post = Post.objects.filter(id__lt=self.id).order_by("-create_time").first()
         if next_post:
             return next_post
         else:
@@ -77,7 +77,7 @@ class CategoryType(DjangoObjectType):
         model = Category
         fields = "__all__"
         filter_fields = {
-            'name': ['exact', 'icontains', 'istartswith'],
+            "name": ["exact", "icontains", "istartswith"],
         }
         interfaces = (graphene.relay.Node, )
     posts_count = graphene.Int()
@@ -85,6 +85,7 @@ class CategoryType(DjangoObjectType):
     def resolve_posts_count(self, info, **kwargs):
         return Post.objects.filter(category=self.id).count()
     
+        interfaces = (graphene.relay.Node,)
 
 
 class CommentType(DjangoObjectType):
@@ -92,9 +93,9 @@ class CommentType(DjangoObjectType):
         model = Comment
         fields = "__all__"
         filter_fields = {
-            'comment': ['exact', 'icontains', 'istartswith'],
+            "comment": ["exact", "icontains", "istartswith"],
         }
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)
 
 
 class ImageType(DjangoObjectType):
@@ -108,6 +109,6 @@ class SubcommentType(DjangoObjectType):
         model = Subcomment
         fields = "__all__"
         filter_fields = {
-            'content': ['exact', 'icontains', 'istartswith'],
+            "content": ["exact", "icontains", "istartswith"],
         }
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)

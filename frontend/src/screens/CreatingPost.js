@@ -26,9 +26,9 @@ function CreatingPost() {
   const navigate = useNavigate();
 
   const [file, setFile] = useState(null);
+  const [image, setImage] = useState(null);
 
   const [uploadStatus, setUploadStatus] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -43,17 +43,19 @@ function CreatingPost() {
 
   const [cat, setCat] = useState("");
 
-  const imageId = uploadedImage?.image?.id;
+
   const userId = userInfo?.user?.id;
 
   const onDrop = (acceptedFiles) => {
     setFile(acceptedFiles[0]);
+    setImage(URL.createObjectURL(acceptedFiles[0]));
+    dispatch(categoriesList());
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
+
   const submitHandler = async (e) => {
-    dispatch(categoriesList());
     e.preventDefault();
     const formData = new FormData();
     const operations = {
@@ -83,26 +85,27 @@ function CreatingPost() {
           "Content-Type": "multipart/form-data",
         },
       };
-
+  
       const { data } = await axios.post(
         "http://localhost:8000/graphql",
         formData,
         config
       );
-
-      if (data?.data?.createImage?.success === true) {
-        setUploadStatus(true);
-        setUploadedImage(data.data.createImage);
+  
+      const imageId = data?.data?.createImage?.image?.id;
+  
+      if (imageId) {
+        await dispatch(createPost(title, description, userId, imageId, cat));
+      } else {
+        console.log("Image ID not available yet.");
       }
+  
     } catch (error) {
       console.log(error);
     }
   };
-
-  const addPost = async (ele) => {
-    ele.preventDefault();
-    dispatch(createPost(title, description, userId, imageId, cat));
-  };
+  
+  
 
   useEffect(() => {
     if (post?.success === true) {
@@ -111,6 +114,7 @@ function CreatingPost() {
       window.location.reload();
     }
   }, [post, navigate]);
+  
 
   return (
     <div>
@@ -120,13 +124,13 @@ function CreatingPost() {
           <Row className="px-5 py-5">
             <Col>
               <Image
-                src={`${uploadedImage.image?.url}`}
-                alt={`${uploadedImage?.image?.name}`}
+                src={`${image}`}
+                // alt={`${uploadedImage?.image?.name}`}
                 className="max-h-96 mt-5"
               />
             </Col>
             <Col md={4}>
-              <Form>
+              <Form onSubmit={submitHandler}>
                 <Form.Group controlId="title" className="mt-3">
                   <Form.Label className="text-xl">
                     <i class="fa-regular fa-hand-point-right"></i> Add title{" "}
@@ -180,7 +184,6 @@ function CreatingPost() {
                 </FormGroup>
 
                 <Button
-                  onClick={addPost}
                   type="submit"
                   variant="primary"
                   className="mt-5 button-primary"
@@ -195,7 +198,7 @@ function CreatingPost() {
         <div>
           <h1 className="text-5xl text-center mb-3">Upload new image</h1>
 
-          <Form onSubmit={submitHandler}>
+          <Form >
             <div
               {...getRootProps()}
               className={`${
@@ -229,6 +232,7 @@ function CreatingPost() {
               variant="primary"
               disabled={!userInfo || !file}
               className="button-primary my-5 text-2xl"
+              onClick={()=> setUploadStatus(true)}
             >
               Upload
             </Button>

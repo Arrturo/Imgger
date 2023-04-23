@@ -67,7 +67,7 @@ function PostScreen() {
 
   const likePostHandler = (id) => {
     dispatch(likePost(id));
-    // window.location.reload();
+    window.location.reload();
   };
 
   const dislikePostHandler = (id) => {
@@ -224,6 +224,7 @@ function PostScreen() {
                     className=" border-b-2 p-3 com"
                     onMouseEnter={() => handleItemMouseEnter(com.node.id)}
                     onMouseLeave={handleItemMouseLeave}
+                    
                   >
                     <p className="mb-2 text-sm">
                       <strong className="text-base text-amber-800 pr-2">
