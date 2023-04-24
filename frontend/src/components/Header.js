@@ -61,6 +61,9 @@ function Header() {
 									<LinkContainer to='/profile'>
 									<NavDropdown.Item className="hover:text-amber-400"><i class="fa-solid fa-address-card"></i> Account</NavDropdown.Item>
 									</LinkContainer>
+									<LinkContainer to='/myposts'>
+									<NavDropdown.Item className="hover:text-amber-400"><i class="fa-solid fa-images"></i> My posts</NavDropdown.Item>
+									</LinkContainer>
 									<NavDropdown.Item onClick={logoutHandler} className="hover:text-amber-400"><i class="fa-solid fa-right-from-bracket"></i> Logout</NavDropdown.Item>
 								</NavDropdown>
 								) : (

@@ -203,9 +203,9 @@ GRAPHQL_JWT = {
     "JWT_REFRESH_TOKEN_EXPIRATION_DELTA": timedelta(days=7),
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "localhost"
-EMAIL_PORT = "1025"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = '1025'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 

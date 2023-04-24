@@ -44,6 +44,8 @@ from .types import (
     UserType,
 )
 
+from django.db.models import Count
+
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     users = graphene.List(UserType)
@@ -51,6 +53,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     users_by_id = graphene.Field(UserType, id=graphene.ID(required=True))
     posts = DjangoFilterConnectionField(PostType)
     posts_by_id = graphene.Field(PostType, id=graphene.String(required=True))
+    posts_by_user = DjangoFilterConnectionField(PostType, user_id=graphene.ID(required=True))
     categories = DjangoFilterConnectionField(CategoryType)
     images = graphene.List(ImageType)
     comments = DjangoFilterConnectionField(CommentType)
@@ -76,13 +79,16 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return Post.objects.all().order_by("-create_time")
 
     def resolve_posts_by_category(self, info, **kwargs):
-        return Post.objects.filter(category=kwargs["category"])
+        return Post.objects.filter(category=kwargs['category'])
+    
+    def resolve_posts_by_user(self, info, user_id, **kwargs):
+        return Post.objects.filter(user=user_id).order_by('-create_time')
 
     def resolve_categories_by_id(self, info, id):
         return Category.objects.get(pk=id)
 
     def resolve_categories(self, info, **kwargs):
-        return Category.objects.all()
+        return Category.objects.annotate(num_posts=Count('post')).order_by('-num_posts')
 
     def resolve_posts_by_id(self, info, id, **kwargs):
         post_id = base64.b64decode(id).decode("utf-8").split(":")[1]
