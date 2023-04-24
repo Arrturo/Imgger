@@ -67,12 +67,16 @@ function PostScreen() {
 
   const likePostHandler = (id) => {
     dispatch(likePost(id));
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   const dislikePostHandler = (id) => {
     dispatch(dislikePost(id));
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   useEffect(() => {

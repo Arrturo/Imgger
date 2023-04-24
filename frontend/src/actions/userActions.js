@@ -70,16 +70,14 @@ export const login = (username, password) => async (dispatch) =>{
 }
 
 export const logout = () => (dispatch) => {
-	localStorage.removeItem('userInfo');
-	dispatch({
-		type: USER_LOGOUT,
+	axios.post('http://localhost:8000/logout/', {
+		headers: {
+			'Content-type': 'application/json',
+		},
 	});
+	localStorage.removeItem('userInfo');
+	dispatch({ type: USER_LOGOUT });
 };
-
-
-
-
-
 
 export const register = (username, email, password, confirmPassword) => async (dispatch) => {
 	try {
