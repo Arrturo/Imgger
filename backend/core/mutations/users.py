@@ -84,7 +84,10 @@ class LoginMutation(graphene.Mutation):
 
 class RefreshTokenMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        if request.COOKIES.get("JWT-refresh-token") and request.COOKIES.get("JWT-token") is None:
+        if (
+            request.COOKIES.get("JWT-refresh-token")
+            and request.COOKIES.get("JWT-token") is None
+        ):
             schema = graphene.Schema(mutation=AuthMutation)
             result = schema.execute(
                 '''

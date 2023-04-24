@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from firebase_admin import storage
 from graphql_jwt.decorators import login_required, staff_member_required
 
-from ..models import Category, ExtendUser, Image, Post
+from ..models import Category, Image, Post
 from ..types import PostType
 
 
@@ -13,7 +13,6 @@ class CreatePostMutation(graphene.Mutation):
     class Arguments:
         title = graphene.String(required=True)
         description = graphene.String()
-        user_id = graphene.ID(required=True)
         image_id = graphene.String(required=True)
         category_id = graphene.ID(required=True)
 
@@ -21,10 +20,10 @@ class CreatePostMutation(graphene.Mutation):
     errors = graphene.String()
     post = graphene.Field(PostType)
 
-    @login_required
     def mutate(self, info, title, description, image_id, category_id):
         try:
             user = info.context.user
+            print(user)
             if not user.is_anonymous:
                 category_id = Category.objects.get(
                     id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
@@ -34,7 +33,7 @@ class CreatePostMutation(graphene.Mutation):
                     post = Post(
                         title=title,
                         description=description,
-                        user=info.context.user,
+                        user=user,
                         image=image,
                         category=category_id,
                     )
@@ -54,7 +53,7 @@ class CreatePostMutation(graphene.Mutation):
                     post = Post(
                         title=title,
                         description=description,
-                        user=None,
+                        user_id=2,
                         image=image,
                         category=category_id,
                         is_private=True,
@@ -63,7 +62,7 @@ class CreatePostMutation(graphene.Mutation):
                     post = Post(
                         title=title,
                         description=description,
-                        user=None,
+                        user_id=2,
                         category=category_id,
                         is_private=True,
                     )
@@ -79,30 +78,36 @@ class UpdatePostMutation(graphene.Mutation):
         post_id = graphene.ID(required=True)
         title = graphene.String()
         description = graphene.String()
-        user_id = graphene.ID()
-        image_id = graphene.ID()
         category_id = graphene.ID()
 
     post = graphene.Field(PostType)
+    success = graphene.Boolean()
+    errors = graphene.String()
 
+    @staff_member_required
     @login_required
-    def mutate(self, info, post_id, title, description, user_id, image_id, category_id):
-        post = Post.objects.get(id=post_id)
-        if title:
-            post.title = title
-        if description:
-            post.description = description
-        if user_id:
-            user = get_user_model().objects.get(id=user_id)
-            post.user = user
-        if image_id:
-            image = Image.objects.get(id=image_id)
-            post.image = image
-        if category_id:
-            category = Category.objects.get(id=category_id)
-            post.category = category
-        post.save()
-        return UpdatePostMutation(post=post)
+    def mutate(self, info, post_id, title, description, category_id):
+        try:
+            user = info.context.user
+            id = base64.b64decode(post_id).decode("utf-8").split(":")[1]
+            post = Post.objects.get(id=id)
+            if not user.is_staff:
+                return UpdatePostMutation(success=False, errors="User not staff")
+            if post.user != user:
+                return UpdatePostMutation(success=False, errors="User not owner")
+            if title:
+                post.title = title
+            if description:
+                post.description = description
+            if category_id:
+                category_id = Category.objects.get(
+                    id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
+                )
+                post.category = category_id
+            post.save()
+            return UpdatePostMutation(success=True, post=post)
+        except Exception as e:
+            return UpdatePostMutation(success=False, errors=str(e))
 
 
 class DeletePostMutation(graphene.Mutation):
