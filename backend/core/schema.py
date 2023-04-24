@@ -4,24 +4,45 @@ import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
+from graphql_jwt.decorators import staff_member_required
 
 from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
-from .mutations.categories import (CreateCategoryMutation,
-                                   DeleteCategoryMutation,
-                                   UpdateCategoryMutation)
-from .mutations.comments import (CreateCommentMutation, DeleteCommentMutation,
-                                 UpdateCommentMutation)
-from .mutations.images import (CreateImageMutation, DeleteImageMutation,
-                               UpdateImageMutation)
-from .mutations.posts import (CreatePostMutation, DeletePostMutation,
-                              UpdatePostMutation, dislike, like)
-from .mutations.subcomments import (CreateSubCommentMutation,
-                                    DeleteSubCommentMutation,
-                                    UpdateSubCommentMutation)
-from .mutations.users import (DeleteUserMutation, LoginMutation,
-                              RefreshMutation, UpdateUserMutation)
-from .types import (CategoryType, CommentType, ImageType, PostType,
-                    SubcommentType, UserType)
+from .mutations.categories import (
+    CreateCategoryMutation,
+    DeleteCategoryMutation,
+    UpdateCategoryMutation,
+)
+from .mutations.comments import (
+    CreateCommentMutation,
+    DeleteCommentMutation,
+    UpdateCommentMutation,
+)
+from .mutations.images import (
+    CreateImageMutation,
+    DeleteImageMutation,
+    UpdateImageMutation,
+)
+from .mutations.posts import (
+    CreatePostMutation,
+    DeletePostMutation,
+    UpdatePostMutation,
+    dislike,
+    like,
+)
+from .mutations.subcomments import (
+    CreateSubCommentMutation,
+    DeleteSubCommentMutation,
+    UpdateSubCommentMutation,
+)
+from .mutations.users import DeleteUserMutation, LoginMutation, UpdateUserMutation
+from .types import (
+    CategoryType,
+    CommentType,
+    ImageType,
+    PostType,
+    SubcommentType,
+    UserType,
+)
 
 from django.db.models import Count
 
@@ -41,6 +62,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     )
     subcomments = DjangoFilterConnectionField(SubcommentType)
 
+    @staff_member_required
     def resolve_users(self, info, **kwargs):
         return ExtendUser.objects.all().order_by("id")
 
@@ -94,7 +116,6 @@ class AuthMutation(graphene.ObjectType):
     verify_token = mutations.VerifyToken.Field()
     refresh_token = mutations.RefreshToken.Field()
     update_account = mutations.UpdateAccount.Field()
-    # resend_activation_email = mutations.ResendActivationEmail.Field()
     verify_account = mutations.VerifyAccount.Field()
     send_password_reset_email = mutations.SendPasswordResetEmail.Field()
     password_reset = mutations.PasswordReset.Field()
@@ -103,7 +124,7 @@ class AuthMutation(graphene.ObjectType):
 
 class Mutation(AuthMutation, graphene.ObjectType):
     login = LoginMutation.Field()
-    refresh = RefreshMutation.Field()
+
     update_user = UpdateUserMutation.Field()
     delete_user = DeleteUserMutation.Field()
 

@@ -216,21 +216,10 @@ function CreatingPost() {
                 <p className="mt-12 text-base text-center">{file.name}</p>
               )}
             </div>
-            {!userInfo ? (
-              <p className="mt-5 grid justify-items-center">
-                <Message variant="danger">
-                  You must be{" "}
-                  <Link to="/login" className="text-red-700">
-                    logged in{" "}
-                  </Link>{" "}
-                  to upload image
-                </Message>
-              </p>
-            ) : null}
             <Button
               type="submit"
               variant="primary"
-              disabled={!userInfo || !file}
+              disabled={!file}
               className="button-primary my-5 text-2xl"
               onClick={()=> setUploadStatus(true)}
             >

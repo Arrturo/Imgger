@@ -18,7 +18,6 @@ class CreateImageMutation(graphene.Mutation):
     errors = graphene.String()
 
     @staticmethod
-    @login_required
     def mutate(root, info, image):
         try:
             bucket = storage.bucket()

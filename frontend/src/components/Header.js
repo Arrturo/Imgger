@@ -8,6 +8,7 @@ import '../index.css';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import {useNavigate} from 'react-router-dom'
 import SearchBox from './SearchBox';
+import Loader from './Loader';
 
 
 function Header() {
@@ -24,7 +25,6 @@ function Header() {
 		dispatch(logout())
 		localStorage.clear()
 		navigate('/')
-		window.location.reload()
 	}
 
 	return (

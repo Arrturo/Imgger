@@ -178,7 +178,7 @@ export const createPost =
         {
           query: `
                 mutation{
-                   createPost(title: "${title}", description: "${description}", userId: ${userId}, imageId: "${imageId}", 
+                   createPost(title: "${title}", description: "${description}", imageId: "${imageId}", 
                    categoryId: "${categoryId}"){
                         success
                         errors
