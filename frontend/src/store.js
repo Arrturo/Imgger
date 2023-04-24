@@ -4,7 +4,7 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 import { userLoginReducer, userRegisterReducer, userUpdateProfileRecuder, userListReducer, userDeleteReducer, userDetailsReducer} from './reducers/userReducers'
 import { categoriesListReducers, categoryDeleteReducer, categoriesCreateReducers, categoriesEditeReducers } from './reducers/categoriesReducers'
 import { postListReducers, myPostListReducers, potsDetailsReducers, postCreateReducers, postCommentsReducers, addCommentReducers, commentDeleteReducer, commentEditeReducers,
-    likedPostListReducers } from './reducers/postReducers'
+    likedPostListReducers, postDeleteReducer } from './reducers/postReducers'
 
 
 
@@ -21,6 +21,7 @@ const reducer = combineReducers({
     categoriesEdit: categoriesEditeReducers,
     postList: postListReducers,
     myPostList: myPostListReducers,
+    dedletePost: postDeleteReducer,
     likedPostList: likedPostListReducers,
     postDetails: potsDetailsReducers,
     postComments: postCommentsReducers,

@@ -155,6 +155,11 @@ main{
 }
 
 
-.section-button{
-  
+.liked_img{
+  max-height: 120px;
+}
+
+.liked{
+
+  max-height: 200px;
 }

@@ -81,7 +81,7 @@ class UpdatePostMutation(graphene.Mutation):
         post.save()
         return UpdatePostMutation(post=post)
 
-
+@login_required
 class DeletePostMutation(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
@@ -89,17 +89,13 @@ class DeletePostMutation(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.String()
 
-    @staff_member_required
-    @login_required
     def mutate(self, info, post_id):
         try:
             user = info.context.user
             id = base64.b64decode(post_id).decode("utf-8").split(":")[1]
             post = Post.objects.get(id=id)
-            if not user.is_staff:
-                return DeletePostMutation(success=False, errors="User not staff")
-            if post.user != user:
-                return DeletePostMutation(success=False, errors="User not owner")
+            if not (user.is_staff or post.user == user):
+                return DeletePostMutation(success=False, errors="Only admins and the author can delete this post")
             if post.image:
                 image = post.image
             post.delete()
@@ -112,7 +108,6 @@ class DeletePostMutation(graphene.Mutation):
             return DeletePostMutation(success=True)
         except Exception as e:
             return DeletePostMutation(success=False, errors=str(e))
-
 
 class like(graphene.Mutation):
     class Arguments:
