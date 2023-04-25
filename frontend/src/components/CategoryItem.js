@@ -4,9 +4,9 @@ import Card from 'react-bootstrap/Card';
 import {Link} from 'react-router-dom'
 
 
-function CategoryItem({name, postsCount}) {
+function CategoryItem({name, postsCount, id}) {
   return (
-    <Link to={'/'}>
+    <Link to={`/category/${id}`}>
         <Card className="category-item inline-block m-1 ">
             {/* <Card.Img variant="top" src="https://cdn-icons-png.flaticon.com/512/126/126422.png" /> */}
             <Card.Body>

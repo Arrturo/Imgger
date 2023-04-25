@@ -9,7 +9,7 @@ from ..types import CategoryType
 
 class CreateCategoryMutation(graphene.Mutation):
     class Arguments:
-        name = graphene.String(required=True)
+        name = graphene.String(required=False)
 
     category = graphene.Field(CategoryType)
 

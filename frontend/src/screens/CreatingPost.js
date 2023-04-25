@@ -43,6 +43,8 @@ function CreatingPost() {
 
   const [cat, setCat] = useState("");
 
+  const [isPrivate, setIsPrivate] = useState(false);
+
 
   const userId = userInfo?.user?.id;
 
@@ -95,7 +97,7 @@ function CreatingPost() {
       const imageId = data?.data?.createImage?.image?.id;
   
       if (imageId) {
-        await dispatch(createPost(title, description, userId, imageId, cat));
+        await dispatch(createPost(title, description, userId, imageId, cat, isPrivate));
       } else {
         console.log("Image ID not available yet.");
       }

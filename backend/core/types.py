@@ -18,6 +18,7 @@ class PostType(DjangoObjectType):
             "id": ["exact"],
             "title": ["exact", "icontains", "istartswith"],
             "description": ["exact", "icontains", "istartswith"],
+            "category": ["exact"],
         }
         interfaces = (graphene.relay.Node,)
 
@@ -54,20 +55,28 @@ class PostType(DjangoObjectType):
 
     def resolve_previous_post(self, info, **kwargs):
         previous_post = (
-            Post.objects.filter(id__gt=self.id).order_by("create_time").first()
+            Post.objects.filter(is_private=False).filter(id__gt=self.id).order_by(
+                "create_time").first()
         )
         if previous_post:
             return previous_post
         else:
-            previous_post = Post.objects.order_by("create_time").first()
+            previous_post = Post.objects.filter(
+                is_private=False).order_by(
+                "create_time").first()
             return previous_post
 
     def resolve_next_post(self, info, **kwargs):
-        next_post = Post.objects.filter(id__lt=self.id).order_by("-create_time").first()
+        next_post = Post.objects.filter(
+            is_private=False).filter(
+            id__lt=self.id).order_by(
+            "-create_time").first()
         if next_post:
             return next_post
         else:
-            next_post = Post.objects.order_by("-create_time").first()
+            next_post = Post.objects.filter(
+                is_private=False).order_by(
+                "-create_time").first()
             return next_post
     
 
@@ -83,9 +92,7 @@ class CategoryType(DjangoObjectType):
     posts_count = graphene.Int()
 
     def resolve_posts_count(self, info, **kwargs):
-        return Post.objects.filter(category=self.id).count()
-    
-        interfaces = (graphene.relay.Node,)
+        return Post.objects.filter(category=self.id).filter(is_private=False).count()
 
 
 class CommentType(DjangoObjectType):
