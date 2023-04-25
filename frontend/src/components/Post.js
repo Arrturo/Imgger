@@ -39,7 +39,7 @@ function Post({post, my, liked}) {
         {post.node.id == hoveredItemId ? 
         (
         <div className='centering '>
-          <Button variant='light' className="edit-btn2 mb-2"><i class="fa-solid fa-pen-to-square"></i> Edit</Button>
+          <Link to={`/post/${post?.node?.id}/edit`} ><Button variant='light' className="edit-btn2 mb-2"><i class="fa-solid fa-pen-to-square"></i> Edit</Button></Link>
           <Button onClick={() => deletePostHandler(hoveredItemId, post?.node?.title)} variant='primary' className="delete-btn"><i class="fa-regular fa-trash-can"></i> Delete</Button>
         </div>
         ) : null}

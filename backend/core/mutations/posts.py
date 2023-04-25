@@ -84,32 +84,31 @@ class UpdatePostMutation(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.String()
 
-    @staff_member_required
     @login_required
     def mutate(self, info, post_id, title, description, category_id):
         try:
             user = info.context.user
             id = base64.b64decode(post_id).decode("utf-8").split(":")[1]
             post = Post.objects.get(id=id)
-            if not user.is_staff:
-                return UpdatePostMutation(success=False, errors="User not staff")
-            if post.user != user:
-                return UpdatePostMutation(success=False, errors="User not owner")
+            if not (user.is_staff or post.user == user):
+                return DeletePostMutation(
+                    success=False,
+                    errors="Only admins and the author can update this post",
+                )
             if title:
                 post.title = title
-            if description:
-                post.description = description
+            # if description:
             if category_id:
                 category_id = Category.objects.get(
                     id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
                 )
                 post.category = category_id
+            post.description = description
             post.save()
             return UpdatePostMutation(success=True, post=post)
         except Exception as e:
             return UpdatePostMutation(success=False, errors=str(e))
 
-@login_required
 class DeletePostMutation(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
@@ -117,13 +116,17 @@ class DeletePostMutation(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.String()
 
+    @login_required
     def mutate(self, info, post_id):
         try:
             user = info.context.user
             id = base64.b64decode(post_id).decode("utf-8").split(":")[1]
             post = Post.objects.get(id=id)
             if not (user.is_staff or post.user == user):
-                return DeletePostMutation(success=False, errors="Only admins and the author can delete this post")
+                return DeletePostMutation(
+                    success=False,
+                    errors="Only admins and the author can delete this post",
+                )
             if post.image:
                 image = post.image
             post.delete()

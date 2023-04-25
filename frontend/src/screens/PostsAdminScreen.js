@@ -80,9 +80,9 @@ function PostsAdminScreen() {
                       {post?.node?.createTime?.substring(15, 19)}
                     </td>
                     <td>
-                      <Button varinat="light" className="btn-m">
+                      <Link to={`/post/${post?.node?.id}/edit`}><Button varinat="light" className="btn-m">
                         <i class="fa-regular fa-pen-to-square text-lime-500"></i>
-                      </Button>
+                      </Button></Link>
                       <Button varinat="danger" className="btn-m" onClick={() => deletePostHandler(post?.node?.id, post?.node?.title)}>
                         <i class="fa-solid fa-trash-can text-red-500"></i>
                       </Button>

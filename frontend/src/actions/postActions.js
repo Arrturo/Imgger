@@ -34,7 +34,13 @@ import {
   LIKED_POST_LIST_SUCCESS,
   POST_DELETE_FAIL,
   POST_DELETE_REQUEST,
-  POST_DELETE_SUCCESS
+  POST_DELETE_SUCCESS,
+  POST_UPDATE_FAIL,
+  POST_UPDATE_REQUEST,
+  POST_UPDATE_SUCCESS,
+  SUBCOMMENT_FAIL,
+  SUBCOMMENT_REQUEST,
+  SUBCOMMENT_SUCCESS
 } from "../constants/postConstants";
 
 
@@ -624,4 +630,101 @@ export const deletePost = (postId) => async (dispatch, getState) => {
           : error.message,
       })
   }
+}
+
+
+export const editPost = (post) => async (dispatch, getState) => {
+    
+  try {
+      dispatch({
+          type: POST_UPDATE_REQUEST,
+      })
+
+      const {
+          userLogin: {userInfo}
+      } = getState()
+
+      const config = {
+          headers: {
+              'Content-type': 'application/json',
+          }}
+
+      const {data} = await axios.post(`http://localhost:8000/graphql`, {
+          query: `
+          mutation{
+              updatePost(postId: "${post.postId}", title: "${post.title}", description: "${post.description}", categoryId: "${post.category}") {
+                success
+                errors
+              }
+            }
+          `
+      }, config)
+
+
+      dispatch({
+          type: POST_UPDATE_SUCCESS,
+          payload: data,
+      })
+
+  }catch(error){
+      dispatch({
+          type: POST_UPDATE_FAIL,
+          payload: error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+      })
+  }
+}
+
+
+export const subcomments = (commentId) => async (dispatch, getState) => {
+  try{
+      const {
+          userLogin: { userInfo },
+      } = getState();
+
+      const config = {
+          headers: {
+              'Content-type': 'application/json',
+          },
+      };
+      
+
+      dispatch({type: SUBCOMMENT_REQUEST})
+      const {data} = await axios.post(`http://localhost:8000/graphql`, {
+          query: `
+              query{
+                  subcommentsByComment(commentId: "${commentId}"){
+                      edges{
+                          node{
+                              user {
+                                  id
+                                  username
+                              }
+                              id
+                              content
+                              createTime
+                              }
+                          }
+                      }
+                  }
+          `
+      }, config)
+
+      dispatch({
+          type: SUBCOMMENT_SUCCESS,
+          payload: data.data.subcommentsByComment.edges
+      })
+
+
+
+  }catch(error){
+      dispatch({
+          type: SUBCOMMENT_FAIL,
+          payload: error.respone && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+      })
+  }
+
 }

@@ -36,14 +36,13 @@ function MyPostsScreen() {
 
 
 
-
   return (
     <div>
         <Row className="myposts-bg rounded-2xl border-4 border-rose-400">
             <Col className="mx-5 grid justify-items-start content-center">
                 <p className="text-7xl"><span className="px-4 border-8 rounded-full">
                     <i class="fa-solid fa-user"></i></span> {userInfo?.user?.username}
-                    <Rank points={posts?.length}/>
+                    <Rank points={posts?.length} />
                     </p>
                 <p className="text-xl ms-auto">{posts?.length} uploaded posts</p>
             </Col>

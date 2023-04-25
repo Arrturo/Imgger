@@ -65,6 +65,11 @@ main{
   opacity: 1
 }
 
+
+.com{
+  width: 100%;
+}
+
 .com:hover{
   background-color: #fff6b0;
   cursor: pointer;
@@ -163,3 +168,4 @@ main{
 
   max-height: 200px;
 }
+

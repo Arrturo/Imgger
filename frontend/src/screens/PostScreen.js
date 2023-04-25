@@ -28,6 +28,7 @@ import {
   addComment,
   deleteComment,
   editComment,
+  subcomments
 } from "../actions/postActions";
 import CategoryItem from "../components/CategoryItem";
 import dayjs from "dayjs";
@@ -48,6 +49,9 @@ function PostScreen() {
 
   const PostComments = useSelector((state) => state.postComments);
   const { comments } = PostComments;
+
+  const {subc} = useSelector((state) => state.subcomments);
+  // const { subc } = subcomments;
 
   const [comment, setComment] = useState("");
 
@@ -109,6 +113,15 @@ function PostScreen() {
     dispatch(editComment({ id: clickedItemId, content: editedComment }));
     window.location.reload();
   };
+
+
+  
+  
+  const CommentClick = (commentId) => {
+    dispatch(subcomments(commentId))
+  }
+
+
 
   return (
     <div>
@@ -195,7 +208,7 @@ function PostScreen() {
             <Col md={5}>
               <ListGroup.Item variant="flush" className="mb-5">
                 <p className="text-2xl">Tags:</p>
-                {<CategoryItem name={post?.category?.name} />}
+                {post?.category && <CategoryItem name={post?.category?.name} />}
               </ListGroup.Item>
 
               <ListGroup.Item variant="flush">
@@ -212,7 +225,7 @@ function PostScreen() {
 
           <Row className="flex justify-center">
             <Col md={8}>
-              <h1 className="text-3xl my-5 border-b-2 p-2">
+              <h1 className="text-3xl my-4 border-b-2 p-2">
                 {comments.length} Comments:
               </h1>
               {comments.length === 0 && (
@@ -220,21 +233,25 @@ function PostScreen() {
                   Users have not added any comments yet
                 </Message>
               )}
-
-              <div className="my-5 ">
+              
+              <div className="my-2 ">
                 {comments.map((com) => (
-                  <div
+                  // <button className="but-com">
+                  
+                  <button
                     key={com.node.id}
-                    className=" border-b-2 p-3 com"
+                    className=" border-b-2 p-1 com"
                     onMouseEnter={() => handleItemMouseEnter(com.node.id)}
                     onMouseLeave={handleItemMouseLeave}
-                    
+                    onClick={() => CommentClick(com.node.id)}
                   >
-                    <p className="mb-2 text-sm">
-                      <strong className="text-base text-amber-800 pr-2">
+                    <p className="text-sm p-2">
+                      <span className="flex">
+                        <strong className="text-base text-amber-800 pr-2">
                         {com.node.user.id == post?.user?.id ? <span className="text-gray-900"><span className="text-purple-500">{com.node.user.username}</span> (Author)</span> : <span>{com.node.user.username}</span>}
-                      </strong>
-                      {dayjs(com.node.createTime).fromNow()}
+                        </strong>
+                        {dayjs(com.node.createTime).fromNow()}
+                      </span>
                       {com.node.user.id == userInfo?.user?.id ||
                       userInfo?.user?.isStaff === true ? (
                         <button
@@ -280,7 +297,7 @@ function PostScreen() {
                         </div>
                       ) : (
                         <div>
-                          <p>{com.node.comment}</p>
+                          <p className="pl-2">{com.node.comment}</p>
                           <p className="text-base">
                             <button className="mt-2 px-3 hover:text-lime-600 ease-in duration-75"> <i class="fa-solid fa-thumbs-up"></i> 3 </button>
                             <button className="mt-2 hover:text-red-500 ease-in duration-75"> <i class="fa-solid fa-thumbs-down"></i> 1 </button>
@@ -297,9 +314,11 @@ function PostScreen() {
                         </Button>
                       ) : null}
                     </p>
-                  </div>
+                  </button>
+                  // </button>
                 ))}
               </div>
+              
 
               <h4 className="text-xl text-center mt-5">Add comment</h4>
               {userInfo ? (

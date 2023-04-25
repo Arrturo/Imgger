@@ -61,6 +61,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         CommentType, post_id=graphene.String(required=True)
     )
     subcomments = DjangoFilterConnectionField(SubcommentType)
+    subcomments_by_comment = DjangoFilterConnectionField(SubcommentType, comment_id=graphene.String(required=True))
 
     @staff_member_required
     def resolve_users(self, info, **kwargs):
@@ -105,6 +106,11 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
     def resolve_subcomments(self, info, **kwargs):
         return Subcomment.objects.all()
+    
+    def resolve_subcomments_by_comment(self, info, comment_id, **kwargs):
+        comment_id = base64.b64decode(comment_id).decode("utf-8").split(":")[1]
+        comment_id = int(comment_id)
+        return Subcomment.objects.filter(comment=comment_id).order_by("create_time")
 
     def resolve_images(self, info, **kwargs):
         return Image.objects.all()
@@ -143,9 +149,9 @@ class Mutation(AuthMutation, graphene.ObjectType):
     update_comment = UpdateCommentMutation.Field()
     delete_comment = DeleteCommentMutation.Field()
 
-    create_subcomment = CreateSubCommentMutation.Field()
-    update_subcomment = UpdateSubCommentMutation.Field()
-    delete_subcomment = DeleteSubCommentMutation.Field()
+    # create_subcomment = CreateSubCommentMutation.Field()
+    # update_subcomment = UpdateSubCommentMutation.Field()
+    # delete_subcomment = DeleteSubCommentMutation.Field()
 
     create_image = CreateImageMutation.Field()
     update_imaage = UpdateImageMutation.Field()
