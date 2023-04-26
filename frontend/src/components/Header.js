@@ -32,7 +32,7 @@ function Header() {
 			<Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
 				<Container fluid >
                     <LinkContainer to='/'>
-					    <Navbar.Brand className="hover:text-amber-400 hover:font-bold text-2xl text-amber-200" href='/'>PySquad</Navbar.Brand>
+					    <Navbar.Brand className="hover:text-amber-400 hover:font-bold text-2xl text-amber-200" href='/'>Imgger</Navbar.Brand>
                     </LinkContainer>
 					<Navbar.Toggle aria-controls='navbarScroll' />
 					<Navbar.Collapse id='navbarScroll'>

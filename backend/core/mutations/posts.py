@@ -93,18 +93,17 @@ class UpdatePostMutation(graphene.Mutation):
                 )
             if title:
                 post.title = title
-            if description:
-                post.description = description
+            # if description:
             if category_id:
                 category_id = Category.objects.get(
                     id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
                 )
                 post.category = category_id
+            post.description = description
             post.save()
             return UpdatePostMutation(success=True, post=post)
         except Exception as e:
             return UpdatePostMutation(success=False, errors=str(e))
-
 
 class DeletePostMutation(graphene.Mutation):
     class Arguments:
@@ -136,7 +135,6 @@ class DeletePostMutation(graphene.Mutation):
             return DeletePostMutation(success=True)
         except Exception as e:
             return DeletePostMutation(success=False, errors=str(e))
-
 
 class like(graphene.Mutation):
     class Arguments:
