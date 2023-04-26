@@ -13,24 +13,28 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
-from core.schema import schema
-from graphene_file_upload.django import FileUploadGraphQLView
-from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.conf.urls.static import static
-from core.views import activate
+from django.contrib import admin
+from django.urls import path
+from django.views.decorators.csrf import csrf_exempt
+from graphene_file_upload.django import FileUploadGraphQLView
 from graphql_jwt.decorators import jwt_cookie
 
+from core.schema import schema
+from core.views import activate, logout_view
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('graphql', jwt_cookie(csrf_exempt(FileUploadGraphQLView.as_view
-                                           (graphiql=True, schema=schema)))),
-    path('activate/<token>', activate, name='activate'),
+    path("admin/", admin.site.urls),
+    path(
+        "graphql",
+        jwt_cookie(
+            csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True, schema=schema))
+        ),
+    ),
+    path("activate/<token>", activate, name="activate"),
+    path("logout/", csrf_exempt(logout_view), name="logout"),
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

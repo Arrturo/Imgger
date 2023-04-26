@@ -22,6 +22,7 @@ export const categoriesList = () => async (dispatch) => {
                             node{
                                 id
                                 name
+                                postsCount
                             }
                         }
                     }

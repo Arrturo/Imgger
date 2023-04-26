@@ -40,7 +40,9 @@ function CategoriesAdminScreen() {
             setMessage("Name of category is empty!")
         }else{
             dispatch(createCategory(name))
-            window.location.reload()
+            setTimeout(() => {
+                window.location.reload();
+              }, 1000);
         }
     }
 

@@ -1,8 +1,11 @@
 import base64
+
 import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
+from graphql_jwt.decorators import staff_member_required, login_required
+
 from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 from .mutations.categories import (
     CreateCategoryMutation,
@@ -31,12 +34,7 @@ from .mutations.subcomments import (
     DeleteSubCommentMutation,
     UpdateSubCommentMutation,
 )
-from .mutations.users import (
-    DeleteUserMutation,
-    LoginMutation,
-    RefreshMutation,
-    UpdateUserMutation,
-)
+from .mutations.users import DeleteUserMutation, LoginMutation, UpdateUserMutation
 from .types import (
     CategoryType,
     CommentType,
@@ -46,6 +44,8 @@ from .types import (
     UserType,
 )
 
+from django.db.models import Count
+
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     users = graphene.List(UserType)
@@ -53,6 +53,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     users_by_id = graphene.Field(UserType, id=graphene.ID(required=True))
     posts = DjangoFilterConnectionField(PostType)
     posts_by_id = graphene.Field(PostType, id=graphene.String(required=True))
+    posts_by_user = DjangoFilterConnectionField(PostType, user_id=graphene.ID(required=True))
     categories = DjangoFilterConnectionField(CategoryType)
     images = graphene.List(ImageType)
     comments = DjangoFilterConnectionField(CommentType)
@@ -61,30 +62,34 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     )
     subcomments = DjangoFilterConnectionField(SubcommentType)
 
-
+    @staff_member_required
     def resolve_users(self, info, **kwargs):
-        return ExtendUser.objects.all().order_by('id')
+        return ExtendUser.objects.all().order_by("id")
 
     def resolve_me(self, info, **kwargs):
         user = info.context.user
         if user.is_anonymous:
-            raise Exception('Not logged in!')
+            raise Exception("Not logged in!")
         return user
 
     def resolve_users_by_id(self, info, id):
         return ExtendUser.objects.get(pk=id)
 
     def resolve_posts(self, info, **kwargs):
-        return Post.objects.all().order_by('-create_time')
+        return Post.objects.all().filter(is_private=False).order_by("-create_time")
 
     def resolve_posts_by_category(self, info, **kwargs):
         return Post.objects.filter(category=kwargs['category'])
+    
+    @login_required
+    def resolve_posts_by_user(self, info, user_id, **kwargs):
+        return Post.objects.filter(user=user_id).filter(is_private=False).order_by('-create_time')
 
     def resolve_categories_by_id(self, info, id):
         return Category.objects.get(pk=id)
 
     def resolve_categories(self, info, **kwargs):
-        return Category.objects.all()
+        return Category.objects.annotate(num_posts=Count('post')).order_by('-num_posts')
 
     def resolve_posts_by_id(self, info, id, **kwargs):
         post_id = base64.b64decode(id).decode("utf-8").split(":")[1]
@@ -112,7 +117,6 @@ class AuthMutation(graphene.ObjectType):
     verify_token = mutations.VerifyToken.Field()
     refresh_token = mutations.RefreshToken.Field()
     update_account = mutations.UpdateAccount.Field()
-    # resend_activation_email = mutations.ResendActivationEmail.Field()
     verify_account = mutations.VerifyAccount.Field()
     send_password_reset_email = mutations.SendPasswordResetEmail.Field()
     password_reset = mutations.PasswordReset.Field()
@@ -121,7 +125,7 @@ class AuthMutation(graphene.ObjectType):
 
 class Mutation(AuthMutation, graphene.ObjectType):
     login = LoginMutation.Field()
-    refresh = RefreshMutation.Field()
+
     update_user = UpdateUserMutation.Field()
     delete_user = DeleteUserMutation.Field()
 

@@ -23,7 +23,6 @@ export const login = (username, password) => async (dispatch) =>{
                 login(username: "${username}", password: "${password}") {
                   success
                   errors
-				  expirationTime
                   user {
                     id
                     username
@@ -50,7 +49,6 @@ export const login = (username, password) => async (dispatch) =>{
             });
         
             localStorage.setItem('userInfo', JSON.stringify(data.data.login));
-			localStorage.setItem('expiresIn', JSON.stringify(data.data.login.expirationTime));
 
           } else {
             dispatch({
@@ -72,16 +70,14 @@ export const login = (username, password) => async (dispatch) =>{
 }
 
 export const logout = () => (dispatch) => {
-	localStorage.removeItem('userInfo');
-	dispatch({
-		type: USER_LOGOUT,
+	axios.post('http://localhost:8000/logout/', {
+		headers: {
+			'Content-type': 'application/json',
+		},
 	});
+	localStorage.removeItem('userInfo');
+	dispatch({ type: USER_LOGOUT });
 };
-
-
-
-
-
 
 export const register = (username, email, password, confirmPassword) => async (dispatch) => {
 	try {
@@ -156,7 +152,6 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 		const config = {
 			headers: {
 				'Content-type': 'application/json',
-				Authorization: `JWT ${userInfo.token}`,
 			},
 		};
 

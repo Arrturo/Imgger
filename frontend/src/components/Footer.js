@@ -5,7 +5,7 @@ import { Container, Row, Col } from 'react-bootstrap'
 
 function Footer() {
   return (
-    <div className=" w-full footer " >
+    <div className=" w-full footer ">
         <Container>
             <Row>
                 <Col className="text-center text-xl p-4">

@@ -1,6 +1,7 @@
-from graphene_django import DjangoObjectType
-from .models import ExtendUser, Post, Category, Comment, Image, Subcomment
 import graphene
+from graphene_django import DjangoObjectType
+
+from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 
 
 class UserType(DjangoObjectType):
@@ -14,11 +15,12 @@ class PostType(DjangoObjectType):
         model = Post
         fields = "__all__"
         filter_fields = {
-            'id': ['exact'],
-            'title': ['exact', 'icontains', 'istartswith'],
-            'description': ['exact', 'icontains', 'istartswith'],
+            "id": ["exact"],
+            "title": ["exact", "icontains", "istartswith"],
+            "description": ["exact", "icontains", "istartswith"],
+            "category": ["exact"],
         }
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)
 
     likes = graphene.Int()
     dislikes = graphene.Int()
@@ -27,6 +29,8 @@ class PostType(DjangoObjectType):
     comments_count = graphene.Int()
     previous_post = graphene.Field(lambda: PostType)
     next_post = graphene.Field(lambda: PostType)
+    
+    
 
     def resolve_likes(self, info, **kwargs):
         return self.likes.count()
@@ -51,23 +55,30 @@ class PostType(DjangoObjectType):
 
     def resolve_previous_post(self, info, **kwargs):
         previous_post = (
-            Post.objects.filter(id__gt=self.id).order_by("create_time").first()
+            Post.objects.filter(is_private=False).filter(id__gt=self.id).order_by(
+                "create_time").first()
         )
         if previous_post:
             return previous_post
         else:
-            previous_post = Post.objects.order_by("create_time").first()
+            previous_post = Post.objects.filter(
+                is_private=False).order_by(
+                "create_time").first()
             return previous_post
 
     def resolve_next_post(self, info, **kwargs):
-        next_post = (
-            Post.objects.filter(id__lt=self.id).order_by("-create_time").first()
-        )
+        next_post = Post.objects.filter(
+            is_private=False).filter(
+            id__lt=self.id).order_by(
+            "-create_time").first()
         if next_post:
             return next_post
         else:
-            next_post = Post.objects.order_by("-create_time").first()
+            next_post = Post.objects.filter(
+                is_private=False).order_by(
+                "-create_time").first()
             return next_post
+    
 
 
 class CategoryType(DjangoObjectType):
@@ -75,9 +86,13 @@ class CategoryType(DjangoObjectType):
         model = Category
         fields = "__all__"
         filter_fields = {
-            'name': ['exact', 'icontains', 'istartswith'],
+            "name": ["exact", "icontains", "istartswith"],
         }
         interfaces = (graphene.relay.Node, )
+    posts_count = graphene.Int()
+
+    def resolve_posts_count(self, info, **kwargs):
+        return Post.objects.filter(category=self.id).filter(is_private=False).count()
 
 
 class CommentType(DjangoObjectType):
@@ -85,9 +100,9 @@ class CommentType(DjangoObjectType):
         model = Comment
         fields = "__all__"
         filter_fields = {
-            'comment': ['exact', 'icontains', 'istartswith'],
+            "comment": ["exact", "icontains", "istartswith"],
         }
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)
 
 
 class ImageType(DjangoObjectType):
@@ -101,6 +116,6 @@ class SubcommentType(DjangoObjectType):
         model = Subcomment
         fields = "__all__"
         filter_fields = {
-            'content': ['exact', 'icontains', 'istartswith'],
+            "content": ["exact", "icontains", "istartswith"],
         }
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)

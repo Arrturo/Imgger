@@ -6,6 +6,7 @@ import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
 import { postsList } from "../actions/postActions";
 
+
 function PostsAdminScreen() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -50,29 +51,31 @@ function PostsAdminScreen() {
           <tbody className="text-center">
             {posts.map((post) => (
               <tr key={post?.node?.id}>
-                <td>{post?.node?.id}</td>
-                <td>
-                  <Image
-                    className="max-h-28 "
-                    src={post?.node?.image?.url}
-                    alt={post?.node?.title}
-                  />
-                </td>
-                <td>{post?.node?.title}</td>
-                <td>{post?.node?.user?.username}</td>
-                <td>
-                  {post?.node?.createTime?.substring(0, 10)}{" "}
-                  {post?.node?.createTime?.substring(15, 19)}
-                </td>
-                <td>
-                  <Button varinat="light" className="btn-m">
-                    <i class="fa-regular fa-pen-to-square text-lime-500"></i>
-                  </Button>
-                  <Button varinat="danger" className="btn-m">
-                    <i class="fa-solid fa-trash-can text-red-500"></i>
-                  </Button>
-                </td>
-              </tr>
+                    <td>{post?.node?.id}</td>
+                    <td>
+                      <a href={`http://localhost:3000/post/${post?.node?.id}`}>
+                        <Image
+                          className="max-h-28 "
+                          src={post?.node?.image?.url}
+                          alt={post?.node?.title}
+                        />
+                      </a>
+                    </td>
+                    <td>{post?.node?.title}</td>
+                    <td>{post?.node?.user?.username}</td>
+                    <td>
+                      {post?.node?.createTime?.substring(0, 10)}{" "}
+                      {post?.node?.createTime?.substring(15, 19)}
+                    </td>
+                    <td>
+                      <Button varinat="light" className="btn-m">
+                        <i class="fa-regular fa-pen-to-square text-lime-500"></i>
+                      </Button>
+                      <Button varinat="danger" className="btn-m">
+                        <i class="fa-solid fa-trash-can text-red-500"></i>
+                      </Button>
+                    </td>
+                </tr>
             ))}
           </tbody>
         </Table>
