@@ -37,9 +37,11 @@ class Post(models.Model):
     dislikes = models.ManyToManyField(ExtendUser, related_name="dislikes", blank=True)
     description = models.TextField(max_length=255, null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(ExtendUser, null=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(ExtendUser, null=True, on_delete=models.CASCADE)
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, null=False, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, null=True, on_delete=models.CASCADE)
+    is_private = models.BooleanField(default=True)
+    expiration_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.title}"

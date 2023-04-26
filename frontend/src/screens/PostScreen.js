@@ -51,15 +51,18 @@ function PostScreen() {
   const { comments } = PostComments;
 
   const {subc} = useSelector((state) => state.subcomments);
-  // const { subc } = subcomments;
 
   const [comment, setComment] = useState("");
 
   const [hoveredItemId, setHoveredItemId] = useState(null);
   const [clickedItemId, setClickedItemId] = useState(null);
+  const [clickedCommentId, setClickedCommentId] = useState(null);
 
   const [editMode, setEditMode] = useState(false);
   const [editedComment, setEditedComment] = useState("");
+
+  const [isPriv, setIsPriv] = useState(false);
+
 
   const handleItemMouseEnter = (itemId) => {
     setHoveredItemId(itemId);
@@ -88,6 +91,13 @@ function PostScreen() {
     dispatch(postComments(id));
   }, [dispatch]);
 
+  
+  useEffect(() => {
+    if (post) {
+      setIsPriv(post.isPrivate);
+    }
+  }, [post]);
+
   const nextPost = post.nextPost?.id;
   const previousPost = post.previousPost?.id;
 
@@ -114,13 +124,10 @@ function PostScreen() {
     window.location.reload();
   };
 
-
-  
   
   const CommentClick = (commentId) => {
     dispatch(subcomments(commentId))
   }
-
 
 
   return (
@@ -243,7 +250,7 @@ function PostScreen() {
                     className=" border-b-2 p-1 com"
                     onMouseEnter={() => handleItemMouseEnter(com.node.id)}
                     onMouseLeave={handleItemMouseLeave}
-                    onClick={() => CommentClick(com.node.id)}
+                    onClick={() => (CommentClick(com.node.id), clickedCommentId === com.node.id ? setClickedCommentId(null) : setClickedCommentId(com.node.id))}
                   >
                     <p className="text-sm p-2">
                       <span className="flex">
@@ -314,10 +321,39 @@ function PostScreen() {
                         </Button>
                       ) : null}
                     </p>
-                  </button>
+
+                    {com.node.id === clickedCommentId ? (
+                        <div className="my-3">
+                        {subc.map((sc) => (
+                          <button className="subc border-b-2 p-1">
+                            <p className="text-sm p-2">
+                              <span className="flex">
+                                <strong className="text-base text-amber-800 pr-2">
+                                  {sc.node.user.id == post?.user?.id ? <span className="text-gray-900"><span className="text-purple-500">{sc.node.user.username}</span> (Author)</span> : <span>{sc.node.user.username}</span>}
+                                </strong>
+                                {dayjs(sc.node.createTime).fromNow()}
+                              </span>
+                              <p className="content-sub">{sc.node.content}</p>
+                              {sc.node.user.id == userInfo?.user?.id || userInfo?.user?.isStaff === true ? (
+                                <button className="edit-btn edit-btn-sub px-3">
+                                  <i class="fa-solid fa-trash"></i>
+                                </button>
+                               ) : null}
+                              
+                              
+                            </p>
+                          </button>
+                          
+                        ))}
+                      </div>
+                      ) : null}
+
+                      
+                  </button>             
                   // </button>
                 ))}
               </div>
+              
               
 
               <h4 className="text-xl text-center mt-5">Add comment</h4>

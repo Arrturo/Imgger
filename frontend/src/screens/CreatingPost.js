@@ -43,6 +43,8 @@ function CreatingPost() {
 
   const [cat, setCat] = useState("");
 
+  const [isPrivate, setIsPrivate] = useState(true);
+
 
   const userId = userInfo?.user?.id;
 
@@ -95,7 +97,7 @@ function CreatingPost() {
       const imageId = data?.data?.createImage?.image?.id;
   
       if (imageId) {
-        await dispatch(createPost(title, description, userId, imageId, cat));
+        await dispatch(createPost(title, description, userId, imageId, cat, isPrivate));
       } else {
         console.log("Image ID not available yet.");
       }
@@ -105,12 +107,21 @@ function CreatingPost() {
     }
   };
   
+  useEffect(() => {
+    if (userInfo?.user){
+      setIsPrivate(false)
+    }
+  }, [navigate]);
   
+  console.log(isPrivate)
 
   useEffect(() => {
     if (post?.success === true) {
-      // dispatch({type:POST_CREATE_RESET})
-      navigate(`/post/${post?.post?.id}`);
+      if(isPrivate === true){
+        navigate(`/post/private/${post?.post?.id}`);
+      }else{
+        navigate(`/post/${post?.post?.id}`);
+      }
       window.location.reload();
     }
   }, [post, navigate]);
@@ -163,7 +174,6 @@ function CreatingPost() {
                   <Form.Label className="text-xl">
                     <i class="fa-regular fa-hand-point-right"></i> Choose
                     category from list below
-                    <span className="text-red-800">*</span>{" "}
                   </Form.Label>
                   <Form.Control
                     required
@@ -181,6 +191,9 @@ function CreatingPost() {
                       </option>
                     ))}
                   </Form.Control>
+                  <Form.Check disabled={!userInfo?.user} className="mt-5 text-xl" type='checkbox' label='Private post?' checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)}>
+
+                  </Form.Check>
                 </FormGroup>
 
                 <Button

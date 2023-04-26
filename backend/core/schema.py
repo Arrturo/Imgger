@@ -4,7 +4,7 @@ import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
-from graphql_jwt.decorators import staff_member_required
+from graphql_jwt.decorators import staff_member_required, login_required
 
 from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 from .mutations.categories import (
@@ -77,13 +77,14 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return ExtendUser.objects.get(pk=id)
 
     def resolve_posts(self, info, **kwargs):
-        return Post.objects.all().order_by("-create_time")
+        return Post.objects.filter(is_private=False).order_by('-create_time')
 
     def resolve_posts_by_category(self, info, **kwargs):
         return Post.objects.filter(category=kwargs['category'])
     
+    @login_required
     def resolve_posts_by_user(self, info, user_id, **kwargs):
-        return Post.objects.filter(user=user_id).order_by('-create_time')
+        return Post.objects.filter(user=user_id).filter(is_private=False).order_by('-create_time')
 
     def resolve_categories_by_id(self, info, id):
         return Category.objects.get(pk=id)

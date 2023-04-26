@@ -125,6 +125,7 @@ export const postsDetails = (id) => async (dispatch, getState) => {
                         isLiked
                         isDisliked
                         createTime
+                        isPrivate
                         nextPost{
                             id
                         }
@@ -166,7 +167,7 @@ export const postsDetails = (id) => async (dispatch, getState) => {
 };
 
 export const createPost =
-  (title, description, userId, imageId, categoryId) =>
+  (title, description, userId, imageId, categoryId, isPrivate) =>
   async (dispatch, getState) => {
     try {
       dispatch({
@@ -185,7 +186,7 @@ export const createPost =
           query: `
                 mutation{
                    createPost(title: "${title}", description: "${description}", imageId: "${imageId}", 
-                   categoryId: "${categoryId}"){
+                   categoryId: "${categoryId}", isPrivate: ${isPrivate}){
                         success
                         errors
                         post{

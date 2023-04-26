@@ -14,13 +14,14 @@ class CreatePostMutation(graphene.Mutation):
         title = graphene.String(required=True)
         description = graphene.String()
         image_id = graphene.String(required=True)
-        category_id = graphene.ID(required=True)
+        category_id = graphene.ID()
+        is_private = graphene.Boolean()
 
     success = graphene.Boolean()
     errors = graphene.String()
     post = graphene.Field(PostType)
 
-    def mutate(self, info, title, description, image_id, category_id):
+    def mutate(self, info, title, description, image_id, category_id, is_private):
         try:
             user = info.context.user
             print(user)
@@ -36,6 +37,7 @@ class CreatePostMutation(graphene.Mutation):
                         user=user,
                         image=image,
                         category=category_id,
+                        is_private=is_private,
                     )
                 else:
                     post = Post(
@@ -43,27 +45,21 @@ class CreatePostMutation(graphene.Mutation):
                         description=description,
                         user=user,
                         category=category_id,
+                        is_private=is_private,
                     )
             else:
-                category_id = Category.objects.get(
-                    id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
-                )
                 if image_id:
                     image = Image.objects.get(id=image_id)
                     post = Post(
                         title=title,
                         description=description,
-                        user_id=2,
                         image=image,
-                        category=category_id,
                         is_private=True,
                     )
                 else:
                     post = Post(
                         title=title,
                         description=description,
-                        user_id=2,
-                        category=category_id,
                         is_private=True,
                     )
             post.save()

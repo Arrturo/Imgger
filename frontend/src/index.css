@@ -12,6 +12,7 @@
 *::selection{
   background-color: gold;
   color: black;
+  scroll-behavior: smooth;
 }
 
 
@@ -68,6 +69,7 @@ main{
 
 .com{
   width: 100%;
+  border-radius: 20px;
 }
 
 .com:hover{
@@ -105,7 +107,7 @@ main{
 }
 
 *::-webkit-scrollbar {
-  width: 20px;
+  width: 15px;
 }
 
 
@@ -169,3 +171,37 @@ main{
   max-height: 200px;
 }
 
+.subc {
+  background-color: rgb(255, 252, 213);
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  width: 90%;
+  float: right;
+  border-radius: 20px;
+  position: relative;
+
+}
+
+.subc:hover {
+  background-color: rgb(225, 255, 225);
+}
+
+.content-sub{
+  float: left;
+}
+
+.edit-btn-sub{
+  position: absolute;
+  right: 10%;
+}
+
+/* .par-com{
+  position: relative;
+}
+
+.down-btn{
+  font-size: x-large;
+  position: absolute;
+  top: 60%;
+} */

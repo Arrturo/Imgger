@@ -12,23 +12,31 @@ import "firebase/auth";
 import firebaseConfig from "../firebaseConfig.json";
 import "firebase/firestore";
 import "firebase/storage";
+import { useParams } from "react-router-dom";
+
 const PAGE_NUMBER = 0;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-const HomeScreen = () => {
+  const CategoryPost = () => {
+  const { category } = useParams();
   const dispatch = useDispatch();
 
-    const [postData, setPostData] = useState([]);
-    const [page, setPage] = useState(PAGE_NUMBER);
-    const [loading, setLoading] = useState(true);
+  const [postData, setPostData] = useState([]);
+  const [page, setPage] = useState(PAGE_NUMBER);
+  const [loading, setLoading] = useState(true);
 
   const [hasNextPage, setHasNextPage] = useState(true);
 
   const CategoriesList = useSelector((state) => state.categoriesList);
   const { error, categories } = CategoriesList;
+
+  const chosenCategory = categories.find((cat) => cat?.node?.id == category);
+
+  const categoryName = chosenCategory ? chosenCategory?.node?.name : null;
+
 
   useEffect(() => {
     dispatch(categoriesList());
@@ -47,7 +55,7 @@ const HomeScreen = () => {
         {
           query: `
             query{
-              posts(first: 12, offset: ${page}){
+              posts(first: 12, offset: ${page}, category: "${category}"){
                   edges{
                     node{
                       id
@@ -110,7 +118,8 @@ const HomeScreen = () => {
       <div className="categories">
         {categories.map((category) => (
           <CategoryItem name={category.node.name} postsCount={category.node.postsCount} id={category.node.id}/>
-        ))}
+          ))}
+        <h1 className="text-center text-3xl">Posts with category: {categoryName}</h1>
       </div>
       <PostList posts={postData} />
       {loading && <Loader />}
@@ -118,4 +127,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default CategoryPost;
