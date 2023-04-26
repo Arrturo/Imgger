@@ -4,7 +4,7 @@ import { Form, Button, Row, Col, Table, Image, ListGroup } from "react-bootstrap
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
-import { myPostsList, likedPostsList } from "../actions/postActions";
+import { myPostsList, likedPostsList, deletePost } from "../actions/postActions";
 import Post from "../components/Post"
 import Rank from "../components/Rank"
 
@@ -35,7 +35,6 @@ function MyPostsScreen() {
       }, [dispatch, navigate]);
 
 
-      console.log(liked)
 
   return (
     <div>
@@ -43,7 +42,7 @@ function MyPostsScreen() {
             <Col className="mx-5 grid justify-items-start content-center">
                 <p className="text-7xl"><span className="px-4 border-8 rounded-full">
                     <i class="fa-solid fa-user"></i></span> {userInfo?.user?.username}
-                    <Rank points={posts?.length}/>
+                    <Rank points={posts?.length} />
                     </p>
                 <p className="text-xl ms-auto">{posts?.length} uploaded posts</p>
             </Col>

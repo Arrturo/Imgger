@@ -109,8 +109,6 @@ export const register = (username, email, password, confirmPassword) => async (d
 	  `,
 		}, config);
 
-
-      console.log(data)
       
       if (data.data.register.success) { 
         dispatch({

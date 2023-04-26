@@ -13,16 +13,22 @@ import UserEditScreen from './screens/UserEditScreen'
 import CreatingPost from './screens/CreatingPost';
 import PostScreen from './screens/PostScreen';
 import PostsAdminScreen from './screens/PostsAdminScreen';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { USER_LOGIN_SUCCESS } from './constants/userConstants';
 import { useDispatch } from 'react-redux';
 import MyPostsScreen from './screens/MyPostsScreen';
+import PostEditScreen from './screens/PostEditScreen';
 import CategoryPost from './screens/CategoryPost';
-
+import PrivatePost from './screens/PrivatePost';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 
 
 function App() {
+	useEffect(() => {
+		document.documentElement.style.scrollBehavior = 'smooth';
+	  }, []);
+
 	return (
 		<Router>
 			<main className="min-h-screen">
@@ -36,11 +42,15 @@ function App() {
 							<Route path='/myposts' element={<MyPostsScreen />}/>
 							<Route path='/newpost' element={<CreatingPost />} />
 							<Route path='/post/:id' element={<PostScreen />} />
+							<Route path='/post/private/:id' element={<PrivatePost />} />
+							<Route path='/post/:id/edit' element={<PostEditScreen />} />
 							<Route path='/admin/categoriesList' element={<CategoriesAdminScreen />} />
 							<Route path='admin/userlist' element={<UserListScreen />} />
 							<Route path='admin/userlist/:id/edit' element={<UserEditScreen />} />
 							<Route path='admin/postlist' element={<PostsAdminScreen />} />
 							<Route path='/category/:category' element={<CategoryPost />} />
+							<Route path='/password-reset/:token' element={<ResetPasswordScreen />} />
+							
 						</Routes>
 					</Container>
 				<Footer />

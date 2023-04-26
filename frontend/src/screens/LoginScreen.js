@@ -24,8 +24,12 @@ function LoginScreen() {
 
     const redirect = location.search ? location.search.split('=')[1] : '/'
 
+    const [isForgot, setIsForgot] = useState(false)
+    const [email, setEmail] = useState("")
+    const [sendEmailSuccess, setSendEmailSuccess] = useState(false)
+
     useEffect(() => {
-        if(userInfo){
+        if(userInfo?.user){
             navigate(redirect)
         }else{
             navigate('/login')
@@ -38,46 +42,101 @@ function LoginScreen() {
     }
 
 
+    const sendEmail  = async () => {
+        const config = {
+			headers: {
+				'Content-type': 'application/json',
+			},
+		};
+
+		const { data } = await axios.post('http://localhost:8000/graphql', {
+      query: `
+       mutation {
+        sendPasswordResetEmail(email: "${email}"){
+            success
+            errors
+        }
+      }
+	  `,
+		}, config);
+
+
+        if(data?.data?.sendPasswordResetEmail?.success){
+            await setSendEmailSuccess(true)
+        }
+    }
+
+
+
   return (
     <div>
+        {isForgot ? 
+        
         <FormContainer >
-            <h1 className="text-5xl text-center mb-5 underline decoration-double decoration-amber-500">Sign in</h1>
+        <h1 className="text-5xl text-center mb-5 underline decoration-double decoration-amber-500">Reset your password</h1>
 
-            {error && <Message variant='danger'>{error}</Message>}
-            {loading && <Loader />}
-
-            <Form onSubmit={submitHandler} className="text-2xl">
-                <Form.Group controlId='username'>
-                    <Form.Label> <i class="fa-solid fa-user-tag"></i> Username</Form.Label>
-                        <Form.Control type='text' placeholder='Enter your username' value={username} onChange={(e)=>setUsername(e.target.value)}>
-                            
-                        </Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId='password' className="mt-3">
-                    <Form.Label><i class="fa-solid fa-lock"></i> Password</Form.Label>
-                        <Form.Control type='password' placeholder='Enter your password' value={password} onChange={(e)=>setPassword(e.target.value)}>
-                            
-                        </Form.Control>
-                </Form.Group>
-
-            <Row className="py-3">
-                <Col className="text-center text-base">
-                Don't remember password? <Link to={'#'} className="text-red-700 hover:text-red-800"> Reset them</Link>
-                </Col>
-            </Row>
-                <Button type='submit' variant='primary' className="mt-4 button-primary text-2xl ">Sign in</Button>
-            </Form>
-
-
+        
+       {sendEmailSuccess === true && <Message variant='success'>Password reset email successfully sent, go to your email</Message>}
             
-            <Row className="py-3">
-                <Col className="text-center text-xl">
-                    Do you need account? <Link to={'/register'} className="text-red-700 hover:text-red-800"> Sign up</Link>
-                </Col>
-            </Row>
-        </FormContainer>
-            
+        <Form className="text-2xl">
+            <Form.Group controlId='username'>
+                <Form.Label> <i class="fa-solid fa-user-tag"></i> Email</Form.Label>
+                    <Form.Control type='text' placeholder='Enter your email address' onChange={(ele)=>setEmail(ele.target.value)}>
+                        
+                    </Form.Control>
+            </Form.Group>
+
+            <Button className="mt-4 button-primary text-2xl " onClick={sendEmail}>Send email</Button>
+        </Form>
+
+        
+        <Row className="py-3">
+            <Col className="text-center text-xl">
+                Do you need account? <Link to={'/register'} className="text-red-700 hover:text-red-800"> Sign up</Link>
+            </Col>
+        </Row>
+    </FormContainer>
+
+            :
+
+            <FormContainer >
+                <h1 className="text-5xl text-center mb-5 underline decoration-double decoration-amber-500">Sign in</h1>
+
+                {error && <Message variant='danger'>{error}</Message>}
+                {loading && <Loader />}
+
+                <Form onSubmit={submitHandler} className="text-2xl">
+                    <Form.Group controlId='username'>
+                        <Form.Label> <i class="fa-solid fa-user-tag"></i> Username</Form.Label>
+                            <Form.Control type='text' placeholder='Enter your username' value={username} onChange={(e)=>setUsername(e.target.value)}>
+                                
+                            </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group controlId='password' className="mt-3">
+                        <Form.Label><i class="fa-solid fa-lock"></i> Password</Form.Label>
+                            <Form.Control type='password' placeholder='Enter your password' value={password} onChange={(e)=>setPassword(e.target.value)}>
+                                
+                            </Form.Control>
+                    </Form.Group>
+
+                <Row className="py-3">
+                    <Col className="text-center text-base">
+                    Don't remember password? <Link onClick={() => setIsForgot(true)} className="text-red-700 hover:text-red-800"> Reset them</Link>
+                    </Col>
+                </Row>
+                    <Button type='submit' variant='primary' className="mt-4 button-primary text-2xl ">Sign in</Button>
+                </Form>
+
+
+                
+                <Row className="py-3">
+                    <Col className="text-center text-xl">
+                        Do you need account? <Link to={'/register'} className="text-red-700 hover:text-red-800"> Sign up</Link>
+                    </Col>
+                </Row>
+            </FormContainer>
+        }
 
         <FormContainer >
             <h1 className="text-base text-center mb-4 underline decoration-double decoration-amber-500">Sign in using</h1>

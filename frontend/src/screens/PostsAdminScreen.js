@@ -4,7 +4,7 @@ import { Form, Button, Row, Col, Table, Image } from "react-bootstrap";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
-import { postsList } from "../actions/postActions";
+import { postsList, deletePost } from "../actions/postActions";
 
 
 function PostsAdminScreen() {
@@ -16,6 +16,7 @@ function PostsAdminScreen() {
 
   const postList = useSelector((state) => state.postList);
   const { posts } = postList;
+  
 
   useEffect(() => {
     if (userInfo && userInfo.user.isStaff === true) {
@@ -24,6 +25,17 @@ function PostsAdminScreen() {
       navigate(`/login`);
     }
   }, [dispatch, navigate]);
+
+  const deletePostHandler = (id, name) => {
+    if (
+        window.confirm(
+          `Are you sure to delete post: "${name}" ?`
+        )
+      ) {
+        dispatch(deletePost(id));
+      }
+      window.location.reload();
+}
 
   return (
     <div>
@@ -68,10 +80,10 @@ function PostsAdminScreen() {
                       {post?.node?.createTime?.substring(15, 19)}
                     </td>
                     <td>
-                      <Button varinat="light" className="btn-m">
+                      <Link to={`/post/${post?.node?.id}/edit`}><Button varinat="light" className="btn-m">
                         <i class="fa-regular fa-pen-to-square text-lime-500"></i>
-                      </Button>
-                      <Button varinat="danger" className="btn-m">
+                      </Button></Link>
+                      <Button varinat="danger" className="btn-m" onClick={() => deletePostHandler(post?.node?.id, post?.node?.title)}>
                         <i class="fa-solid fa-trash-can text-red-500"></i>
                       </Button>
                     </td>

@@ -20,18 +20,23 @@ const PAGE_NUMBER = 0;
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-const CategoryPost = () => {
-    const { category } = useParams();
-    const dispatch = useDispatch();
+  const CategoryPost = () => {
+  const { category } = useParams();
+  const dispatch = useDispatch();
 
-    const [postData, setPostData] = useState([]);
-    const [page, setPage] = useState(PAGE_NUMBER);
-    const [loading, setLoading] = useState(true);
+  const [postData, setPostData] = useState([]);
+  const [page, setPage] = useState(PAGE_NUMBER);
+  const [loading, setLoading] = useState(true);
 
   const [hasNextPage, setHasNextPage] = useState(true);
 
   const CategoriesList = useSelector((state) => state.categoriesList);
   const { error, categories } = CategoriesList;
+
+  const chosenCategory = categories.find((cat) => cat?.node?.id == category);
+
+  const categoryName = chosenCategory ? chosenCategory?.node?.name : null;
+
 
   useEffect(() => {
     dispatch(categoriesList());
@@ -113,7 +118,8 @@ const CategoryPost = () => {
       <div className="categories">
         {categories.map((category) => (
           <CategoryItem name={category.node.name} postsCount={category.node.postsCount} id={category.node.id}/>
-        ))}
+          ))}
+        <h1 className="text-center text-3xl">Posts with category: {categoryName}</h1>
       </div>
       <PostList posts={postData} />
       {loading && <Loader />}
