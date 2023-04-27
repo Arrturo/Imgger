@@ -54,7 +54,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     posts = DjangoFilterConnectionField(PostType)
     posts_by_id = graphene.Field(PostType, id=graphene.String(required=True))
     posts_by_user = DjangoFilterConnectionField(PostType, user_id=graphene.ID(required=True))
-    search = DjangoFilterConnectionField(PostType, search=graphene.String(required=True))
+    search = DjangoFilterConnectionField(PostType, keyword=graphene.String(required=True))
     categories = DjangoFilterConnectionField(CategoryType)
     images = graphene.List(ImageType)
     comments = DjangoFilterConnectionField(CommentType)
@@ -87,8 +87,8 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_posts_by_user(self, info, user_id, **kwargs):
         return Post.objects.filter(user=user_id).filter(is_private=False).order_by('-create_time')
     
-    def resolve_search(self, info, search, **kwargs):
-        return Post.objects.filter(Q(title__icontains=search) | Q(description__icontains=search)).filter(is_private=False).order_by('-create_time')
+    def resolve_search(self, info, keyword, **kwargs):
+        return Post.objects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword)).filter(is_private=False).order_by('-create_time')
 
     def resolve_categories_by_id(self, info, id):
         return Category.objects.get(pk=id)
