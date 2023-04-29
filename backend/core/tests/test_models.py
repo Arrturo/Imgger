@@ -11,8 +11,6 @@ class ExtendUserModelTestCase(TestCase):
         )
         self.user.save()
 
-        self.token = get_token(self.user)
-
         self.client = Client()
         self.client.login(username="testuser", password="testpassword")
 
@@ -32,11 +30,11 @@ class CategoryModelTestCase(TestCase):
 
 class ImageModelTestCase(TestCase):
     def setUp(self):
-        self.image = Image.objects.create(name="TestImage", file="sum.jpg")
+        self.image = Image.objects.create(name="TestImage", url="sum.jpg")
         self.image.save()
 
     def test_string_representation(self):
-        self.assertEqual(str(self.image), "sum.jpg")
+        self.assertEqual(str(self.image), "TestImage")
 
 
 class PostModelTestCase(TestCase):
@@ -46,7 +44,7 @@ class PostModelTestCase(TestCase):
         )
         self.user.save()
 
-        self.image = Image.objects.create(name="TestImage", file="sum.jpg")
+        self.image = Image.objects.create(name="TestImage", url="sum.jpg")
         self.image.save()
 
         self.category = Category.objects.create(name="TestCategory")
@@ -72,7 +70,7 @@ class CommentModelTestCase(TestCase):
         )
         self.user.save()
 
-        self.image = Image.objects.create(name="TestImage", file="sum.jpg")
+        self.image = Image.objects.create(name="TestImage", url="sum.jpg")
         self.image.save()
 
         self.category = Category.objects.create(name="TestCategory")
@@ -103,7 +101,7 @@ class SubcommentModelTestCase(TestCase):
         )
         self.user.save()
 
-        self.image = Image.objects.create(name="TestImage", file="sum.jpg")
+        self.image = Image.objects.create(name="TestImage", url="sum.jpg")
         self.image.save()
 
         self.category = Category.objects.create(name="TestCategory")
