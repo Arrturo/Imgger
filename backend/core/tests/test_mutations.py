@@ -1,16 +1,154 @@
 import base64
-import io
 import json
-from io import BytesIO
 
-from django.core.files.uploadedfile import (InMemoryUploadedFile,
-                                            SimpleUploadedFile)
 from django.test import Client
 from graphene_django.utils import GraphQLTestCase
-from PIL import Image as PILImage
 
 from core.models import Category, Comment, ExtendUser, Image, Post, Subcomment
 
+
+
+class ImagesGraphQLTestCase(GraphQLTestCase):
+    def setUp(self) -> None:
+        self.user = ExtendUser.objects.create_user(
+            username="testuser", password="testpassword", email="test123@test.pl"
+        )
+        self.user.save()
+
+        self.client = Client()
+        self.client.login(username="testuser", password="testpassword")
+
+        self.image = Image.objects.create(name="TestImage", url="sum.jpg")
+        self.image.save()
+
+    def test_query(self):
+        query = """query {
+                        images {
+                            name
+                            url
+                        }
+                    }"""
+
+        response = self.client.post("/graphql", data={"query": query})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            json.loads(response.content),
+            {
+                "data": {
+                    "images": [
+                        {
+                            "name": "TestImage",
+                            "url": "sum.jpg",
+                        }
+                    ]
+                }
+            },
+        )
+
+    def test_create_image_mutation(self):
+        with open("core/tests/sum.jpg", "rb") as image:
+            response = self.client.post('/graphql', {
+                'operations': json.dumps({
+                    'query': 'mutation ($file: Upload!) { createImage(image: $file) { success } }',
+                    'variables': {
+                        'file': None
+                    },
+                }),
+                'map': json.dumps({
+                    '0': ['variables.file'],
+                }),
+                '0': image,
+            }, format='multipart')
+
+            self.assertEqual(response.status_code, 200)
+            content = json.loads(response.content)
+            self.assertIn("data", content)
+            self.assertIn("createImage", content["data"])
+            self.assertEqual(content["data"]["createImage"]["success"], True)
+
+    def test_update_image_mutation(self):
+        image_id = self.image.id
+        with open("core/tests/sum.jpg", "rb") as image:
+            response = self.client.post('/graphql', {
+                'operations': json.dumps({
+                    'query': 'mutation ($file: Upload!, $imageId: ID!) { updateImaage(image: $file, imageId: $imageId) { success } }',
+                    'variables': {
+                        'file': None,
+                        'imageId': image_id,
+                    },
+                }),
+                'map': json.dumps({
+                    '0': ['variables.file'],
+                }),
+                '0': image,
+            }, format='multipart')
+            self.assertEqual(response.status_code, 200)
+            content = json.loads(response.content)
+            self.assertIn("data", content)
+            self.assertIn("updateImaage", content["data"])
+            self.assertEqual(content["data"]["updateImaage"]["success"], True)
+
+    def test_delete_image_mutation(self):
+        with open("core/tests/sum.jpg", "rb") as image:
+            response = self.client.post('/graphql', {
+                'operations': json.dumps({
+                    'query': 'mutation ($file: Upload!) { createImage(image: $file) { image{ id } success errors  } }',
+                    'variables': {
+                        'file': None
+                    },
+                }),
+                'map': json.dumps({
+                    '0': ['variables.file'],
+                }),
+                '0': image,
+            }, format='multipart')
+
+            self.assertEqual(response.status_code, 200)
+            content = json.loads(response.content)
+            image_id = content["data"]["createImage"]["image"]["id"]
+            mutation = """mutation($imageId: ID!){
+                        deleteImage(imageId: $imageId){
+                            success
+                            errors
+                        }
+                    }
+                """
+
+            variables = {"imageId": image_id}
+            result = self.client.post(
+                "/graphql",
+                data={"query": mutation, "variables": json.dumps(variables)},
+            )
+            self.assertEqual(result.status_code, 200)
+            content = json.loads(result.content)
+            self.assertIn("data", content)
+            self.assertIn("deleteImage", content["data"])
+            self.assertEqual(content["data"]["deleteImage"]["success"], True)
+            self.assertEqual(content["data"]["deleteImage"]["errors"], None)
+
+
+
+    def test_error_delete_image_mutation(self):
+        mutation = """mutation($imageId: ID!){
+                        deleteImage(imageId: $imageId){
+                            success
+                            errors
+                        }
+                    }
+                """
+
+        variables = {"imageId": self.image.id}
+        result = self.client.post(
+            "/graphql",
+            data={"query": mutation, "variables": json.dumps(variables)},
+        )
+        self.assertEqual(result.status_code, 200)
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+        self.assertIn("deleteImage", content["data"])
+        self.assertEqual(content["data"]["deleteImage"]["success"], False)
+        self.assertNotEqual(content["data"]["deleteImage"]["errors"], None)
 
 class CategoriesGraphQLTestCase(GraphQLTestCase):
     def setUp(self):
@@ -117,6 +255,8 @@ class CategoriesGraphQLTestCase(GraphQLTestCase):
         self.assertIn("deleteCategory", content["data"])
         self.assertIn("success", content["data"]["deleteCategory"])
         self.assertEqual(content["data"]["deleteCategory"]["success"], True)
+
+
 
 
 class UsersGraphQLTestCase(GraphQLTestCase):
@@ -230,45 +370,6 @@ class UsersGraphQLTestCase(GraphQLTestCase):
         )
 
 
-class ImagesGraphQLTestCase(GraphQLTestCase):
-    def setUp(self) -> None:
-        self.user = ExtendUser.objects.create_user(
-            username="testuser", password="testpassword", email="test123@test.pl"
-        )
-        self.user.save()
-
-        self.client = Client()
-        self.client.login(username="testuser", password="testpassword")
-
-        self.image = Image.objects.create(name="TestImage", url="sum.jpg")
-        self.image.save()
-
-    def test_query(self):
-        query = """query {
-                        images {
-                            name
-                            url
-                        }
-                    }"""
-
-        response = self.client.post("/graphql", data={"query": query})
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            json.loads(response.content),
-            {
-                "data": {
-                    "images": [
-                        {
-                            "name": "TestImage",
-                            "url": "sum.jpg",
-                        }
-                    ]
-                }
-            },
-        )
-
-
 class PostsGraphQLTestCase(GraphQLTestCase):
     def setUp(self) -> None:
         self.user = ExtendUser.objects.create_user(
@@ -340,7 +441,7 @@ class PostsGraphQLTestCase(GraphQLTestCase):
             "TestCategory",
         )
 
-    def test_create_post_mutation(self):
+    def test_create_post_with_image_mutation(self):
         image_id = str(self.image.id)
         category_id = base64.b64encode(
             "CategoryType:{}".format(self.category.id).encode("utf-8")
@@ -380,6 +481,36 @@ class PostsGraphQLTestCase(GraphQLTestCase):
             content["data"]["createPost"]["post"]["image"]["name"], "TestImage"
         )
         self.assertEqual(content["data"]["createPost"]["success"], True)
+
+    def test_error_create_post_mutation(self):
+        category_id = base64.b64encode(
+            "CategoryType:{}".format(self.category.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """mutation($categoryId: ID!){
+                        createPost(title: "test", description: "testowanie", imageId: "", categoryId: $categoryId, isPrivate: false){
+                            post{
+                                title
+                                description
+                            }
+                            errors
+                            success
+                        }
+                        }
+                    """
+
+        variables = {
+            "categoryId": category_id,
+        }
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+        self.assertEqual(result.status_code, 200)
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+        self.assertIn("createPost", content["data"])
+        self.assertIn("post", content["data"]["createPost"])
+        self.assertNotEqual(content["data"]["createPost"]["errors"], None)
+        self.assertEqual(content["data"]["createPost"]["success"], False)
 
     def test_like_post_mutation(self):
         post_id = str(
@@ -429,6 +560,216 @@ class PostsGraphQLTestCase(GraphQLTestCase):
         self.assertIn("data", content)
         self.assertIn("dislike", content["data"])
         self.assertEqual(content["data"]["dislike"]["success"], True)
+
+    def test_update_post_mutation(self):
+        post_id = str(
+            base64.b64encode(
+                "CategoryType:{}".format(self.post.id).encode("utf-8")
+            ).decode("utf-8")
+        )
+        category_id = base64.b64encode(
+            "CategoryType:{}".format(self.category.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """ mutation($postId: ID!, $categoryId: ID!){
+                    updatePost(postId: $postId, title: "test", description: "testowanie", categoryId: $categoryId){
+                        post{
+                            title
+                            description
+                        }
+                        errors
+                        success
+                    }
+                }
+                """
+        variables = {"postId": post_id, "categoryId": category_id}
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+        self.assertEqual(result.status_code, 200)
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+        self.assertIn("updatePost", content["data"])
+        self.assertIn("post", content["data"]["updatePost"])
+        self.assertEqual(content["data"]["updatePost"]["post"]["title"], "test")
+        self.assertEqual(
+            content["data"]["updatePost"]["post"]["description"], "testowanie"
+        )
+        self.assertEqual(content["data"]["updatePost"]["success"], True)
+
+    def test_delete_mutation(self):
+        category_id = base64.b64encode(
+            "CategoryType:{}".format(self.category.id).encode("utf-8")
+        ).decode("utf-8")
+        with open("core/tests/sum.jpg", "rb") as image:
+            response = self.client.post('/graphql', {
+                'operations': json.dumps({
+                    'query': 'mutation ($file: Upload!) { createImage(image: $file) { image{ id } success errors  } }',
+                    'variables': {
+                        'file': None
+                    },
+                }),
+                'map': json.dumps({
+                    '0': ['variables.file'],
+                }),
+                '0': image,
+            }, format='multipart')
+
+            self.assertEqual(response.status_code, 200)
+            content = json.loads(response.content)
+            image_id = content["data"]["createImage"]["image"]["id"]
+
+            mutation = """mutation($categoryId: ID!, $imageId: String!){
+                            createPost(title: "test", description: "testowanie", imageId: $imageId, categoryId: $categoryId, isPrivate: false){
+                                post{
+                                    id
+                                    title
+                                    description
+                                }
+                                errors
+                            success
+                        }
+                        }
+                     """
+
+            variables = {
+                "categoryId": category_id,
+                "imageId": image_id,
+            }
+            result = self.client.post(
+                "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+            )
+            self.assertEqual(result.status_code, 200)
+            content = json.loads(result.content)
+            post_id = content["data"]["createPost"]["post"]["id"]
+            mutation = """ mutation($postId: ID!){
+                    deletePost(postId: $postId){
+                        success
+                        errors
+                    }
+                }
+                """
+        
+            variables = {"postId": post_id}
+            result = self.client.post(
+                "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+            )
+            self.assertEqual(result.status_code, 200)
+            content = json.loads(result.content)
+            self.assertIn("data", content)
+            self.assertIn("deletePost", content["data"])
+            self.assertEqual(content["data"]["deletePost"]["success"], True)
+            self.assertEqual(content["data"]["deletePost"]["errors"], None)
+
+
+    def test_errors_delete_post_mutation(self):
+        post_id = str(
+            base64.b64encode(
+                "CategoryType:{}".format(self.post.id).encode("utf-8")
+            ).decode("utf-8")
+        )
+        mutation = """ mutation($postId: ID!){
+                    deletePost(postId: $postId){
+                        success
+                        errors
+                    }
+                }
+                """
+        
+        variables = {"postId": post_id}
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+        self.assertEqual(result.status_code, 200)
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+        self.assertIn("deletePost", content["data"])
+        self.assertEqual(content["data"]["deletePost"]["success"], False)
+        self.assertNotEqual(content["data"]["deletePost"]["errors"], None)
+
+
+class AnonymousPostsGraphQLTestCase(GraphQLTestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+        self.image = Image.objects.create(name="TestImage", url="sum.jpg")
+        self.image.save()
+
+        self.category = Category.objects.create(name="TestCategory")
+        self.category.save()
+
+    def test_create_post_with_image_mutation(self):
+        image_id = str(self.image.id)
+        category_id = base64.b64encode(
+            "CategoryType:{}".format(self.category.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """mutation($imageId: String!, $categoryId: ID!){
+                        createPost(title: "test", description: "testowanie", categoryId: $categoryId, imageId: $imageId, isPrivate: true){
+                            post{
+                                title
+                                description
+                                image{
+                                    name
+                                }
+                            }
+                            errors
+                            success
+                        }
+                        }
+                    """
+
+        variables = {
+            "imageId": image_id,
+            "categoryId": category_id,
+        }
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+        self.assertEqual(result.status_code, 200)
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+        self.assertIn("createPost", content["data"])
+        self.assertIn("post", content["data"]["createPost"])
+        self.assertEqual(content["data"]["createPost"]["post"]["title"], "test")
+        self.assertEqual(
+            content["data"]["createPost"]["post"]["description"], "testowanie"
+        )
+        self.assertEqual(
+            content["data"]["createPost"]["post"]["image"]["name"], "TestImage"
+        )
+        self.assertEqual(content["data"]["createPost"]["success"], True)
+
+    def test_error_create_post_mutation(self):
+        category_id = base64.b64encode(
+            "CategoryType:{}".format(self.category.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """mutation($categoryId: ID!){
+                        createPost(title: "test", description: "testowanie", imageId: "", categoryId: $categoryId, isPrivate: false){
+                            post{
+                                title
+                                description
+                            }
+                            errors
+                            success
+                        }
+                        }
+                    """
+
+        variables = {
+            "categoryId": category_id,
+        }
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+        self.assertEqual(result.status_code, 200)
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+        self.assertIn("createPost", content["data"])
+        self.assertIn("post", content["data"]["createPost"])
+        self.assertNotEqual(content["data"]["createPost"]["errors"], None)
+        self.assertEqual(content["data"]["createPost"]["success"], False)
+
+    
+
 
 
 class CommentsGraphQLTestCase(GraphQLTestCase):
@@ -576,3 +917,73 @@ class CommentsGraphQLTestCase(GraphQLTestCase):
         self.assertIn("data", content)
         self.assertIn("updateComment", content["data"])
         self.assertEqual(content["data"]["updateComment"]["success"], True)
+
+
+class SubCommentsGraphQLTestCase(GraphQLTestCase):
+    def setUp(self):
+        self.user = ExtendUser.objects.create_user(
+            username="testuser", password="testpassword", email="test123@test.pl"
+        )
+        self.user.save()
+
+        self.image = Image.objects.create(name="TestImage", url="sum.jpg")
+        self.image.save()
+
+        self.category = Category.objects.create(name="TestCategory")
+        self.category.save()
+
+        self.post = Post.objects.create(
+            title="TestPost",
+            description="TestDescription",
+            user=self.user,
+            image=self.image,
+            category=self.category,
+        )
+        self.post.save()
+
+        self.comment = Comment.objects.create(
+            user=self.user, comment="TestComment", post=self.post
+        )
+        self.comment.save()
+
+        self.subcomment = Subcomment.objects.create(
+            user=self.user, comment=self.comment, content="TestSubComment"
+        )
+        self.subcomment.save()
+
+    def test_get_subcomments_query(self):
+        comment_id = base64.b64encode(
+            "CategoryType:{}".format(self.comment.id).encode("utf-8")
+        ).decode("utf-8")
+        query = """query($commentId: String!){
+                  subcommentsByComment(commentId: $commentId){
+                      edges{
+                          node{
+                              user {
+                                  id
+                                  username
+                              }
+                              id
+                              content
+                              createTime
+                              }
+                          }
+                      }
+                  }
+                """
+            
+        variables = {"commentId": comment_id}
+        result = self.client.post(
+            "/graphql", data={"query": query, "variables": json.dumps(variables)}
+        )
+        self.assertEqual(result.status_code, 200)
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+        self.assertIn("subcommentsByComment", content["data"])
+        self.assertIn("edges", content["data"]["subcommentsByComment"])
+        self.assertIn("node", content["data"]["subcommentsByComment"]["edges"][0])
+        self.assertIn("user", content["data"]["subcommentsByComment"]["edges"][0]["node"])
+        self.assertIn(content["data"]["subcommentsByComment"]["edges"][0]["node"]["content"],"TestSubComment")
+
+          
+
