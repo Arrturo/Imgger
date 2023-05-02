@@ -88,7 +88,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return Post.objects.filter(user=user_id).filter(is_private=False).order_by('-create_time')
     
     def resolve_search(self, info, keyword, **kwargs):
-        return Post.objects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword)).filter(is_private=False).order_by('-create_time')
+        return Post.objects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword) | Q(category__name__icontains=keyword) | Q(user__username__icontains=keyword)).filter(is_private=False).order_by('-create_time')
 
     def resolve_categories_by_id(self, info, id):
         return Category.objects.get(pk=id)

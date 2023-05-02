@@ -215,7 +215,7 @@ function PostScreen() {
             <Col md={5}>
               <ListGroup.Item variant="flush" className="mb-5">
                 <p className="text-2xl">Tags:</p>
-                {post?.category && <CategoryItem name={post?.category?.name} />}
+                {post?.category && <CategoryItem name={post?.category?.name} id={post?.category?.id}/>}
               </ListGroup.Item>
 
               <ListGroup.Item variant="flush">
