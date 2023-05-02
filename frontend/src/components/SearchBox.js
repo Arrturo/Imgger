@@ -10,7 +10,8 @@ function SearchBox() {
 
     const submitHandler = (e) =>{
         e.preventDefault()
-
+        navigate(`/search/${keyword}`)
+        window.location.reload()
     }
 
   return (
