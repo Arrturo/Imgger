@@ -22,7 +22,7 @@ import PostEditScreen from './screens/PostEditScreen';
 import CategoryPost from './screens/CategoryPost';
 import PrivatePost from './screens/PrivatePost';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
-
+import SearchingPost from './screens/SearchPage'
 
 function App() {
 	useEffect(() => {
@@ -49,6 +49,7 @@ function App() {
 							<Route path='admin/userlist/:id/edit' element={<UserEditScreen />} />
 							<Route path='admin/postlist' element={<PostsAdminScreen />} />
 							<Route path='/category/:category' element={<CategoryPost />} />
+							<Route path='/search/:keywords' element={<SearchingPost />} />
 							<Route path='/password-reset/:token' element={<ResetPasswordScreen />} />
 							
 						</Routes>
