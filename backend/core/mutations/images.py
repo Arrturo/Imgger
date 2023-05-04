@@ -21,7 +21,7 @@ class CreateImageMutation(graphene.Mutation):
     def mutate(root, info, image):
         try:
             bucket = storage.bucket()
-            blob = bucket.blob(f"{random.random()}.{image.name}")
+            blob = bucket.blob(f"images/{random.random()}.{image.name}")
             blob.upload_from_string(image.read(), content_type=image.content_type)
             blob.make_public()
 
