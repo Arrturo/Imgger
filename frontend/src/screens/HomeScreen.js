@@ -115,7 +115,8 @@ const HomeScreen = () => {
           <CategoryItem name={category.node.name} postsCount={category.node.postsCount} id={category.node.id}/>
         ))}
       </div>
-      <Dropdown className="float-right pr-12">
+        <br></br>
+      <Dropdown className="sort">
         <Dropdown.Toggle id="dropdown-button-dark-example1" variant="success" className="sort-btn">
           Sort by
         </Dropdown.Toggle>
