@@ -5,7 +5,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
 import { postsList, deletePost } from "../actions/postActions";
-
+import {url} from '../constants/host'
 
 function PostsAdminScreen() {
   const dispatch = useDispatch();
@@ -65,7 +65,7 @@ function PostsAdminScreen() {
               <tr key={post?.node?.id}>
                     <td>{post?.node?.id}</td>
                     <td>
-                      <a href={`http://localhost:3000/post/${post?.node?.id}`}>
+                      <a href={`/post/${post?.node?.id}`}>
                         <Image
                           className="max-h-28 "
                           src={post?.node?.image?.url}

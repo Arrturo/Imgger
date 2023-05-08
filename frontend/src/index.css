@@ -205,3 +205,18 @@ main{
   position: absolute;
   top: 60%;
 } */
+
+.sort-btn{
+  background: gray;
+}
+
+
+.logoo{
+  width: 50px;
+  height: 50px;
+  transition: scale .3s;
+}
+
+.logoo:hover{
+  scale: 1.2;
+}
