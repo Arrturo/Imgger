@@ -1,5 +1,6 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
+import {Image} from 'react-bootstrap';
 import Navbar from 'react-bootstrap/Navbar';
 import { LinkContainer } from 'react-router-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
@@ -9,6 +10,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import {useNavigate} from 'react-router-dom'
 import SearchBox from './SearchBox';
 import Loader from './Loader';
+import logo from '../LOGO.png';
 
 
 function Header() {
@@ -32,7 +34,9 @@ function Header() {
 			<Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
 				<Container fluid >
                     <LinkContainer to='/'>
-					    <Navbar.Brand className="hover:text-amber-400 hover:font-bold text-2xl text-amber-200" href='/'>Imgger</Navbar.Brand>
+					    <Navbar.Brand href='/' className='inline-block'>
+							<Image src={logo} className='logoo'/>
+						</Navbar.Brand> 
                     </LinkContainer>
 					<Navbar.Toggle aria-controls='navbarScroll' />
 					<Navbar.Collapse id='navbarScroll'>

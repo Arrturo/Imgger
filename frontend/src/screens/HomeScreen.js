@@ -12,6 +12,8 @@ import "firebase/auth";
 import firebaseConfig from "../firebaseConfig.json";
 import "firebase/firestore";
 import "firebase/storage";
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 const PAGE_NUMBER = 0;
 
 // Initialize Firebase
@@ -112,6 +114,17 @@ const HomeScreen = () => {
           <CategoryItem name={category.node.name} postsCount={category.node.postsCount} id={category.node.id}/>
         ))}
       </div>
+      <Dropdown className="float-right pr-12">
+        <Dropdown.Toggle id="dropdown-button-dark-example1" variant="success" className="sort-btn">
+          Sort by
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu variant="dark">
+          <Dropdown.Item href="/" active> Newest </Dropdown.Item>
+          <button onClick={() => console.log("ELOELO")}><Dropdown.Item active> Best rating </Dropdown.Item></button>
+          <Dropdown.Item href="#/action-1" active> Popularity </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
       <PostList posts={postData} />
       {loading && <Loader />}
     </div>
