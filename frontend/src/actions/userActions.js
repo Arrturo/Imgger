@@ -17,7 +17,7 @@ export const login = (username, password) => async (dispatch) =>{
         })
 	
 
-        const { data } = await axios.post('http://localhost:8000/graphql', {
+        const { data } = await axios.post('https://imgger.smallhost.pl/graphql', {
             query: `
               mutation {
                 login(username: "${username}", password: "${password}") {
@@ -70,7 +70,7 @@ export const login = (username, password) => async (dispatch) =>{
 }
 
 export const logout = () => (dispatch) => {
-	axios.post('http://localhost:8000/logout/', {
+	axios.post('https://imgger.smallhost.pl/logout/', {
 		headers: {
 			'Content-type': 'application/json',
 		},
@@ -91,7 +91,7 @@ export const register = (username, email, password, confirmPassword) => async (d
 			},
 		};
 
-		const { data } = await axios.post('http://localhost:8000/graphql', {
+		const { data } = await axios.post('https://imgger.smallhost.pl/graphql', {
       query: `
        mutation {
         register(
@@ -153,7 +153,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 			},
 		};
 
-		const { data } = await axios.post(`http://localhost:8000/graphql`,{
+		const { data } = await axios.post(`https://imgger.smallhost.pl/graphql`,{
       query: `
         mutation{
           updateUser(userId: ${user.id}, username: "${user.username}", email: "${user.email}", password: "${user.password}"){
@@ -211,7 +211,7 @@ export const listUsers = () => async (dispatch, getState) => {
 			},
 		};
 
-		const { data } = await axios.post(`http://localhost:8000/graphql`,{
+		const { data } = await axios.post(`https://imgger.smallhost.pl/graphql`,{
       query: `
         query{
           users{
@@ -259,7 +259,7 @@ export const deleteUser = (id) => async (dispatch, getState) => {
 			},
 		};
 
-		const { data } = await axios.post(`http:/localhost:8000/graphql`, {
+		const { data } = await axios.post(`https://imgger.smallhost.pl/graphql`, {
       query: `
         mutation{
           deleteUser(userId: ${id}){
@@ -304,7 +304,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
 			},
 		};
 
-		const { data } = await axios.post(`http://localhost:8000/graphql`, {
+		const { data } = await axios.post(`https://imgger.smallhost.pl/graphql`, {
       query: `
         query{
           usersById(id: ${id}){
@@ -356,7 +356,7 @@ export const updateUserProfileByAdmin = (user) => async (dispatch, getState) => 
 			},
 		};
 
-		const { data } = await axios.post(`http://localhost:8000/graphql`,{
+		const { data } = await axios.post(`https://imgger.smallhost.pl/graphql`,{
       query: `
         mutation{
           updateUser(userId: ${user.id}, username: "${user.username}", email: "${user.email}", password: "", isStaff: ${user.isStaff}){

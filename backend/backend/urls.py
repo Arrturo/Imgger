@@ -16,24 +16,25 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_file_upload.django import FileUploadGraphQLView
 from graphql_jwt.decorators import jwt_cookie
 
 from core.schema import schema
 from core.views import activate, logout_view
+from django.views.generic import TemplateView
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
     path(
         "graphql",
         jwt_cookie(
-            csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True, schema=schema))
+            csrf_exempt(FileUploadGraphQLView.as_view(graphiql=False, schema=schema))
         ),
     ),
     path("activate/<token>", activate, name="activate"),
     path("logout/", csrf_exempt(logout_view), name="logout"),
+    re_path(r"^.*$", TemplateView.as_view(template_name="index.html")),
 ]
 
 if settings.DEBUG:

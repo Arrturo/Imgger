@@ -58,7 +58,7 @@ export const postsList = () => async (dispatch, getState) => {
             },
         };
 
-        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+        const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
             query:`
                 query{
                     posts(first: 10, offset: 0){
@@ -113,7 +113,7 @@ export const postsDetails = (id) => async (dispatch, getState) => {
         };
 
         dispatch({type: POST_DETAILS_REQUEST})
-        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+        const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
             query: `
                 query{
                     postsById(id: "${id}"){
@@ -181,7 +181,7 @@ export const createPost =
         },
       };
       const { data } = await axios.post(
-        `http://localhost:8000/graphql`,
+        `https://imgger.smallhost.pl/graphql`,
         {
           query: `
                 mutation{
@@ -226,7 +226,7 @@ export const likePost = (id) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.post(
-      `http://localhost:8000/graphql`,
+      `https://imgger.smallhost.pl/graphql`,
       {
         query: `
                 mutation{
@@ -265,7 +265,7 @@ export const dislikePost = (id) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.post(
-      `http://localhost:8000/graphql`,
+      `https://imgger.smallhost.pl/graphql`,
       {
         query: `
                 mutation{
@@ -307,7 +307,7 @@ export const postComments = (postId) => async (dispatch, getState) => {
         
 
         dispatch({type: POST_COMMENTS_REQUEST})
-        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+        const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
             query: `
                 query{
                     commentsByPost(postId: "${postId}"){
@@ -359,7 +359,7 @@ export const addComment = (postId, userId, comment) => async (dispatch, getState
                 'Content-type': 'application/json',
             },
         }
-        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+        const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
             query: `
                 mutation{
                    createComment(postId: "${postId}", userId: ${userId}, comment: "${comment}"){
@@ -402,7 +402,7 @@ export const deleteComment = (commentId) => async (dispatch, getState) => {
                 'Content-type': 'application/json',
             }}
 
-        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+        const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
             query: `
                 mutation{
                     deleteComment(commentId: "${commentId}"){
@@ -444,7 +444,7 @@ export const editComment = (comment) => async (dispatch, getState) => {
                 'Content-type': 'application/json',
             }}
 
-        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+        const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
             query: `
             mutation{
                 updateComment(commentId: "${comment.id}", content: "${comment.content}") {
@@ -486,7 +486,7 @@ export const myPostsList = (id) => async (dispatch, getState) => {
             },
         };
 
-        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+        const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
             query:`
                 query{
                     postsByUser(userId: ${id}){
@@ -547,7 +547,7 @@ export const likedPostsList = () => async (dispatch, getState) => {
             },
         };
 
-        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+        const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
             query:`
                 query{
                     me{
@@ -608,7 +608,7 @@ export const deletePost = (postId) => async (dispatch, getState) => {
               'Content-type': 'application/json',
           }}
 
-      const {data} = await axios.post(`http://localhost:8000/graphql`, {
+      const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
           query: `
               mutation{
                   deletePost(postId: "${postId}"){
@@ -650,7 +650,7 @@ export const editPost = (post) => async (dispatch, getState) => {
               'Content-type': 'application/json',
           }}
 
-      const {data} = await axios.post(`http://localhost:8000/graphql`, {
+      const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
           query: `
           mutation{
               updatePost(postId: "${post.postId}", title: "${post.title}", description: "${post.description}", categoryId: "${post.category}") {
@@ -692,7 +692,7 @@ export const subcomments = (commentId) => async (dispatch, getState) => {
       
 
       dispatch({type: SUBCOMMENT_REQUEST})
-      const {data} = await axios.post(`http://localhost:8000/graphql`, {
+      const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
           query: `
               query{
                   subcommentsByComment(commentId: "${commentId}"){

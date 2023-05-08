@@ -14,7 +14,7 @@ export const categoriesList = () => async (dispatch) => {
 			},
 		};
 
-        const {data} = await axios.post('http://localhost:8000/graphql', {
+        const {data} = await axios.post('https://imgger.smallhost.pl/graphql', {
             query: `
                 query{
                     categories{
@@ -65,7 +65,7 @@ export const deleteCategories = (id) => async (dispatch, getState) => {
         }
 
 
-        const {data} = await axios.post('http://localhost:8000/graphql', {
+        const {data} = await axios.post('https://imgger.smallhost.pl/graphql', {
             query: `
                 mutation{
                     deleteCategory(categoryId: "${id}"){
@@ -108,7 +108,7 @@ export const createCategory = (name) => async (dispatch, getState) => {
                 'Sec-Fetch-Site': 'same-origin',
             }
         }
-        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+        const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
             query: `
                 mutation{
                     createCategory(name: "${name}"){
@@ -156,7 +156,7 @@ export const editCategory = (category) => async (dispatch, getState) => {
                 'Content-type': 'application/json',
             }
         }
-        const {data} = await axios.post(`http://localhost:8000/graphql`, {
+        const {data} = await axios.post(`https://imgger.smallhost.pl/graphql`, {
             query: `
                 mutation{
                     updateCategory(categoryId: "${category.id}", name: "${category.name}"){

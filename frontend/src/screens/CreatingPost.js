@@ -89,7 +89,7 @@ function CreatingPost() {
       };
   
       const { data } = await axios.post(
-        "http://localhost:8000/graphql",
+        "https://imgger.smallhost.pl/graphql",
         formData,
         config
       );

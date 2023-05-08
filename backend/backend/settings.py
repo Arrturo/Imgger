@@ -22,7 +22,7 @@ from firebase_admin import credentials
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-with open(os.path.join(BASE_DIR, "backend/secrets.json")) as secrets_file:
+with open(os.path.join(BASE_DIR, "public_python/secrets.json")) as secrets_file:
     secrets = json.load(secrets_file)
 
 
@@ -34,7 +34,7 @@ def get_secret(setting, secrets=secrets):
         raise ImproperlyConfigured("Set the {} setting".format(setting))
 
 
-cred = credentials.Certificate("backend/secrets.json")
+cred = credentials.Certificate("public_python/secrets.json")
 firebase_admin.initialize_app(cred, {"storageBucket": get_secret("storageBucket")})
 
 # Quick-start development settings - unsuitable for production
@@ -81,12 +81,12 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "backend.urls"
+ROOT_URLCONF = "public_python.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["core", os.path.join(BASE_DIR, "templates")],
+        "DIRS": ["core", os.path.join(BASE_DIR, "templates"), "frontend/build"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -99,7 +99,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "backend.wsgi.application"
+WSGI_APPLICATION = "public_python.wsgi.application"
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
@@ -179,7 +179,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "core.ExtendUser"
 
 GRAPHENE = {
-    "SCHEMA": "backend.schema.schema",
+    "SCHEMA": "public_python.schema.schema",
     "MIDDLEWARE": [
         "graphql_jwt.middleware.JSONWebTokenMiddleware",
     ],
@@ -212,3 +212,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+STATICFILES_DIRS = [
+    "frontend/build/static",
+]

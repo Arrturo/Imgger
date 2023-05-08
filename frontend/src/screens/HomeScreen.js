@@ -43,7 +43,7 @@ const HomeScreen = () => {
       };
 
       const { data } = await axios.post(
-        `http://127.0.0.1:8000/graphql`,
+        `https://imgger.smallhost.pl/graphql`,
         {
           query: `
             query{

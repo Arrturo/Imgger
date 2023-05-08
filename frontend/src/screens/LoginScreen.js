@@ -49,7 +49,7 @@ function LoginScreen() {
 			},
 		};
 
-		const { data } = await axios.post('http://localhost:8000/graphql', {
+		const { data } = await axios.post('https://imgger.smallhost.pl/graphql', {
       query: `
        mutation {
         sendPasswordResetEmail(email: "${email}"){
