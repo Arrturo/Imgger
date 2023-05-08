@@ -14,6 +14,7 @@ import "firebase/firestore";
 import "firebase/storage";
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import {url} from '../constants/host'
 const PAGE_NUMBER = 0;
 
 // Initialize Firebase
@@ -45,7 +46,7 @@ const HomeScreen = () => {
       };
 
       const { data } = await axios.post(
-        `http://127.0.0.1:8000/graphql`,
+        `${url}/graphql`,
         {
           query: `
             query{

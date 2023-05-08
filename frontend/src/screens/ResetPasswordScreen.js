@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
+import {url} from '../constants/host'
 
 function ResetPasswordScreen() {
 	const { token } = useParams();
@@ -45,7 +46,7 @@ function ResetPasswordScreen() {
 		};
 
 		const { data } = await axios.post(
-			"http://localhost:8000/graphql",
+			`${url}/graphql`,
 			{
 				query: `
            mutation {
@@ -66,9 +67,9 @@ function ResetPasswordScreen() {
 			setTimeout(() => {
 				navigate("/login");
 			}, 3000);
-		}else{
-            setMessage(data?.data?.passwordReset?.errors?.nonFieldErrors[0]?.message)
-        }
+		} else {
+			setMessage(data?.data?.passwordReset?.errors?.nonFieldErrors[0]?.message);
+		}
 	};
 
 	return (

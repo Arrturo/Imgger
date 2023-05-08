@@ -13,6 +13,7 @@ import firebaseConfig from "../firebaseConfig.json";
 import "firebase/firestore";
 import "firebase/storage";
 import { useParams } from "react-router-dom";
+import {url} from '../constants/host'
 
 const PAGE_NUMBER = 0;
 
@@ -46,7 +47,7 @@ const SearchingPost = () => {
 			};
 
 			const { data } = await axios.post(
-				`http://127.0.0.1:8000/graphql`,
+				`${url}/graphql`,
 				{
 					query: `
             query{
