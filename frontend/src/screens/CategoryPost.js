@@ -5,7 +5,6 @@ import Loader from "../components/Loader";
 import { categoriesList } from "../actions/categoriesActions";
 import CategoryItem from "../components/CategoryItem";
 import { useDispatch, useSelector } from "react-redux";
-
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import "firebase/auth";
@@ -13,6 +12,7 @@ import firebaseConfig from "../firebaseConfig.json";
 import "firebase/firestore";
 import "firebase/storage";
 import { useParams } from "react-router-dom";
+import {url} from '../constants/host'
 
 const PAGE_NUMBER = 0;
 
@@ -51,7 +51,7 @@ const analytics = getAnalytics(app);
       };
 
       const { data } = await axios.post(
-        `http://127.0.0.1:8000/graphql`,
+        `${url}/graphql`,
         {
           query: `
             query{

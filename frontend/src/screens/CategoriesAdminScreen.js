@@ -62,8 +62,11 @@ function CategoriesAdminScreen() {
 
     const editDataSubmitHandler = (ele) => {
         ele.preventDefault()
-        dispatch(editCategory({'id': idEditCategory, 'name': editName}))
-        window.location.reload()
+        setTimeout(() => {
+            dispatch(editCategory({'id': idEditCategory, 'name': editName}))
+            window.location.reload()
+          }, 100);
+
     }
 
 
