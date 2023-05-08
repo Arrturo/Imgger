@@ -210,6 +210,12 @@ main{
   background: gray;
 }
 
+.sort{
+  display: flex;
+  align-items: right;
+  justify-content: right;
+}
+
 
 .logoo{
   width: 50px;
@@ -219,4 +225,19 @@ main{
 
 .logoo:hover{
   scale: 1.2;
+}
+
+.my-masonry-grid {
+  display: flex;
+  width: auto;
+}
+
+.my-masonry-grid_column {
+  padding-left: 10px; /* gutter size */
+  background-clip: padding-box;
+}
+
+/* Style your items */
+.my-masonry-grid_column > div {
+  margin-bottom: 30px;
 }

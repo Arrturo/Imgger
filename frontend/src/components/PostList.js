@@ -1,16 +1,31 @@
-import Post from '../components/Post'
-import {Row, Col} from 'react-bootstrap'
+import React from 'react';
+import Post from '../components/Post';
+import { Row, Col } from 'react-bootstrap';
+import Masonry from 'react-masonry-css';
 
-function PostList({posts}) {
-    return (
-        <Row className="mt-5">
-            {posts.map(post => (
-                <Col key={post.node.id} sm={12} md={6} lg={4} xl={3} >
-                    <Post key={post.node.id} post={post} />
-                </Col>
-            ))}
-        </Row>
-    )
+function PostList({ posts }) {
+  const breakpointColumnsObj = {
+    default: 6,
+    2500: 5,
+    2000: 4,
+    1100: 3,
+    800: 2,
+    700: 1
+  };
+  const childElements = posts.map((post) => (
+    <div key={post.node.id}>
+      <Post key={post.node.id} post={post} />
+    </div>
+  ));
+  return (
+    <Masonry
+      breakpointCols={breakpointColumnsObj}
+      className="my-masonry-grid"
+      columnClassName="my-masonry-grid_column"
+    >
+      {childElements}
+    </Masonry>
+  );
 }
 
-export default PostList
+export default PostList;
