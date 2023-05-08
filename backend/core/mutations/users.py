@@ -66,16 +66,24 @@ class LoginMutation(graphene.Mutation):
         try:
             context = info.context
             user = authenticate(username=username, password=password)
+            print(user.status.verified)
             if user is not None:
-                context.jwt_cookie = True
-                context.jwt_refresh_token = create_refresh_token(user)
-                context.jwt_token = get_token(user)
-                context.user = user
-                return cls(
-                    user=user,
-                    success=True,
-                    errors=None,
-                )
+                if user.status.verified:
+                    context.jwt_cookie = True
+                    context.jwt_refresh_token = create_refresh_token(user)
+                    context.jwt_token = get_token(user)
+                    context.user = user
+                    return cls(
+                        user=user,
+                        success=True,
+                        errors=None,
+                    )
+                else:
+                    return cls(
+                        user=None,
+                        success=False,
+                        errors="Please verify your email address",
+                    )
             else:
                 return cls(user=None, success=False, errors="Invalid credentials")
         except Exception as e:
