@@ -143,6 +143,7 @@ class like(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.String()
 
+    @login_required
     def mutate(self, info, post_id):
         user = info.context.user
 
@@ -168,6 +169,7 @@ class dislike(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.String()
 
+    @login_required
     def mutate(self, info, post_id):
         user = info.context.user
 
