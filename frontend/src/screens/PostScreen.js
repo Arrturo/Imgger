@@ -306,8 +306,8 @@ function PostScreen() {
                         <div>
                           <p className="pl-2">{com.node.comment}</p>
                           <p className="text-base">
-                            <button className="mt-2 px-3 hover:text-lime-600 ease-in duration-75"> <i class="fa-solid fa-thumbs-up"></i> 3 </button>
-                            <button className="mt-2 hover:text-red-500 ease-in duration-75"> <i class="fa-solid fa-thumbs-down"></i> 1 </button>
+                            <button className="mt-2 px-3 hover:text-lime-600 ease-in duration-75"> <i class="fa-solid fa-thumbs-up"></i> 0 </button>
+                            <button className="mt-2 hover:text-red-500 ease-in duration-75"> <i class="fa-solid fa-thumbs-down"></i> 0 </button>
                           </p>
                         </div>
                       )}

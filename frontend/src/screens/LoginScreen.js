@@ -7,7 +7,7 @@ import {login} from '../actions/userActions'
 import axios from 'axios';
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-
+import { url } from '../constants/host';
 
 function LoginScreen() {
 
@@ -27,6 +27,7 @@ function LoginScreen() {
     const [isForgot, setIsForgot] = useState(false)
     const [email, setEmail] = useState("")
     const [sendEmailSuccess, setSendEmailSuccess] = useState(false)
+
 
     useEffect(() => {
         if(userInfo?.user){
@@ -49,7 +50,7 @@ function LoginScreen() {
 			},
 		};
 
-		const { data } = await axios.post('http://localhost:8000/graphql', {
+		const { data } = await axios.post('${url}/graphql', {
       query: `
        mutation {
         sendPasswordResetEmail(email: "${email}"){

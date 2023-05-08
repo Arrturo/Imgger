@@ -67,7 +67,7 @@ export const login = (username, password) => async (dispatch) => {
 		} else {
 			dispatch({
 				type: USER_LOGIN_FAIL,
-				payload: "Invalid username or password",
+				payload: data.data.login.errors,
 			});
 		}
 	} catch (error) {
