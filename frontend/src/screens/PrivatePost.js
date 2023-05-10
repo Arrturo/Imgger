@@ -68,10 +68,10 @@ function PrivatePost() {
 						</Col>
 
 						<Col md={5}>
-							<ListGroup.Item variant="flush" className="mb-5">
+							{/* <ListGroup.Item variant="flush" className="mb-5">
 								<p className="text-2xl">Tags:</p>
 								{post?.category && <CategoryItem name={post?.category?.name} />}
-							</ListGroup.Item>
+							</ListGroup.Item> */}
 
 							<ListGroup.Item variant="flush">
 								<h2 className="text-4xl text-center">{post.title}</h2>

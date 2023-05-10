@@ -205,3 +205,75 @@ main{
   position: absolute;
   top: 60%;
 } */
+
+.sort-btn{
+  background: gray;
+}
+
+.dropdown-item:hover{
+  background: gray;
+}
+
+.sort{
+  display: flex;
+  align-items: right;
+  justify-content: right;
+}
+
+
+.logoo{
+  width: 50px;
+  height: 50px;
+  transition: scale .3s;
+}
+
+.logoo:hover{
+  scale: 1.2;
+}
+
+.my-masonry-grid {
+  display: flex;
+  width: auto;
+}
+
+.my-masonry-grid_column {
+  padding-left: 10px; /* gutter size */
+  background-clip: padding-box;
+}
+
+/* Style your items */
+.my-masonry-grid_column > div {
+  margin-bottom: 30px;
+}
+
+@media (max-width: 1201px){
+
+  .categories{
+    display: none;
+  }
+}
+
+
+.button-categorieslist{
+  float: right;
+  background-color: yellow;
+  color: black;
+  font-weight: bold;
+  padding: 3px;
+  border-radius: 25px;
+}
+
+.app{
+  min-height: 100vh;
+}
+
+
+@media (max-width: 769px){
+
+  .lajki{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+}
+

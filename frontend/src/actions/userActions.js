@@ -1,24 +1,40 @@
-import {USER_LOGIN_REQUEST, USER_LOGIN_SUCCESS, USER_LOGIN_FAIL, USER_REGISTER_REQUEST,
+import {
+	USER_LOGIN_REQUEST,
+	USER_LOGIN_SUCCESS,
+	USER_LOGIN_FAIL,
+	USER_REGISTER_REQUEST,
 	USER_REGISTER_SUCCESS,
-	USER_REGISTER_FAIL, USER_LOGOUT, USER_UPDATE_PROFILE_REQUEST,
+	USER_REGISTER_FAIL,
+	USER_LOGOUT,
+	USER_UPDATE_PROFILE_REQUEST,
 	USER_UPDATE_PROFILE_SUCCESS,
 	USER_UPDATE_PROFILE_FAIL,
-	USER_UPDATE_PROFILE_RESET, USER_LIST_FAIL, USER_LIST_REQUEST, USER_LIST_SUCCESS, USER_DELETE_FAIL,
+	USER_UPDATE_PROFILE_RESET,
+	USER_LIST_FAIL,
+	USER_LIST_REQUEST,
+	USER_LIST_SUCCESS,
+	USER_DELETE_FAIL,
 	USER_DELETE_REQUEST,
-	USER_DELETE_SUCCESS, USER_DETAILS_FAIL, USER_DETAILS_REQUEST, USER_DETAILS_SUCCESS} from '../constants/userConstants'
-import axios from 'axios'
+	USER_DELETE_SUCCESS,
+	USER_DETAILS_FAIL,
+	USER_DETAILS_REQUEST,
+	USER_DETAILS_SUCCESS,
+} from "../constants/userConstants";
+import axios from "axios";
+import {url} from '../constants/host'
 
 axios.defaults.withCredentials = true;
 
-export const login = (username, password) => async (dispatch) =>{
-    try{
-        dispatch({
-            type: USER_LOGIN_REQUEST
-        })
-	
+export const login = (username, password) => async (dispatch) => {
+	try {
+		dispatch({
+			type: USER_LOGIN_REQUEST,
+		});
 
-        const { data } = await axios.post('http://localhost:8000/graphql', {
-            query: `
+		const { data } = await axios.post(
+			`${url}/graphql`,
+			{
+				query: `
               mutation {
                 login(username: "${username}", password: "${password}") {
                   success
@@ -32,67 +48,66 @@ export const login = (username, password) => async (dispatch) =>{
                   }
                 }
               }
-            `, 
-          }, {
-			headers: {
-				'Content-type': 'application/json',
-				
+            `,
 			},
-		  })
+			{
+				headers: {
+					"Content-type": "application/json",
+				},
+			}
+		);
 
-		  console.log(data)
+		if (data.data.login.success === true) {
+			dispatch({
+				type: USER_LOGIN_SUCCESS,
+				payload: data.data.login,
+			});
 
-          if(data.data.login.success === true){
-            dispatch({
-                type: USER_LOGIN_SUCCESS,
-                payload: data.data.login,
-            });
-        
-            localStorage.setItem('userInfo', JSON.stringify(data.data.login));
-
-          } else {
-            dispatch({
-                type: USER_LOGIN_FAIL,
-                payload: "Invalid username or password",
-            })
-          }
-
-
-
-    } catch (error){
-        dispatch({
-            type: USER_LOGIN_FAIL,
-            payload: error.response && error.response.data.detail
-            ? error.response.data.detail
-            : error.message,
-        })
-    }
-}
+			localStorage.setItem("userInfo", JSON.stringify(data.data.login));
+		} else {
+			dispatch({
+				type: USER_LOGIN_FAIL,
+				payload: data.data.login.errors,
+			});
+		}
+	} catch (error) {
+		dispatch({
+			type: USER_LOGIN_FAIL,
+			payload:
+				error.response && error.response.data.detail
+					? error.response.data.detail
+					: error.message,
+		});
+	}
+};
 
 export const logout = () => (dispatch) => {
-	axios.post('http://localhost:8000/logout/', {
+	axios.post(`${url}/logout/`, {
 		headers: {
-			'Content-type': 'application/json',
+			"Content-type": "application/json",
 		},
 	});
-	localStorage.removeItem('userInfo');
+	localStorage.removeItem("userInfo");
 	dispatch({ type: USER_LOGOUT });
 };
 
-export const register = (username, email, password, confirmPassword) => async (dispatch) => {
-	try {
-		dispatch({
-			type: USER_REGISTER_REQUEST,
-		});
+export const register =
+	(username, email, password, confirmPassword) => async (dispatch) => {
+		try {
+			dispatch({
+				type: USER_REGISTER_REQUEST,
+			});
 
-		const config = {
-			headers: {
-				'Content-type': 'application/json',
-			},
-		};
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
 
-		const { data } = await axios.post('http://localhost:8000/graphql', {
-      query: `
+			const { data } = await axios.post(
+				`${url}/graphql`,
+				{
+					query: `
        mutation {
         register(
           email: "${email}",
@@ -107,35 +122,35 @@ export const register = (username, email, password, confirmPassword) => async (d
         }
       }
 	  `,
-		}, config);
+				},
+				config
+			);
 
-      
-      if (data.data.register.success) { 
-        dispatch({
-          type: USER_REGISTER_SUCCESS,
-          payload: data,
-        });
-      }else{
-        dispatch({
-			type: USER_REGISTER_FAIL,
-			payload: data.data.register.errors.username || data.data.register.errors.password1 || data.data.register.errors.password2
-		  });
-      }
-
-
-	} catch (error) {
-		dispatch({
-      
-			type: USER_REGISTER_FAIL,
-			payload:
-				error.response && error.response.data.detail
-					? error.response.data.detail
-					: error.message,
-		});
-	}
-};
-
-
+			if (data.data.register.success) {
+				dispatch({
+					type: USER_REGISTER_SUCCESS,
+					payload: data,
+				});
+			} else {
+				dispatch({
+					type: USER_REGISTER_FAIL,
+					payload:
+						data.data.register.errors.username ||
+						data.data.register.errors.password1 ||
+						data.data.register.errors.password2 ||
+						data.data.register.errors.email,
+				});
+			}
+		} catch (error) {
+			dispatch({
+				type: USER_REGISTER_FAIL,
+				payload:
+					error.response && error.response.data.detail
+						? error.response.data.detail
+						: error.message,
+			});
+		}
+	};
 
 export const updateUserProfile = (user) => async (dispatch, getState) => {
 	try {
@@ -149,12 +164,14 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 
 		const config = {
 			headers: {
-				'Content-type': 'application/json',
+				"Content-type": "application/json",
 			},
 		};
 
-		const { data } = await axios.post(`http://localhost:8000/graphql`,{
-      query: `
+		const { data } = await axios.post(
+			`${url}/graphql`,
+			{
+				query: `
         mutation{
           updateUser(userId: ${user.id}, username: "${user.username}", email: "${user.email}", password: "${user.password}"){
             user{
@@ -166,26 +183,24 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
             }
           }
         }
-      `
-    },  config);
+      `,
+			},
+			config
+		);
 
-    
 		dispatch({
-      type: USER_UPDATE_PROFILE_SUCCESS,
+			type: USER_UPDATE_PROFILE_SUCCESS,
 			payload: data,
 		});
-    
-    const userData = JSON.parse(localStorage.getItem('userInfo')); 
-    console.log(userData.user.username)
-    console.log(data.data.updateUser.user.username)
-    userData.user.username = data.data.updateUser.user.username;
-    userData.user.email = data.data.updateUser.user.email 
 
-    localStorage.setItem('userInfo', JSON.stringify(userData)); 
-    window.location.reload()
-    
-    
+		const userData = JSON.parse(localStorage.getItem("userInfo"));
+		console.log(userData.user.username);
+		console.log(data.data.updateUser.user.username);
+		userData.user.username = data.data.updateUser.user.username;
+		userData.user.email = data.data.updateUser.user.email;
 
+		localStorage.setItem("userInfo", JSON.stringify(userData));
+		window.location.reload();
 	} catch (error) {
 		dispatch({
 			type: USER_UPDATE_PROFILE_FAIL,
@@ -197,8 +212,6 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 	}
 };
 
-
-
 export const listUsers = () => async (dispatch, getState) => {
 	try {
 		dispatch({
@@ -207,12 +220,14 @@ export const listUsers = () => async (dispatch, getState) => {
 
 		const config = {
 			headers: {
-				'Content-type': 'application/json',
+				"Content-type": "application/json",
 			},
 		};
 
-		const { data } = await axios.post(`http://localhost:8000/graphql`,{
-      query: `
+		const { data } = await axios.post(
+			`${url}/graphql`,
+			{
+				query: `
         query{
           users{
               id
@@ -222,17 +237,15 @@ export const listUsers = () => async (dispatch, getState) => {
               dateJoined
           }
         }
-      `
-    }, config);
-
+      `,
+			},
+			config
+		);
 
 		dispatch({
 			type: USER_LIST_SUCCESS,
-			payload: data.data
+			payload: data.data,
 		});
-
-
-
 	} catch (error) {
 		dispatch({
 			type: USER_LIST_FAIL,
@@ -244,9 +257,6 @@ export const listUsers = () => async (dispatch, getState) => {
 	}
 };
 
-
-
-
 export const deleteUser = (id) => async (dispatch, getState) => {
 	try {
 		dispatch({
@@ -255,12 +265,14 @@ export const deleteUser = (id) => async (dispatch, getState) => {
 
 		const config = {
 			headers: {
-				'Content-type': 'application/json',
+				"Content-type": "application/json",
 			},
 		};
 
-		const { data } = await axios.post(`http:/localhost:8000/graphql`, {
-      query: `
+		const { data } = await axios.post(
+			`${url}/graphql`,
+			{
+				query: `
         mutation{
           deleteUser(userId: ${id}){
               user{
@@ -269,8 +281,10 @@ export const deleteUser = (id) => async (dispatch, getState) => {
               }
           }
         }
-      `
-    }, config);
+      `,
+			},
+			config
+		);
 
 		dispatch({
 			type: USER_DELETE_SUCCESS,
@@ -287,7 +301,6 @@ export const deleteUser = (id) => async (dispatch, getState) => {
 	}
 };
 
-
 export const getUserDetails = (id) => async (dispatch, getState) => {
 	try {
 		dispatch({
@@ -300,12 +313,14 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
 
 		const config = {
 			headers: {
-				'Content-type': 'application/json',
+				"Content-type": "application/json",
 			},
 		};
 
-		const { data } = await axios.post(`http://localhost:8000/graphql`, {
-      query: `
+		const { data } = await axios.post(
+			`${url}/graphql`,
+			{
+				query: `
         query{
           usersById(id: ${id}){
               id
@@ -314,19 +329,17 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
               isStaff
           }
         }
-      `
-    }, config);
+      `,
+			},
+			config
+		);
 
-
-    // console.log(data.data.usersById)
+		// console.log(data.data.usersById)
 
 		dispatch({
 			type: USER_DETAILS_SUCCESS,
 			payload: data.data.usersById,
 		});
-
-
-
 	} catch (error) {
 		dispatch({
 			type: USER_DETAILS_FAIL,
@@ -336,28 +349,29 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
 					: error.message,
 		});
 	}
-}
+};
 
+export const updateUserProfileByAdmin =
+	(user) => async (dispatch, getState) => {
+		try {
+			dispatch({
+				type: USER_UPDATE_PROFILE_REQUEST,
+			});
 
+			const {
+				userLogin: { userInfo },
+			} = getState();
 
-export const updateUserProfileByAdmin = (user) => async (dispatch, getState) => {
-	try {
-		dispatch({
-			type: USER_UPDATE_PROFILE_REQUEST,
-		});
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
 
-		const {
-			userLogin: { userInfo },
-		} = getState();
-
-		const config = {
-			headers: {
-				'Content-type': 'application/json',
-			},
-		};
-
-		const { data } = await axios.post(`http://localhost:8000/graphql`,{
-      query: `
+			const { data } = await axios.post(
+				`${url}/graphql`,
+				{
+					query: `
         mutation{
           updateUser(userId: ${user.id}, username: "${user.username}", email: "${user.email}", password: "", isStaff: ${user.isStaff}){
             user{
@@ -369,24 +383,22 @@ export const updateUserProfileByAdmin = (user) => async (dispatch, getState) => 
             }
           }
         }
-      `
-    },  config);
+      `,
+				},
+				config
+			);
 
-    
-		dispatch({
-      type: USER_UPDATE_PROFILE_SUCCESS,
-			payload: data,
-		});
-    
-    
-
-	} catch (error) {
-		dispatch({
-			type: USER_UPDATE_PROFILE_FAIL,
-			payload:
-				error.response && error.response.data.detail
-					? error.response.data.detail
-					: error.message,
-		});
-	}
-};
+			dispatch({
+				type: USER_UPDATE_PROFILE_SUCCESS,
+				payload: data,
+			});
+		} catch (error) {
+			dispatch({
+				type: USER_UPDATE_PROFILE_FAIL,
+				payload:
+					error.response && error.response.data.detail
+						? error.response.data.detail
+						: error.message,
+			});
+		}
+	};
