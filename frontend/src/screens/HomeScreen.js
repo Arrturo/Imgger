@@ -98,7 +98,65 @@ const HomeScreen = () => {
 	}, [sorting, page]);
 
 	useEffect(() => {
-		if (sorting === "popularity") {
+		if (sorting === "most liked") {
+			setTimeout(async () => {
+				const config = {
+					headers: {
+						"Content-type": "application/json",
+					},
+				};
+
+				const { data } = await axios.post(
+					`${url}/graphql`,
+					{
+						query: `
+            query{
+              postsByPopularity(first: 12, offset: ${page}){
+                  edges{
+                    node{
+                      id
+                      title
+                      description
+                      likes
+                      dislikes
+                      createTime
+                      isLiked
+                      isDisliked
+                      commentsCount
+                      image{
+                        url
+                      }
+                      user{
+                          username
+                      }
+                    }
+                  }
+                    pageInfo{
+                    hasNextPage
+                    }
+                }
+                }
+                `,
+					},
+					config
+				);
+
+				if (!data.data.postsByPopularity.pageInfo.hasNextPage) {
+					setHasNextPage(false);
+				}
+				if (data.data.postsByPopularity.edges.length > 0) {
+					setPostData((prev) => [
+						...prev,
+						...data.data.postsByPopularity.edges,
+					]);
+				}
+				setLoading(false);
+			}, 1000);
+		}
+	}, [sorting, page]);
+
+	useEffect(() => {
+		if (sorting === "views") {
 			setTimeout(async () => {
 				const config = {
 					headers: {
@@ -194,16 +252,14 @@ const HomeScreen = () => {
 							className="button-categorieslist"
 							onClick={handleShowLessCategories}
 						>
-							Less tags {" "}
-							<i class="fa-solid fa-caret-up"></i>
+							Less tags <i class="fa-solid fa-caret-up"></i>
 						</Button>
 					) : (
 						<Button
 							className="button-categorieslist"
 							onClick={handleShowMoreCategories}
 						>
-							More tags {" "}
-							<i class="fa-solid fa-caret-down"></i>
+							More tags <i class="fa-solid fa-caret-down"></i>
 						</Button>
 					))}
 				<br />
@@ -246,18 +302,27 @@ const HomeScreen = () => {
 							setPostData([]),
 							setPage(0),
 							setHasNextPage(true),
-							setSorting("popularity"),
+							setSorting("most liked"),
 							setLoading(true)
 						)}
 						active
 					>
 						{" "}
-						Popularity{" "}
+						Most Liked{" "}
 					</Dropdown.Item>
-					{/* <Dropdown.Item onClick={() => setSorting("most viewed")} active>
+					<Dropdown.Item
+						onClick={() => (
+							setPostData([]),
+							setPage(0),
+							setHasNextPage(true),
+							setSorting("views"),
+							setLoading(true)
+						)}
+						active
+					>
 						{" "}
 						Most viewed{" "}
-					</Dropdown.Item> */}
+					</Dropdown.Item>
 				</Dropdown.Menu>
 			</Dropdown>
 			<PostList posts={postData} />
