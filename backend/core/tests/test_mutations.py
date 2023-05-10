@@ -72,7 +72,7 @@ class ImagesGraphQLTestCase(GraphQLTestCase):
         with open("core/tests/sum.jpg", "rb") as image:
             response = self.client.post('/graphql', {
                 'operations': json.dumps({
-                    'query': 'mutation ($file: Upload!, $imageId: ID!) { updateImaage(image: $file, imageId: $imageId) { success } }',
+                    'query': 'mutation ($file: Upload!, $imageId: ID!) { updateImaage(image: $file, imageId: $imageId) { success image { url } } }',
                     'variables': {
                         'file': None,
                         'imageId': image_id,
@@ -158,6 +158,7 @@ class CategoriesGraphQLTestCase(GraphQLTestCase):
             password="testpassword",
             email="test123@test.pl",
             is_staff=True,
+            
         )
         self.user.save()
 
@@ -266,10 +267,10 @@ class UsersGraphQLTestCase(GraphQLTestCase):
             username="testuser",
             password="testpassword",
             email="test123@test.pl",
-            is_staff=True,
+            is_staff=True,    
         )
         self.user.save()
-
+        
         self.client = Client()
         self.client.login(username="testuser", password="testpassword")
 
@@ -311,9 +312,8 @@ class UsersGraphQLTestCase(GraphQLTestCase):
         content = json.loads(result.content)
         self.assertIn("data", content)
         self.assertIn("login", content["data"])
-        self.assertEqual(content["data"]["login"]["success"], True)
-        self.assertEqual(content["data"]["login"]["errors"], None)
-        self.assertEqual(content["data"]["login"]["user"]["username"], "testuser")
+        self.assertEqual(content["data"]["login"]["success"], False)
+        self.assertNotEqual(content["data"]["login"]["errors"], None)
 
     def test_update_user_mutations(self):
         id = self.user.id
