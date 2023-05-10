@@ -8,6 +8,7 @@ import axios from 'axios';
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { url } from '../constants/host';
+import { Toaster, toast } from 'react-hot-toast';
 
 function LoginScreen() {
 
@@ -32,6 +33,12 @@ function LoginScreen() {
     useEffect(() => {
         if(userInfo?.user){
             navigate(redirect)
+            toast.success(`Successfully logged in ${userInfo?.user.username}`, {
+                position: "top-center",
+                style: {
+                    fontSize: '25px',
+                  },
+              })
         }else{
             navigate('/login')
         }
@@ -50,7 +57,7 @@ function LoginScreen() {
 			},
 		};
 
-		const { data } = await axios.post('${url}/graphql', {
+		const { data } = await axios.post(`${url}/graphql`, {
       query: `
        mutation {
         sendPasswordResetEmail(email: "${email}"){
