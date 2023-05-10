@@ -130,6 +130,7 @@ export const postsDetails = (id) => async (dispatch, getState) => {
                         isDisliked
                         createTime
                         isPrivate
+						views
                         nextPost{
                             id
                         }
