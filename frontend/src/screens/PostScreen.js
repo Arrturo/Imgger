@@ -159,13 +159,14 @@ function PostScreen() {
       ) : (
         <div>
           <Row>
-            <Col md={1} className="text-2xl grid gap-16 content-center ">
+            <Col md={1} className="text-2xl grid gap-16 content-center lajki">
               <ListGroup.Item>
                 {post.isLiked ? (
                   <Button
                     variant="outline-success"
                     active="true"
                     onClick={() => likePostHandler(id)}
+                    disabled={!userInfo}
                   >
                     {" "}
                     <i class="fa-solid fa-thumbs-up"></i> {post.likes}{" "}
@@ -174,6 +175,7 @@ function PostScreen() {
                   <Button
                     variant="outline-success"
                     onClick={() => likePostHandler(id)}
+                    disabled={!userInfo}
                   >
                     {" "}
                     <i class="fa-regular fa-thumbs-up"></i> {post.likes}{" "}
@@ -186,6 +188,7 @@ function PostScreen() {
                     variant="outline-danger"
                     active="true"
                     onClick={() => dislikePostHandler(id)}
+                    disabled={!userInfo}
                   >
                     {" "}
                     <i class="fa-solid fa-thumbs-down"></i> {post.dislikes}{" "}
@@ -194,6 +197,7 @@ function PostScreen() {
                   <Button
                     variant="outline-danger"
                     onClick={() => dislikePostHandler(id)}
+                    disabled={!userInfo}
                   >
                     {" "}
                     <i class="fa-regular fa-thumbs-down"></i> {post.dislikes}{" "}
@@ -306,8 +310,8 @@ function PostScreen() {
                         <div>
                           <p className="pl-2">{com.node.comment}</p>
                           <p className="text-base">
-                            <button className="mt-2 px-3 hover:text-lime-600 ease-in duration-75"> <i class="fa-solid fa-thumbs-up"></i> 3 </button>
-                            <button className="mt-2 hover:text-red-500 ease-in duration-75"> <i class="fa-solid fa-thumbs-down"></i> 1 </button>
+                            <button className="mt-2 px-3 hover:text-lime-600 ease-in duration-75"> <i class="fa-solid fa-thumbs-up"></i> 0 </button>
+                            <button className="mt-2 hover:text-red-500 ease-in duration-75"> <i class="fa-solid fa-thumbs-down"></i> 0 </button>
                           </p>
                         </div>
                       )}
