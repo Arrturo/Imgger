@@ -11,7 +11,7 @@ import {useNavigate} from 'react-router-dom'
 import SearchBox from './SearchBox';
 import Loader from './Loader';
 import logo from '../LOGO.png';
-
+import { Toaster, toast } from 'react-hot-toast';
 
 function Header() {
 
@@ -27,6 +27,12 @@ function Header() {
 		dispatch(logout())
 		localStorage.clear()
 		navigate('/')
+		toast.success("Successfully logged out", {
+			position: "top-center",
+			style: {
+				fontSize: '25px',
+			  },
+		  })
 	}
 
 	return (

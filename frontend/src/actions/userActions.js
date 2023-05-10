@@ -67,7 +67,7 @@ export const login = (username, password) => async (dispatch) => {
 		} else {
 			dispatch({
 				type: USER_LOGIN_FAIL,
-				payload: "Invalid username or password",
+				payload: data.data.login.errors,
 			});
 		}
 	} catch (error) {
@@ -137,7 +137,8 @@ export const register =
 					payload:
 						data.data.register.errors.username ||
 						data.data.register.errors.password1 ||
-						data.data.register.errors.password2,
+						data.data.register.errors.password2 ||
+						data.data.register.errors.email,
 				});
 			}
 		} catch (error) {

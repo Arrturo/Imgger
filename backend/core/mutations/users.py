@@ -66,7 +66,6 @@ class LoginMutation(graphene.Mutation):
         try:
             context = info.context
             user = authenticate(username=username, password=password)
-            print(user.status.verified)
             if user is not None:
                 if user.status.verified:
                     context.jwt_cookie = True

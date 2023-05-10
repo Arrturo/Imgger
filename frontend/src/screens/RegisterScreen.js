@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import { register } from '../actions/userActions';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import { Toaster, toast } from 'react-hot-toast';
 
 function RegisterScreen() {
 
@@ -30,7 +31,13 @@ function RegisterScreen() {
     useEffect(() => {
         if(userInfo?.data?.register?.success === true){
             navigate('/login')
-            window.location.reload();
+            toast.success(`Successfully registered, go to your email and click activate link`, {
+                position: "top-center",
+                style: {
+                    fontSize: '25px',
+                  },
+                duration: 6000,
+              })
         }
     }, [navigate, userInfo])
 

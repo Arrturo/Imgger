@@ -210,6 +210,10 @@ main{
   background: gray;
 }
 
+.dropdown-item:hover{
+  background: gray;
+}
+
 .sort{
   display: flex;
   align-items: right;
@@ -241,3 +245,35 @@ main{
 .my-masonry-grid_column > div {
   margin-bottom: 30px;
 }
+
+@media (max-width: 1201px){
+
+  .categories{
+    display: none;
+  }
+}
+
+
+.button-categorieslist{
+  float: right;
+  background-color: yellow;
+  color: black;
+  font-weight: bold;
+  padding: 3px;
+  border-radius: 25px;
+}
+
+.app{
+  min-height: 100vh;
+}
+
+
+@media (max-width: 769px){
+
+  .lajki{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+}
+
