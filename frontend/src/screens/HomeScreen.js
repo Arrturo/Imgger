@@ -289,6 +289,7 @@ const HomeScreen = () => {
 					<Dropdown.Item
 						className="dropdown-item"
 						onClick={() => (
+							setSorting(null),
 							setPostData([]),
 							setPage(0),
 							setHasNextPage(true),
@@ -296,12 +297,14 @@ const HomeScreen = () => {
 							setLoading(true)
 						)}
 						active
+						disabled={sorting === "newest"}
 					>
 						{" "}
 						Newest{" "}
 					</Dropdown.Item>
 					<Dropdown.Item
 						onClick={() => (
+							setSorting(null),
 							setPostData([]),
 							setPage(0),
 							setHasNextPage(true),
@@ -309,12 +312,14 @@ const HomeScreen = () => {
 							setLoading(true)
 						)}
 						active
+						disabled={sorting === "most liked"}
 					>
 						{" "}
 						Most Liked{" "}
 					</Dropdown.Item>
 					<Dropdown.Item
 						onClick={() => (
+							setSorting(null),
 							setPostData([]),
 							setPage(0),
 							setHasNextPage(true),
@@ -322,6 +327,7 @@ const HomeScreen = () => {
 							setLoading(true)
 						)}
 						active
+						disabled={sorting === "views"}
 					>
 						{" "}
 						Most viewed{" "}
