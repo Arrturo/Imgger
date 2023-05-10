@@ -35,6 +35,7 @@ class Post(models.Model):
     dislikes = models.ManyToManyField(ExtendUser, related_name="dislikes", blank=True)
     likes = models.ManyToManyField(ExtendUser, related_name="likes", blank=True)
     dislikes = models.ManyToManyField(ExtendUser, related_name="dislikes", blank=True)
+    views = models.IntegerField(default=0)
     description = models.TextField(max_length=255, null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(ExtendUser, null=True, on_delete=models.CASCADE)
