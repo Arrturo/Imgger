@@ -1,7 +1,7 @@
 import base64
 
 import graphene
-from django.db.models import Count, Q
+from django.db.models import Count, Q, F
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
@@ -106,6 +106,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_posts_by_id(self, info, id, **kwargs):
         post_id = base64.b64decode(id).decode("utf-8").split(":")[1]
         post_id = int(post_id)
+        Post.objects.filter(pk=post_id).update(views=F("views") + 1)
         return Post.objects.get(pk=post_id)
 
     def resolve_comments(self, info, **kwargs):

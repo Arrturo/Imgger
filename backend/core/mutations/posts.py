@@ -129,7 +129,7 @@ class DeletePostMutation(graphene.Mutation):
             if image:
                 bucket = storage.bucket()
                 url = image.url.split("/")[-1]
-                blob = bucket.blob(url)
+                blob = bucket.blob("images/" + url)
                 blob.delete()
                 image.delete()
             return DeletePostMutation(success=True)
