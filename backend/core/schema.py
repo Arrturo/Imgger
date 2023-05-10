@@ -81,7 +81,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         likes_count = Count("likes", distinct=True)
         dislikes_count = Count("dislikes", distinct=True)
         rank = likes_count - dislikes_count
-        return Post.objects.annotate(rank=rank, likes_count=likes_count).order_by(
+        return Post.objects.filter(is_private=False).annotate(rank=rank, likes_count=likes_count).order_by(
             "-rank", "-likes_count"
         )
 
