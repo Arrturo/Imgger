@@ -68,6 +68,7 @@ const HomeScreen = () => {
                       isLiked
                       isDisliked
                       commentsCount
+					  views
                       image{
                         url
                       }
@@ -122,6 +123,7 @@ const HomeScreen = () => {
                       createTime
                       isLiked
                       isDisliked
+					  views
                       commentsCount
                       image{
                         url
@@ -169,7 +171,7 @@ const HomeScreen = () => {
 					{
 						query: `
             query{
-              postsByPopularity(first: 12, offset: ${page}){
+              postsByViews(first: 12, offset: ${page}){
                   edges{
                     node{
                       id
@@ -180,6 +182,7 @@ const HomeScreen = () => {
                       createTime
                       isLiked
                       isDisliked
+					  views
                       commentsCount
                       image{
                         url
@@ -199,13 +202,13 @@ const HomeScreen = () => {
 					config
 				);
 
-				if (!data.data.postsByPopularity.pageInfo.hasNextPage) {
+				if (!data.data.postsByViews.pageInfo.hasNextPage) {
 					setHasNextPage(false);
 				}
-				if (data.data.postsByPopularity.edges.length > 0) {
+				if (data.data.postsByViews.edges.length > 0) {
 					setPostData((prev) => [
 						...prev,
-						...data.data.postsByPopularity.edges,
+						...data.data.postsByViews.edges,
 					]);
 				}
 				setLoading(false);

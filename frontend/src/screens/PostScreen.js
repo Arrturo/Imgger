@@ -212,7 +212,7 @@ function PostScreen() {
                 <span className="text-purple-500">{post?.user?.username}</span>{" "}
                 at {post?.createTime?.substring(0, 10)}{" "}
                 {post?.createTime?.substring(15, 19)}
-                <span className="text-sm mx-12">Views: 238</span>
+                <span className="text-sm mx-12">Views: {post?.views}</span>
               </p>
               <Image src={post?.image?.url} alt={post.title} fluid />
             </Col>

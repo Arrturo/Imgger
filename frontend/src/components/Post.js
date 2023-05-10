@@ -98,7 +98,7 @@ function Post({post, my, liked}) {
               <p> <i class="fa-regular fa-thumbs-up"></i> {post.node.likes}</p> 
               <p> <i class="fa-regular fa-thumbs-down"></i> {post.node.dislikes}</p>
               <p> <i class="fa-regular fa-comment-dots"></i> {post.node.commentsCount}</p>
-              <p> <i class="fa-regular fa-eye"></i> 5324</p>
+              <p> <i class="fa-regular fa-eye"></i> {post.node.views}</p>
             </div>
           </Card.Text>
         </Card.Body>
