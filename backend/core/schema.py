@@ -36,6 +36,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         PostType, user_id=graphene.ID(required=True)
     )
     posts_by_popularity = DjangoFilterConnectionField(PostType)
+    posts_by_views = DjangoFilterConnectionField(PostType)
     search = DjangoFilterConnectionField(
         PostType, keyword=graphene.String(required=True)
     )
@@ -84,6 +85,9 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return Post.objects.annotate(rank=rank, likes_count=likes_count).order_by(
             "-rank", "-likes_count"
         )
+    
+    def resolve_posts_by_views(self, info, **kwargs):
+        return Post.objects.filter(is_private=False).order_by("-views")
 
     def resolve_search(self, info, keyword, **kwargs):
         return (

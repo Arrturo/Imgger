@@ -212,6 +212,7 @@ function PostScreen() {
                 <span className="text-purple-500">{post?.user?.username}</span>{" "}
                 at {post?.createTime?.substring(0, 10)}{" "}
                 {post?.createTime?.substring(15, 19)}
+                <span className="text-sm mx-12">Views: {post?.views}</span>
               </p>
               <Image src={post?.image?.url} alt={post.title} fluid />
             </Col>
@@ -310,8 +311,8 @@ function PostScreen() {
                         <div>
                           <p className="pl-2">{com.node.comment}</p>
                           <p className="text-base">
-                            <button className="mt-2 px-3 hover:text-lime-600 ease-in duration-75"> <i class="fa-solid fa-thumbs-up"></i> 0 </button>
-                            <button className="mt-2 hover:text-red-500 ease-in duration-75"> <i class="fa-solid fa-thumbs-down"></i> 0 </button>
+                            <button disabled={true} className="mt-2 px-3 hover:text-lime-600 ease-in duration-75"> <i class="fa-solid fa-thumbs-up"></i> 0 </button>
+                            <button disabled={true} className="mt-2 hover:text-red-500 ease-in duration-75"> <i class="fa-solid fa-thumbs-down"></i> 0 </button>
                           </p>
                         </div>
                       )}
