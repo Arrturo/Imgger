@@ -162,7 +162,7 @@ const CategoryPost = () => {
 			</h1>
 			{postData.length > 0 ? (
 				<PostList posts={postData} />
-			) : (
+			) : loading === true ? null : (
 				<p className="text-4xl text-center">No posts in this category :(</p>
 			)}
 			{loading && <Loader />}
