@@ -1,29 +1,56 @@
 import base64
 
 import graphene
-from django.db.models import Count, Q, F
+from django.db.models import Count, F, Q
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
 from graphql_jwt.decorators import login_required, staff_member_required
 
 from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
-from .mutations.categories import (CreateCategoryMutation,
-                                   DeleteCategoryMutation,
-                                   UpdateCategoryMutation)
-from .mutations.comments import (CreateCommentMutation, DeleteCommentMutation,
-                                 UpdateCommentMutation)
-from .mutations.images import (CreateImageMutation, DeleteImageMutation,
-                               UpdateImageMutation)
-from .mutations.posts import (CreatePostMutation, DeletePostMutation,
-                              UpdatePostMutation, dislike, like)
-from .mutations.subcomments import (CreateSubCommentMutation,
-                                    DeleteSubCommentMutation,
-                                    UpdateSubCommentMutation)
-from .mutations.users import (DeleteUserMutation, LoginMutation,
-                              UpdateUserMutation)
-from .types import (CategoryType, CommentType, ImageType, PostType,
-                    SubcommentType, UserType)
+from .mutations.categories import (
+    CreateCategoryMutation,
+    DeleteCategoryMutation,
+    UpdateCategoryMutation,
+)
+from .mutations.comments import (
+    CreateCommentMutation,
+    DeleteCommentMutation,
+    DislikeCommentMutation,
+    LikeCommentMutation,
+    UpdateCommentMutation,
+)
+from .mutations.images import (
+    CreateImageMutation,
+    DeleteImageMutation,
+    UpdateImageMutation,
+)
+from .mutations.posts import (
+    CreatePostMutation,
+    DeletePostMutation,
+    UpdatePostMutation,
+    dislike,
+    like,
+)
+from .mutations.subcomments import (
+    CreateSubCommentMutation,
+    DeleteSubCommentMutation,
+    UpdateSubCommentMutation,
+)
+from .mutations.users import (
+    DeleteMeMutation,
+    DeleteUserMutation,
+    LoginMutation,
+    UpdateUserMutation,
+)
+from .types import (
+    CategoryType,
+    CommentType,
+    ImageType,
+    PostType,
+    SubcommentType,
+    UserType,
+)
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
@@ -85,7 +112,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return Post.objects.annotate(rank=rank, likes_count=likes_count).order_by(
             "-rank", "-likes_count"
         )
-    
+
     def resolve_posts_by_views(self, info, **kwargs):
         return Post.objects.filter(is_private=False).order_by("-views")
 
@@ -150,6 +177,7 @@ class Mutation(AuthMutation, graphene.ObjectType):
 
     update_user = UpdateUserMutation.Field()
     delete_user = DeleteUserMutation.Field()
+    delete_me = DeleteMeMutation.Field()
 
     create_post = CreatePostMutation.Field()
     update_post = UpdatePostMutation.Field()
@@ -165,6 +193,8 @@ class Mutation(AuthMutation, graphene.ObjectType):
     create_comment = CreateCommentMutation.Field()
     update_comment = UpdateCommentMutation.Field()
     delete_comment = DeleteCommentMutation.Field()
+    like_comment = LikeCommentMutation.Field()
+    dislike_comment = DislikeCommentMutation.Field()
 
     # create_subcomment = CreateSubCommentMutation.Field()
     # update_subcomment = UpdateSubCommentMutation.Field()
