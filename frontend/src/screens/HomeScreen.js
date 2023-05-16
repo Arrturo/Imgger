@@ -68,6 +68,7 @@ const HomeScreen = () => {
                       isLiked
                       isDisliked
                       commentsCount
+					  views
                       image{
                         url
                       }
@@ -98,7 +99,7 @@ const HomeScreen = () => {
 	}, [sorting, page]);
 
 	useEffect(() => {
-		if (sorting === "popularity") {
+		if (sorting === "most liked") {
 			setTimeout(async () => {
 				const config = {
 					headers: {
@@ -122,6 +123,7 @@ const HomeScreen = () => {
                       createTime
                       isLiked
                       isDisliked
+					  views
                       commentsCount
                       image{
                         url
@@ -148,6 +150,65 @@ const HomeScreen = () => {
 					setPostData((prev) => [
 						...prev,
 						...data.data.postsByPopularity.edges,
+					]);
+				}
+				setLoading(false);
+			}, 1000);
+		}
+	}, [sorting, page]);
+
+	useEffect(() => {
+		if (sorting === "views") {
+			setTimeout(async () => {
+				const config = {
+					headers: {
+						"Content-type": "application/json",
+					},
+				};
+
+				const { data } = await axios.post(
+					`${url}/graphql`,
+					{
+						query: `
+            query{
+              postsByViews(first: 12, offset: ${page}){
+                  edges{
+                    node{
+                      id
+                      title
+                      description
+                      likes
+                      dislikes
+                      createTime
+                      isLiked
+                      isDisliked
+					  views
+                      commentsCount
+                      image{
+                        url
+                      }
+                      user{
+                          username
+                      }
+                    }
+                  }
+                    pageInfo{
+                    hasNextPage
+                    }
+                }
+                }
+                `,
+					},
+					config
+				);
+
+				if (!data.data.postsByViews.pageInfo.hasNextPage) {
+					setHasNextPage(false);
+				}
+				if (data.data.postsByViews.edges.length > 0) {
+					setPostData((prev) => [
+						...prev,
+						...data.data.postsByViews.edges,
 					]);
 				}
 				setLoading(false);
@@ -194,16 +255,14 @@ const HomeScreen = () => {
 							className="button-categorieslist"
 							onClick={handleShowLessCategories}
 						>
-							Less tags {" "}
-							<i class="fa-solid fa-caret-up"></i>
+							Less tags <i class="fa-solid fa-caret-up"></i>
 						</Button>
 					) : (
 						<Button
 							className="button-categorieslist"
 							onClick={handleShowMoreCategories}
 						>
-							More tags {" "}
-							<i class="fa-solid fa-caret-down"></i>
+							More tags <i class="fa-solid fa-caret-down"></i>
 						</Button>
 					))}
 				<br />
@@ -230,6 +289,7 @@ const HomeScreen = () => {
 					<Dropdown.Item
 						className="dropdown-item"
 						onClick={() => (
+							setSorting(null),
 							setPostData([]),
 							setPage(0),
 							setHasNextPage(true),
@@ -237,27 +297,41 @@ const HomeScreen = () => {
 							setLoading(true)
 						)}
 						active
+						disabled={sorting === "newest"}
 					>
 						{" "}
 						Newest{" "}
 					</Dropdown.Item>
 					<Dropdown.Item
 						onClick={() => (
+							setSorting(null),
 							setPostData([]),
 							setPage(0),
 							setHasNextPage(true),
-							setSorting("popularity"),
+							setSorting("most liked"),
 							setLoading(true)
 						)}
 						active
+						disabled={sorting === "most liked"}
 					>
 						{" "}
-						Popularity{" "}
+						Most Liked{" "}
 					</Dropdown.Item>
-					{/* <Dropdown.Item onClick={() => setSorting("most viewed")} active>
+					<Dropdown.Item
+						onClick={() => (
+							setSorting(null),
+							setPostData([]),
+							setPage(0),
+							setHasNextPage(true),
+							setSorting("views"),
+							setLoading(true)
+						)}
+						active
+						disabled={sorting === "views"}
+					>
 						{" "}
 						Most viewed{" "}
-					</Dropdown.Item> */}
+					</Dropdown.Item>
 				</Dropdown.Menu>
 			</Dropdown>
 			<PostList posts={postData} />

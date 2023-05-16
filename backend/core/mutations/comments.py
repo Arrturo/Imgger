@@ -87,3 +87,53 @@ class UpdateCommentMutation(graphene.Mutation):
                 raise Exception("Not logged in!")
         except Exception as e:
             return UpdateCommentMutation(success=False, errors=str(e))
+
+
+class LikeCommentMutation(graphene.Mutation):
+    class Arguments:
+        comment_id = graphene.String()
+
+    success = graphene.Boolean()
+    errors = graphene.String()
+
+    @login_required
+    def mutate(self, info, comment_id):
+        try:
+            user = info.context.user
+            comment = Comment.objects.get(
+                id=base64.b64decode(comment_id).decode("utf-8").split(":")[1]
+            )
+            if user in comment.likes.all():
+                comment.likes.remove(user)
+                comment.save()
+                return LikeCommentMutation(success=True, errors=None)
+            comment.likes.add(user)
+            comment.save()
+            return LikeCommentMutation(success=True, errors=None)
+        except Exception as e:
+            return LikeCommentMutation(success=False, errors=str(e))
+
+
+class DislikeCommentMutation(graphene.Mutation):
+    class Arguments:
+        comment_id = graphene.String()
+
+    success = graphene.Boolean()
+    errors = graphene.String()
+
+    @login_required
+    def mutate(self, info, comment_id):
+        try:
+            user = info.context.user
+            comment = Comment.objects.get(
+                id=base64.b64decode(comment_id).decode("utf-8").split(":")[1]
+            )
+            if user in comment.dislikes.all():
+                comment.dislikes.remove(user)
+                comment.save()
+                return DislikeCommentMutation(success=True, errors=None)
+            comment.dislikes.add(user)
+            comment.save()
+            return DislikeCommentMutation(success=True, errors=None)
+        except Exception as e:
+            return DislikeCommentMutation(success=False, errors=str(e))

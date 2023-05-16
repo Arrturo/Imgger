@@ -57,8 +57,9 @@ class DeleteCategoryMutation(graphene.Mutation):
         user = info.context.user
         print(user)
         if user.is_authenticated:
-            category = Category.objects.get(id=base64.b64decode(category_id)
-                                            .decode("utf-8").split(':')[1])
+            category = Category.objects.get(
+                id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
+            )
             try:
                 category.delete()
                 success = True

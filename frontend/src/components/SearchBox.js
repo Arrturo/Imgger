@@ -18,7 +18,7 @@ function SearchBox() {
     <Form onSubmit={submitHandler} className="inline-flex ms-auto">
         <Form.Control type='text' name='q' onChange={(e) => setKeyword(e.target.value)} className="min-w-full" placeholder={`Images, #tags, @users `}>
         </Form.Control>
-        <Button type='submit' variant='outline-success' className="p-2">Search</Button>
+        <Button type='submit' variant='outline-success' className="p-2" disabled={keyword === ''}>Search</Button>
     </Form>
   )
 }
