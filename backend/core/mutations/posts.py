@@ -105,6 +105,7 @@ class UpdatePostMutation(graphene.Mutation):
         except Exception as e:
             return UpdatePostMutation(success=False, errors=str(e))
 
+
 class DeletePostMutation(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
@@ -135,6 +136,7 @@ class DeletePostMutation(graphene.Mutation):
             return DeletePostMutation(success=True)
         except Exception as e:
             return DeletePostMutation(success=False, errors=str(e))
+
 
 class like(graphene.Mutation):
     class Arguments:
