@@ -51,6 +51,20 @@ class DeleteUserMutation(graphene.Mutation):
         return DeleteUserMutation(user=user)
 
 
+class DeleteMeMutation(graphene.Mutation):
+    success = graphene.Boolean()
+    errors = graphene.String()
+
+    @login_required
+    def mutate(self, info):
+        try:
+            user = info.context.user
+            user.delete()
+            return DeleteMeMutation(success=True, errors=None)
+        except Exception as e:
+            return DeleteMeMutation(success=False, errors=str(e))
+
+
 class LoginMutation(graphene.Mutation):
     # Define mutation fields
     class Arguments:
@@ -66,7 +80,6 @@ class LoginMutation(graphene.Mutation):
         try:
             context = info.context
             user = authenticate(username=username, password=password)
-            print(user.status.verified)
             if user is not None:
                 if user.status.verified:
                     context.jwt_cookie = True

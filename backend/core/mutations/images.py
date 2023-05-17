@@ -74,7 +74,7 @@ class DeleteImageMutation(graphene.Mutation):
             if image_obj:
                 bucket = storage.bucket()
                 url = image_obj.url.split("/")[-1]
-                blob = bucket.blob(url)
+                blob = bucket.blob("images/" + url)
                 blob.delete()
                 image_obj.delete()
             return DeleteImageMutation(success=True)

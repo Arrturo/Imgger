@@ -105,6 +105,7 @@ class UpdatePostMutation(graphene.Mutation):
         except Exception as e:
             return UpdatePostMutation(success=False, errors=str(e))
 
+
 class DeletePostMutation(graphene.Mutation):
     class Arguments:
         post_id = graphene.ID(required=True)
@@ -129,12 +130,13 @@ class DeletePostMutation(graphene.Mutation):
             if image:
                 bucket = storage.bucket()
                 url = image.url.split("/")[-1]
-                blob = bucket.blob(url)
+                blob = bucket.blob("images/" + url)
                 blob.delete()
                 image.delete()
             return DeletePostMutation(success=True)
         except Exception as e:
             return DeletePostMutation(success=False, errors=str(e))
+
 
 class like(graphene.Mutation):
     class Arguments:

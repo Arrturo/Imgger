@@ -23,16 +23,20 @@ import CategoryPost from './screens/CategoryPost';
 import PrivatePost from './screens/PrivatePost';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import SearchingPost from './screens/SearchPage'
+import toast, { Toaster } from 'react-hot-toast';
+import ActivationScreen from './screens/ActivationScreen';
 
 function App() {
 	useEffect(() => {
 		document.documentElement.style.scrollBehavior = 'smooth';
 	  }, []);
 
+	  
 	return (
 		<Router>
 			<main className="min-h-screen">
 				<Header />
+				<Toaster/>
 					<Container className="mt-5">
 						<Routes>
 							<Route path='/' element={<HomeScreen />}/>
@@ -51,6 +55,7 @@ function App() {
 							<Route path='/category/:category' element={<CategoryPost />} />
 							<Route path='/search/:keywords' element={<SearchingPost />} />
 							<Route path='/password-reset/:token' element={<ResetPasswordScreen />} />
+							<Route path='/activate/:token' element={<ActivationScreen />} />
 							
 						</Routes>
 					</Container>

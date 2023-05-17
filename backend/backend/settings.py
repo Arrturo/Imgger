@@ -114,24 +114,13 @@ SESSION_COOKIE_SECURE = True
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# database for testing
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": get_secret("DB_PASSWORD"),
-        "HOST": get_secret("DB_HOST"),
-        "PORT": "5432",
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-# database for testing
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -204,7 +193,7 @@ GRAPHQL_JWT = {
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = 'mail1.small.pl'
+EMAIL_HOST = "mail1.small.pl"
 EMAIL_USE_TLS = False
 EMAIL_PORT = 25
 EMAIL_HOST_USER = get_secret("EMAIL_HOST_USER")
