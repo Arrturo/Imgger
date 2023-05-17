@@ -5,120 +5,149 @@ import { LinkContainer } from "react-router-bootstrap";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserDetails, updateUserProfile } from "../actions/userActions";
+import {
+	getUserDetails,
+	updateUserProfile,
+	deleteUserOwn,
+} from "../actions/userActions";
 import { USER_DETAILS_RESET } from "../constants/userConstants";
 
 function ProfileScreen() {
-  const location = useLocation();
-  const navigate = useNavigate();
+	const location = useLocation();
+	const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [messagePassword, setMessagePassword] = useState("");
-  const [message, setMessage] = useState("");
+	const [name, setName] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+	const [messagePassword, setMessagePassword] = useState("");
+	const [message, setMessage] = useState("");
 
-  const dispatch = useDispatch();
+	const dispatch = useDispatch();
 
-  const userLogin = useSelector((state) => state.userLogin);
-  const { error, loading, userInfo } = userLogin;
+	const userLogin = useSelector((state) => state.userLogin);
+	const { error, loading, userInfo } = userLogin;
 
-  useEffect(() => {
-    if (userInfo === null) {
-      navigate("/login");
-    }
-    setName(userInfo?.user?.username);
-    setEmail(userInfo?.user?.email);
-  }, [navigate, userInfo, dispatch]);
+	useEffect(() => {
+		if (userInfo === null) {
+			navigate("/login");
+		}
+		setName(userInfo?.user?.username);
+		setEmail(userInfo?.user?.email);
+	}, [navigate, userInfo, dispatch]);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
+	const submitHandler = (e) => {
+		e.preventDefault();
 
-    if (password != confirmPassword) {
-      setMessagePassword("The entered passwords are different!");
-    } else {
-      if (
-        window.confirm(`${name} Are you sure you want to update your details ?`)
-      ) {
-        dispatch(
-          updateUserProfile({
-            id: userInfo?.user?.id,
-            username: name,
-            email: email,
-            password: password,
-          })
-        );
+		if (password != confirmPassword) {
+			setMessagePassword("The entered passwords are different!");
+		} else {
+			if (
+				window.confirm(`${name} Are you sure you want to update your details ?`)
+			) {
+				dispatch(
+					updateUserProfile({
+						id: userInfo?.user?.id,
+						username: name,
+						email: email,
+						password: password,
+					})
+				);
 
-        setMessage("user data successfully updated");
-      }
-    }
-  };
+				setMessage("user data successfully updated");
+			}
+		}
+	};
 
-  return (
-    <Row className="flex justify-center">
-      <Col md={5}>
-        <h2 className="text-4xl text-center mb-3">My account:</h2>
-        {loading && <Loader />}
-        {error && <Message variant="danger">{error}</Message>}
-        {message && <Message variant="info">{message}</Message>}
-        {messagePassword && (
-          <Message variant="danger">{messagePassword}</Message>
-        )}
-        <Form onSubmit={submitHandler}>
-          <Form.Group controlId="name">
-            <Form.Label>Name</Form.Label>
-            <Form.Control
-              required
-              type="name"
-              placeholder="Enter your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
+	const deleteAccount = (id, username) => {
+		if (
+			window.confirm(
+				`${username} Are you sure you want to permanently delete your account and the associated posts and comments?`
+			)
+		) {
+			dispatch(deleteUserOwn());
+		}
+		setTimeout(() => {
+			navigate("/");
+			window.location.reload();
+		}, 300);
+	};
 
-          <Form.Group controlId="email" className="mt-3">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control
-              required
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
+	return (
+		<div className="mb-72">
+			<Button
+				variant="danger"
+				className="bg-red-600 float-right"
+				onClick={() =>
+					deleteAccount(userInfo?.user?.id, userInfo?.user?.username)
+				}
+			>
+				Delete account
+			</Button>
+			<Row className="flex justify-center">
+				<Col md={5}>
+					<h2 className="text-4xl text-center mb-3">My account:</h2>
+					{loading && <Loader />}
+					{error && <Message variant="danger">{error}</Message>}
+					{message && <Message variant="info">{message}</Message>}
+					{messagePassword && (
+						<Message variant="danger">{messagePassword}</Message>
+					)}
+					<Form onSubmit={submitHandler}>
+						<Form.Group controlId="name">
+							<Form.Label>Name</Form.Label>
+							<Form.Control
+								required
+								type="name"
+								placeholder="Enter your name"
+								value={name}
+								onChange={(e) => setName(e.target.value)}
+							></Form.Control>
+						</Form.Group>
 
-          <Form.Group controlId="password" className="mt-3">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
+						<Form.Group controlId="email" className="mt-3">
+							<Form.Label>Email address</Form.Label>
+							<Form.Control
+								required
+								type="email"
+								placeholder="Enter your email address"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+							></Form.Control>
+						</Form.Group>
 
-          <Form.Group controlId="PasswordConfirm" className="mt-3">
-            <Form.Label>Password confirm</Form.Label>
-            <Form.Control
-              type="Password"
-              placeholder="Enter your password again"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
+						<Form.Group controlId="password" className="mt-3">
+							<Form.Label>Password</Form.Label>
+							<Form.Control
+								type="password"
+								placeholder="Enter your password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+							></Form.Control>
+						</Form.Group>
 
-          <Button
-            type="submit"
-            variant="primary"
-            className="mt-4 button-primary"
-          >
-            <i class="fa-regular fa-pen-to-square"></i> Save changes
-          </Button>
-        </Form>
-      </Col>
-    </Row>
-  );
+						<Form.Group controlId="PasswordConfirm" className="mt-3">
+							<Form.Label>Password confirm</Form.Label>
+							<Form.Control
+								type="Password"
+								placeholder="Enter your password again"
+								value={confirmPassword}
+								onChange={(e) => setConfirmPassword(e.target.value)}
+							></Form.Control>
+						</Form.Group>
+
+						<Button
+							type="submit"
+							variant="primary"
+							className="mt-4 button-primary"
+						>
+							<i class="fa-regular fa-pen-to-square"></i> Save changes
+						</Button>
+					</Form>
+				</Col>
+			</Row>
+		</div>
+	);
 }
 
 export default ProfileScreen;
