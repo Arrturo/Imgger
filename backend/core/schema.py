@@ -34,8 +34,8 @@ from .mutations.posts import (
 )
 from .mutations.subcomments import (
     CreateSubCommentMutation,
-    UpdateSubCommentMutation,
     DeleteSubCommentMutation,
+    UpdateSubCommentMutation,
 )
 from .mutations.users import (
     DeleteMeMutation,

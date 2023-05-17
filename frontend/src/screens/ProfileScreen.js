@@ -70,7 +70,7 @@ function ProfileScreen() {
 		setTimeout(() => {
 			navigate("/");
 			window.location.reload();
-		}, 300);
+		}, 1000);
 	};
 
 	return (
