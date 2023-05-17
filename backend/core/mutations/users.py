@@ -55,14 +55,19 @@ class DeleteMeMutation(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.String()
 
+    @classmethod
     @login_required
-    def mutate(self, info):
+    def mutate(cls, self, info):
         try:
             user = info.context.user
             user.delete()
-            return DeleteMeMutation(success=True, errors=None)
+            context = info.context
+            context.jwt_cookie = True
+            context.jwt_refresh_token = None
+            context.jwt_token = None
+            return cls(success=True, errors=None)
         except Exception as e:
-            return DeleteMeMutation(success=False, errors=str(e))
+            return cls(success=False, errors=str(e))
 
 
 class LoginMutation(graphene.Mutation):
