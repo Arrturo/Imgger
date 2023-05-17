@@ -42,7 +42,7 @@ import {
 	SUBCOMMENT_REQUEST,
 	SUBCOMMENT_SUCCESS,
 } from "../constants/postConstants";
-import {url} from '../constants/host'
+import { url } from "../constants/host";
 
 export const postsList = () => async (dispatch, getState) => {
 	try {
@@ -325,6 +325,10 @@ export const postComments = (postId) => async (dispatch, getState) => {
                                 id
                                 comment
                                 createTime
+								likes
+								dislikes
+								isLiked
+								isDisliked
                                 }
                             }
                         }
