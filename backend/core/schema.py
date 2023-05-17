@@ -8,23 +8,49 @@ from graphql_auth.schema import MeQuery, UserQuery
 from graphql_jwt.decorators import login_required, staff_member_required
 
 from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
-from .mutations.categories import (CreateCategoryMutation,
-                                   DeleteCategoryMutation,
-                                   UpdateCategoryMutation)
-from .mutations.comments import (CreateCommentMutation, DeleteCommentMutation,
-                                 DislikeCommentMutation, LikeCommentMutation,
-                                 UpdateCommentMutation)
-from .mutations.images import (CreateImageMutation, DeleteImageMutation,
-                               UpdateImageMutation)
-from .mutations.posts import (CreatePostMutation, DeletePostMutation,
-                              UpdatePostMutation, dislike, like)
-from .mutations.subcomments import (CreateSubCommentMutation,
-                                    DeleteSubCommentMutation,
-                                    UpdateSubCommentMutation)
-from .mutations.users import (DeleteMeMutation, DeleteUserMutation,
-                              LoginMutation, UpdateUserMutation)
-from .types import (CategoryType, CommentType, ImageType, PostType,
-                    SubcommentType, UserType)
+from .mutations.categories import (
+    CreateCategoryMutation,
+    DeleteCategoryMutation,
+    UpdateCategoryMutation,
+)
+from .mutations.comments import (
+    CreateCommentMutation,
+    DeleteCommentMutation,
+    DislikeCommentMutation,
+    LikeCommentMutation,
+    UpdateCommentMutation,
+)
+from .mutations.images import (
+    CreateImageMutation,
+    DeleteImageMutation,
+    UpdateImageMutation,
+)
+from .mutations.posts import (
+    CreatePostMutation,
+    DeletePostMutation,
+    UpdatePostMutation,
+    dislike,
+    like,
+)
+from .mutations.subcomments import (
+    CreateSubCommentMutation,
+    DeleteSubCommentMutation,
+    UpdateSubCommentMutation,
+)
+from .mutations.users import (
+    DeleteMeMutation,
+    DeleteUserMutation,
+    LoginMutation,
+    UpdateUserMutation,
+)
+from .types import (
+    CategoryType,
+    CommentType,
+    ImageType,
+    PostType,
+    SubcommentType,
+    UserType,
+)
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
