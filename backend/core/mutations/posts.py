@@ -160,6 +160,8 @@ class like(graphene.Mutation):
             post.likes.remove(user)
         else:
             post.likes.add(user)
+        if user in post.dislikes.all():
+            post.dislikes.remove(user)
         post.save()
         return like(success=True)
 
@@ -186,5 +188,7 @@ class dislike(graphene.Mutation):
             post.dislikes.remove(user)
         else:
             post.dislikes.add(user)
+        if user in post.likes.all():
+            post.likes.remove(user)
         post.save()
         return dislike(success=True)

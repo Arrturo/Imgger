@@ -107,6 +107,8 @@ class LikeCommentMutation(graphene.Mutation):
                 comment.likes.remove(user)
                 comment.save()
                 return LikeCommentMutation(success=True, errors=None)
+            if user in comment.dislikes.all():
+                comment.dislikes.remove(user)
             comment.likes.add(user)
             comment.save()
             return LikeCommentMutation(success=True, errors=None)
@@ -132,6 +134,8 @@ class DislikeCommentMutation(graphene.Mutation):
                 comment.dislikes.remove(user)
                 comment.save()
                 return DislikeCommentMutation(success=True, errors=None)
+            if user in comment.likes.all():
+                comment.likes.remove(user)
             comment.dislikes.add(user)
             comment.save()
             return DislikeCommentMutation(success=True, errors=None)
