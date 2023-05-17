@@ -269,6 +269,8 @@ class UsersGraphQLTestCase(GraphQLTestCase):
             email="test123@test.pl",
             is_staff=True,    
         )
+        self.user.status.verified = True
+        self.user.status.save()
         self.user.save()
         
         self.client = Client()
@@ -312,8 +314,9 @@ class UsersGraphQLTestCase(GraphQLTestCase):
         content = json.loads(result.content)
         self.assertIn("data", content)
         self.assertIn("login", content["data"])
-        self.assertEqual(content["data"]["login"]["success"], False)
-        self.assertNotEqual(content["data"]["login"]["errors"], None)
+        self.assertEqual(content["data"]["login"]["success"], True)
+        self.assertEqual(content["data"]["login"]["errors"], None)
+        self.assertEqual(content["data"]["login"]["user"]["username"], "testuser")
 
     def test_update_user_mutations(self):
         id = self.user.id
@@ -918,13 +921,70 @@ class CommentsGraphQLTestCase(GraphQLTestCase):
         self.assertIn("updateComment", content["data"])
         self.assertEqual(content["data"]["updateComment"]["success"], True)
 
+    def test_like_comment_mutation(self):
+        comment_id = base64.b64encode(
+            "CategoryType:{}".format(self.comment.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """mutation($commentId: String!){
+                            likeComment(commentId: $commentId){
+                                success
+                                errors
+                            }
+                        }
+                        """
+
+        variables = {"commentId": comment_id}
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+
+        self.assertIn("likeComment", content["data"])
+        self.assertIn("success", content["data"]["likeComment"])
+        self.assertEqual(content["data"]["likeComment"]["success"], True)
+
+    def test_dislike_comment_mutation(self):
+        comment_id = base64.b64encode(
+            "CategoryType:{}".format(self.comment.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """mutation($commentId: String!){
+                            dislikeComment(commentId: $commentId){
+                                success
+                                errors
+                            }
+                        }
+                        """
+
+        variables = {"commentId": comment_id}
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+
+        self.assertIn("dislikeComment", content["data"])
+        self.assertIn("success", content["data"]["dislikeComment"])
+        self.assertEqual(content["data"]["dislikeComment"]["success"], True)
+
 
 class SubCommentsGraphQLTestCase(GraphQLTestCase):
     def setUp(self):
         self.user = ExtendUser.objects.create_user(
-            username="testuser", password="testpassword", email="test123@test.pl"
+            username="testuser", password="testpassword", email="test123@test.pl", is_staff=True
         )
+        self.user.status.verified = True
+        self.user.status.save()
         self.user.save()
+
+        self.client = Client()
+        self.client.login(username="testuser", password="testpassword")
 
         self.image = Image.objects.create(name="TestImage", url="sum.jpg")
         self.image.save()
@@ -951,7 +1011,7 @@ class SubCommentsGraphQLTestCase(GraphQLTestCase):
         )
         self.subcomment.save()
 
-    def test_get_subcomments_query(self):
+    def test_subcomments_query(self):
         comment_id = base64.b64encode(
             "CategoryType:{}".format(self.comment.id).encode("utf-8")
         ).decode("utf-8")
@@ -984,6 +1044,83 @@ class SubCommentsGraphQLTestCase(GraphQLTestCase):
         self.assertIn("node", content["data"]["subcommentsByComment"]["edges"][0])
         self.assertIn("user", content["data"]["subcommentsByComment"]["edges"][0]["node"])
         self.assertIn(content["data"]["subcommentsByComment"]["edges"][0]["node"]["content"],"TestSubComment")
+
+    
+    def test_create_subcomment_mutation(self):
+        comment_id = base64.b64encode(
+            "CategoryType:{}".format(self.comment.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """mutation($commentId: String!){
+                        createSubcomment(commentId: $commentId, description: "TestSubComemnts") {
+                            success
+                            errors
+                            subcomment {
+                            content
+                            }
+                        }
+                        }
+                    """
+        
+        variables = {"commentId": comment_id}
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+        self.assertEqual(result.status_code, 200)
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+        self.assertIn("createSubcomment", content["data"])
+        self.assertIn("subcomment", content["data"]["createSubcomment"])
+        self.assertEqual(content["data"]["createSubcomment"]["success"], True)
+        self.assertEqual(content["data"]["createSubcomment"]["subcomment"]["content"], "TestSubComemnts")
+
+    def test_update_subcomment_mutation(self):
+        subcomment_id = base64.b64encode(
+            "CategoryType:{}".format(self.subcomment.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """mutation($subcommentId: ID!){
+                        updateSubcomment(subcommentId: $subcommentId, description: "TestUpdateSubComment"){
+                            success
+                            errors
+                        }
+                    }
+                    """
+        variables = {"subcommentId": subcomment_id}
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+        self.assertEqual(result.status_code, 200)
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+        self.assertIn("updateSubcomment", content["data"])
+        self.assertEqual(content["data"]["updateSubcomment"]["success"], True)
+
+    def test_delete_subcomment_mutation(self):
+        subcomment_id = base64.b64encode(
+            "CategoryType:{}".format(self.subcomment.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """mutation($subcommentId: ID!){
+                        deleteSubcomment(subcommentId: $subcommentId){
+                            success
+                            errors
+                        }
+                    }
+                    """
+        variables = {"subcommentId": subcomment_id}
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+
+        self.assertEqual(result.status_code, 200)
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+        self.assertIn("deleteSubcomment", content["data"])
+        self.assertEqual(content["data"]["deleteSubcomment"]["success"], True)
+
+
+
+
+
+
 
           
 
