@@ -25,6 +25,7 @@ import {
 } from "../constants/userConstants";
 import axios from "axios";
 import {url} from '../constants/host'
+import { Navigate } from "react-router-dom";
 
 axios.defaults.withCredentials = true;
 
@@ -197,8 +198,6 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 		});
 
 		const userData = JSON.parse(localStorage.getItem("userInfo"));
-		console.log(userData.user.username);
-		console.log(data.data.updateUser.user.username);
 		userData.user.username = data.data.updateUser.user.username;
 		userData.user.email = data.data.updateUser.user.email;
 
@@ -407,7 +406,7 @@ export const updateUserProfileByAdmin =
 	};
 
 
-	export const deleteUserOwn = () => async (dispatch, getState) => {
+	export const deleteUserOwn = (password) => async (dispatch, getState) => {
 		try {
 			dispatch({
 				type: USER_DELETE_OWN_REQUEST,
@@ -423,23 +422,37 @@ export const updateUserProfileByAdmin =
 				`${url}/graphql`,
 				{
 					query: `
-			mutation{
-			  deleteMe{
-				  success
-				  errors
-			  }
-			}
-		  `,
+						mutation {
+							deleteMe(password: "${password}") {
+								success
+								errors
+							}
+						}
+					`,
 				},
 				config
 			);
 	
-			localStorage.removeItem("userInfo");
-			
-			dispatch({
-				type: USER_DELETE_OWN_SUCCESS,
-				payload: data,
-			});
+			if (data.data.deleteMe.success === true) {
+				localStorage.removeItem("userInfo");
+				dispatch({
+					type: USER_DELETE_OWN_SUCCESS,
+				});
+				dispatch({
+					type: USER_LOGOUT,
+				});
+				
+				setTimeout(() => {
+					window.location.reload();
+				}
+				, 1000);
+			}
+			else {
+				dispatch({
+					type: USER_DELETE_OWN_FAIL,
+					payload: data.data.deleteMe.errors
+				});
+			}
 		} catch (error) {
 			dispatch({
 				type: USER_DELETE_OWN_FAIL,
