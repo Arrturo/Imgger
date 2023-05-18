@@ -22,7 +22,7 @@ from graphene_file_upload.django import FileUploadGraphQLView
 from graphql_jwt.decorators import jwt_cookie
 
 from core.schema import schema
-from core.views import  logout_view
+from core.views import logout_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),

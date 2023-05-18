@@ -19,9 +19,13 @@ import {
 	USER_DETAILS_FAIL,
 	USER_DETAILS_REQUEST,
 	USER_DETAILS_SUCCESS,
+	USER_DELETE_OWN_FAIL,
+	USER_DELETE_OWN_REQUEST,
+	USER_DELETE_OWN_SUCCESS
 } from "../constants/userConstants";
 import axios from "axios";
 import {url} from '../constants/host'
+import { Navigate } from "react-router-dom";
 
 axios.defaults.withCredentials = true;
 
@@ -194,8 +198,6 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 		});
 
 		const userData = JSON.parse(localStorage.getItem("userInfo"));
-		console.log(userData.user.username);
-		console.log(data.data.updateUser.user.username);
 		userData.user.username = data.data.updateUser.user.username;
 		userData.user.email = data.data.updateUser.user.email;
 
@@ -395,6 +397,65 @@ export const updateUserProfileByAdmin =
 		} catch (error) {
 			dispatch({
 				type: USER_UPDATE_PROFILE_FAIL,
+				payload:
+					error.response && error.response.data.detail
+						? error.response.data.detail
+						: error.message,
+			});
+		}
+	};
+
+
+	export const deleteUserOwn = (password) => async (dispatch, getState) => {
+		try {
+			dispatch({
+				type: USER_DELETE_OWN_REQUEST,
+			});
+	
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
+	
+			const { data } = await axios.post(
+				`${url}/graphql`,
+				{
+					query: `
+						mutation {
+							deleteMe(password: "${password}") {
+								success
+								errors
+							}
+						}
+					`,
+				},
+				config
+			);
+	
+			if (data.data.deleteMe.success === true) {
+				localStorage.removeItem("userInfo");
+				dispatch({
+					type: USER_DELETE_OWN_SUCCESS,
+				});
+				dispatch({
+					type: USER_LOGOUT,
+				});
+				
+				setTimeout(() => {
+					window.location.reload();
+				}
+				, 1000);
+			}
+			else {
+				dispatch({
+					type: USER_DELETE_OWN_FAIL,
+					payload: data.data.deleteMe.errors
+				});
+			}
+		} catch (error) {
+			dispatch({
+				type: USER_DELETE_OWN_FAIL,
 				payload:
 					error.response && error.response.data.detail
 						? error.response.data.detail

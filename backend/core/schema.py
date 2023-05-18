@@ -196,9 +196,9 @@ class Mutation(AuthMutation, graphene.ObjectType):
     like_comment = LikeCommentMutation.Field()
     dislike_comment = DislikeCommentMutation.Field()
 
-    # create_subcomment = CreateSubCommentMutation.Field()
-    # update_subcomment = UpdateSubCommentMutation.Field()
-    # delete_subcomment = DeleteSubCommentMutation.Field()
+    create_subcomment = CreateSubCommentMutation.Field()
+    update_subcomment = UpdateSubCommentMutation.Field()
+    delete_subcomment = DeleteSubCommentMutation.Field()
 
     create_image = CreateImageMutation.Field()
     update_imaage = UpdateImageMutation.Field()
