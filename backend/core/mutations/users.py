@@ -53,23 +53,27 @@ class DeleteUserMutation(graphene.Mutation):
 
 
 class DeleteMeMutation(graphene.Mutation):
+    class Arguments:
+        password = graphene.String(required=True)
+
     success = graphene.Boolean()
     errors = graphene.String()
 
     @classmethod
     @login_required
-    def mutate(cls, self, info):
+    def mutate(cls, root, info, password, **kwargs):
         try:
+            if not info.context.user.check_password(password):
+                return cls(success=False, errors="Incorrect password")
             refresh_token = info.context.COOKIES.get("JWT-refresh-token")
             refresh_token_instance = get_refresh_token(refresh_token)
             user = info.context.user
             refresh_token_instance.delete()
             user.delete()
-            response = HttpResponse()
+            response = super().mutate(root, info, **kwargs)
             response.delete_cookie("JWT-refresh-token")
             response.delete_cookie("JWT")
-
-            return cls(success=True, errors=None)
+            return response
         except Exception as e:
             return cls(success=False, errors=str(e))
 
