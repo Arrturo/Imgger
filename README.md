@@ -1,4 +1,4 @@
-# PySquad ![Project Status](https://img.shields.io/badge/status-in%20progress-yellow)
+# Imgger ![Project Status](https://img.shields.io/badge/status-in%20progress-yellow)
 This is a web application built with Django, GraphQL API, React and PostgreSQL. The purpose of this app is to provide users with a platform to upload, view, and share images with others.
 
 ![](https://i.imgur.com/YG9kjhs.gif)
