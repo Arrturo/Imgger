@@ -81,7 +81,8 @@ class DeleteMeMutation(graphene.Mutation):
 class LoginMutation(graphene.Mutation):
     # Define mutation fields
     class Arguments:
-        username = graphene.String(required=True)
+        username = graphene.String()
+        email = graphene.String()
         password = graphene.String(required=True)
 
     user = graphene.Field(UserType)
@@ -89,9 +90,12 @@ class LoginMutation(graphene.Mutation):
     errors = graphene.String()
 
     @classmethod
-    def mutate(cls, root, info, username, password, **kwargs):
+    def mutate(cls, root, info, password, username=None, email=None, **kwargs):
         try:
             context = info.context
+            if email:
+                username = ExtendUser.objects.get(email=email).username
+
             user = authenticate(username=username, password=password)
             if user is not None:
                 if user.status.verified:
