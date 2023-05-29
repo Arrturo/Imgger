@@ -3,7 +3,7 @@ POST_COMMENTS_FAIL, POST_COMMENTS_REQUEST, POST_COMMENTS_RESET, POST_COMMENTS_SU
 DELETE_COMMENT_FAIL, DELETE_COMMENT_REQUEST, DELETE_COMMENT_SUCCESS, EDIT_COMMENT_FAIL, EDIT_COMMENT_REQUEST, EDIT_COMMENT_SUCCESS,
 MY_POST_LIST_FAIL, MY_POST_LIST_REQUEST, MY_POST_LIST_SUCCESS, LIKED_POST_LIST_FAIL, LIKED_POST_LIST_REQUEST, LIKED_POST_LIST_SUCCESS,
 POST_DELETE_FAIL, POST_DELETE_REQUEST, POST_DELETE_SUCCESS, POST_UPDATE_FAIL, POST_UPDATE_REQUEST, POST_UPDATE_SUCCESS, SUBCOMMENT_FAIL,
-SUBCOMMENT_REQUEST, SUBCOMMENT_SUCCESS } from "../constants/postConstants";
+SUBCOMMENT_REQUEST, SUBCOMMENT_SUCCESS, ADD_SUBCOMMENT_FAIL, ADD_SUBCOMMENT_REQUEST, ADD_SUBCOMMENT_RESET, ADD_SUBCOMMENT_SUCCESS, DELETE_SUBCOMMENT_FAIL, DELETE_SUBCOMMENT_REQUEST, DELETE_SUBCOMMENT_SUCCESS, EDIT_SUBCOMMENT_FAIL, EDIT_SUBCOMMENT_REQUEST, EDIT_SUBCOMMENT_SUCCESS } from "../constants/postConstants";
 
 
 
@@ -219,6 +219,60 @@ export const subcommentsReducers = (state = {subc: []}, action) => {
             return {loading: false, subc: action.payload}
 
         case SUBCOMMENT_FAIL:
+            return {loading: false, error: action.payload}
+        
+        default:
+            return state 
+
+    }
+}
+
+export const addSubcommentReducers = (state = {}, action) => {
+    switch(action.type){
+        case ADD_SUBCOMMENT_REQUEST:
+            return {loading: true}
+        
+        case ADD_SUBCOMMENT_SUCCESS:
+            return {loading: false, success: true, product:action.payload}
+
+        case ADD_SUBCOMMENT_FAIL:
+            return {loading: false, error: action.payload}
+
+        case ADD_SUBCOMMENT_RESET:
+            return {product: {}}
+        
+        default:
+            return state 
+
+    }
+}
+
+export const subcommentDeleteReducer = (state = {}, action) => {
+    switch(action.type){
+        case DELETE_SUBCOMMENT_REQUEST:
+            return {loading: true}
+        
+        case DELETE_SUBCOMMENT_SUCCESS:
+            return {loading: false, success: true}
+        
+        case DELETE_SUBCOMMENT_FAIL:
+            return {loading: false, error: action.payload}
+        
+        default:
+            return state 
+    }
+}
+
+
+export const subcommentEditeReducers = (state = {}, action) => {
+    switch(action.type){
+        case EDIT_SUBCOMMENT_REQUEST:
+            return {loading: true}
+        
+        case EDIT_SUBCOMMENT_SUCCESS:
+            return {loading: false, success: true, comment:action.payload}
+
+        case EDIT_SUBCOMMENT_FAIL:
             return {loading: false, error: action.payload}
         
         default:
