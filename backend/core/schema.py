@@ -64,7 +64,7 @@ def can_increase_views():
     return True
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
-    users = graphene.List(UserType)
+    users = DjangoFilterConnectionField(UserType)
     me = graphene.Field(UserType)
     users_by_id = graphene.Field(UserType, id=graphene.ID(required=True))
     posts = DjangoFilterConnectionField(PostType)
@@ -100,6 +100,8 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return user
 
     def resolve_users_by_id(self, info, id):
+        id = base64.b64decode(id).decode("utf-8").split(":")[1]
+        id = int(id)
         return ExtendUser.objects.get(pk=id)
 
     def resolve_posts(self, info, **kwargs):

@@ -8,6 +8,11 @@ class UserType(DjangoObjectType):
     class Meta:
         model = ExtendUser
         fields = "__all__"
+        filter_fields = {
+            "username": ["exact", "icontains", "istartswith"],
+            "email": ["exact", "icontains", "istartswith"],
+        }
+        interfaces = (graphene.relay.Node,)
 
 
 class PostType(DjangoObjectType):
