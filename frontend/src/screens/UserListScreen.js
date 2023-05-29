@@ -13,9 +13,6 @@ function UserListScreen() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-
 
     const userLogin = useSelector(state => state.userLogin)
     const {loading, error, userInfo} = userLogin
@@ -66,7 +63,6 @@ function UserListScreen() {
                         {users.map((user, index) => (
                             <tr key={user.node.id}>
                                 <td>{index + 1}</td>
-                                <td>{user.node.id}</td>
                                 <td>{user.node.username}</td>
                                 <td>{user.node.email}</td>
                                 <td>{(user.node.dateJoined).substring(0, 10)}</td>
