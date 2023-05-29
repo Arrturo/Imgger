@@ -74,6 +74,7 @@ export const postsList = () => async (dispatch, getState) => {
                             createTime
                             isLiked
                             isDisliked
+							short_url
                             image{
                                 id
                                 url
@@ -131,6 +132,7 @@ export const postsDetails = (id) => async (dispatch, getState) => {
                         createTime
                         isPrivate
 						views
+						short_url
                         nextPost{
                             id
                         }
@@ -518,6 +520,7 @@ export const myPostsList = (id) => async (dispatch, getState) => {
                             createTime
                             isLiked
                             isDisliked
+							short_url
                             image{
                                 id
                                 url

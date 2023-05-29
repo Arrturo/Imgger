@@ -1,4 +1,6 @@
 import base64
+import random
+import string
 
 import graphene
 from django.contrib.auth import get_user_model
@@ -38,6 +40,7 @@ class CreatePostMutation(graphene.Mutation):
                         image=image,
                         category=category_id,
                         is_private=is_private,
+                        short_url=f"{''.join(random.choices(string.ascii_letters + string.digits, k=7))}",
                     )
                 else:
                     post = Post(
@@ -46,6 +49,7 @@ class CreatePostMutation(graphene.Mutation):
                         user=user,
                         category=category_id,
                         is_private=is_private,
+                        short_url=f"{''.join(random.choices(string.ascii_uppercase + string.digits, k=7))}",
                     )
             else:
                 if image_id:
@@ -55,12 +59,14 @@ class CreatePostMutation(graphene.Mutation):
                         description=description,
                         image=image,
                         is_private=True,
+                        short_url=f"{''.join(random.choices(string.ascii_uppercase + string.digits, k=7))}",
                     )
                 else:
                     post = Post(
                         title=title,
                         description=description,
                         is_private=True,
+                        short_url=f"{''.join(random.choices(string.ascii_uppercase + string.digits, k=7))}",
                     )
             post.save()
             print(post)
