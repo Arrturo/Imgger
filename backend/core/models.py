@@ -43,6 +43,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, null=True, on_delete=models.CASCADE)
     is_private = models.BooleanField(default=True)
     expiration_date = models.DateTimeField(null=True, blank=True)
+    expirated = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.title}"
