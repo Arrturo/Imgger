@@ -7,6 +7,9 @@ from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
 from graphql_jwt.decorators import login_required, staff_member_required
 
+from datetime import datetime, timedelta
+from django.core.cache import cache
+
 from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 from .mutations.categories import (
     CreateCategoryMutation,
@@ -52,12 +55,20 @@ from .types import (
     UserType,
 )
 
+def can_increase_views():
+    last_increase_time = cache.get('last_increase_time')
+    if last_increase_time:
+        elapsed_time = datetime.now() - last_increase_time
+        if elapsed_time < timedelta(minutes=1):
+            return False
+    return True
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
-    users = graphene.List(UserType)
+    users = DjangoFilterConnectionField(UserType)
     me = graphene.Field(UserType)
     users_by_id = graphene.Field(UserType, id=graphene.ID(required=True))
     posts = DjangoFilterConnectionField(PostType)
+    posts_count = graphene.Int()
     posts_by_id = graphene.Field(PostType, id=graphene.String(required=True))
     posts_by_user = DjangoFilterConnectionField(
         PostType, user_id=graphene.ID(required=True)
@@ -89,11 +100,16 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return user
 
     def resolve_users_by_id(self, info, id):
+        id = base64.b64decode(id).decode("utf-8").split(":")[1]
+        id = int(id)
         return ExtendUser.objects.get(pk=id)
 
     def resolve_posts(self, info, **kwargs):
         return Post.objects.filter(is_private=False).order_by("-create_time")
 
+    def resolve_posts_count(self, info, **kwargs):
+        return Post.objects.filter(is_private=False).count()
+    
     def resolve_posts_by_category(self, info, **kwargs):
         return Post.objects.filter(category=kwargs["category"])
 
@@ -137,7 +153,9 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_posts_by_id(self, info, id, **kwargs):
         post_id = base64.b64decode(id).decode("utf-8").split(":")[1]
         post_id = int(post_id)
-        Post.objects.filter(pk=post_id).update(views=F("views") + 1)
+        if can_increase_views():
+            Post.objects.filter(pk=post_id).update(views=F("views") + 1)
+            cache.set('last_increase_time', datetime.now())
         return Post.objects.get(pk=post_id)
 
     def resolve_comments(self, info, **kwargs):

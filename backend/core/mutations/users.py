@@ -3,8 +3,9 @@ from django.contrib.auth import authenticate, logout
 from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 from graphql_auth import mutations
-from graphql_jwt.decorators import login_required
+from graphql_jwt.decorators import login_required, staff_member_required
 from graphql_jwt.shortcuts import create_refresh_token, get_refresh_token, get_token
+import base64
 
 from ..models import ExtendUser
 from ..types import UserType
@@ -26,7 +27,8 @@ class UpdateUserMutation(graphene.Mutation):
 
     @login_required
     def mutate(self, info, user_id, username, email, password, isStaff=None):
-        user = ExtendUser.objects.get(id=user_id)
+        id = base64.b64decode(user_id).decode("utf-8").split(":")[1]
+        user = ExtendUser.objects.get(id=id)
         if username:
             user.username = username
         if email:
@@ -45,8 +47,10 @@ class DeleteUserMutation(graphene.Mutation):
 
     user = graphene.Field(UserType)
 
+    @staff_member_required
     @login_required
     def mutate(self, info, user_id):
+        user_id = base64.b64decode(user_id).decode("utf-8").split(":")[1]
         user = ExtendUser.objects.get(id=user_id)
         user.delete()
         return DeleteUserMutation(user=user)
@@ -121,7 +125,6 @@ class RefreshTokenMiddleware(MiddlewareMixin):
         try:
             if (
                 request.COOKIES.get("JWT-refresh-token") is None
-                or request.COOKIES.get("JWT") is None
             ):
                 return
             if request.path == "/logout/":

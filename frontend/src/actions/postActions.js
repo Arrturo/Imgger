@@ -54,7 +54,7 @@ import {
 } from "../constants/postConstants";
 import { url } from "../constants/host";
 
-export const postsList = () => async (dispatch, getState) => {
+export const postsList = (offset) => async (dispatch, getState) => {
 	try {
 		dispatch({ type: POST_LIST_REQUEST });
 
@@ -73,7 +73,7 @@ export const postsList = () => async (dispatch, getState) => {
 			{
 				query: `
                 query{
-                    posts(first: 10, offset: 0){
+                    posts(first: 10, offset: ${offset}){
                         edges{
                           node{
                             id
@@ -92,9 +92,9 @@ export const postsList = () => async (dispatch, getState) => {
                                 username
                             }
                           }
-                          cursor
                         }
-                      }
+					}
+					postsCount
                 }
                 `,
 			},
@@ -103,7 +103,7 @@ export const postsList = () => async (dispatch, getState) => {
 
 		dispatch({
 			type: POST_LIST_SUCCESS,
-			payload: data.data.posts.edges,
+			payload: data.data,
 		});
 	} catch (error) {
 		dispatch({
