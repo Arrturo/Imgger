@@ -41,6 +41,16 @@ import {
 	SUBCOMMENT_FAIL,
 	SUBCOMMENT_REQUEST,
 	SUBCOMMENT_SUCCESS,
+	ADD_SUBCOMMENT_FAIL,
+	ADD_SUBCOMMENT_REQUEST,
+	ADD_SUBCOMMENT_RESET,
+	ADD_SUBCOMMENT_SUCCESS,
+	DELETE_SUBCOMMENT_FAIL,
+	DELETE_SUBCOMMENT_REQUEST,
+	DELETE_SUBCOMMENT_SUCCESS,
+	EDIT_SUBCOMMENT_FAIL,
+	EDIT_SUBCOMMENT_REQUEST,
+	EDIT_SUBCOMMENT_SUCCESS
 } from "../constants/postConstants";
 import { url } from "../constants/host";
 
@@ -518,6 +528,7 @@ export const myPostsList = (id) => async (dispatch, getState) => {
                             createTime
                             isLiked
                             isDisliked
+							views
                             image{
                                 id
                                 url
@@ -578,6 +589,7 @@ export const likedPostsList = () => async (dispatch, getState) => {
                             description
                             likes
                             dislikes
+							views
                             image{
                               id
                               url
@@ -753,3 +765,139 @@ export const subcomments = (commentId) => async (dispatch, getState) => {
 		});
 	}
 };
+
+
+export const addingSubcomment = (commentId, subcomment) => async (dispatch, getState) => {
+		try {
+			dispatch({
+				type: ADD_SUBCOMMENT_REQUEST,
+			});
+
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
+			const { data } = await axios.post(
+				`${url}/graphql`,
+				{
+					query: `
+                mutation{
+					createSubcomment(commentId: "${commentId}", description: "${subcomment}"){
+                        success
+                        errors
+                   }
+                }
+            `,
+				},
+				config
+			);
+
+			dispatch({
+				type: ADD_SUBCOMMENT_SUCCESS,
+				payload: data.data.createSubcomment,
+			});
+		} catch (error) {
+			dispatch({
+				type: ADD_SUBCOMMENT_FAIL,
+				payload:
+					error.response && error.response.data.detail
+						? error.response.data.detail
+						: error.message,
+			});
+		}
+	};
+
+
+	export const deleteSubcomment = (subcommentId) => async (dispatch, getState) => {
+		try {
+			dispatch({
+				type: DELETE_SUBCOMMENT_REQUEST,
+			});
+	
+			const {
+				userLogin: { userInfo },
+			} = getState();
+	
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
+	
+			const { data } = await axios.post(
+				`${url}/graphql`,
+				{
+					query: `
+					mutation{
+						deleteSubcomment(subcommentId: "${subcommentId}"){
+							success
+							errors
+						}
+					}
+				`,
+				},
+				config
+			);
+	
+			dispatch({
+				type: DELETE_SUBCOMMENT_SUCCESS,
+			});
+		} catch (error) {
+			dispatch({
+				type: DELETE_SUBCOMMENT_FAIL,
+				payload:
+					error.response && error.response.data.detail
+						? error.response.data.detail
+						: error.message,
+			});
+		}
+	};
+	
+
+	export const editSubcomment = (subcomment) => async (dispatch, getState) => {
+		try {
+			dispatch({
+				type: EDIT_SUBCOMMENT_REQUEST,
+			});
+	
+			const {
+				userLogin: { userInfo },
+			} = getState();
+	
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
+	
+			const { data } = await axios.post(
+				`${url}/graphql`,
+				{
+					query: `
+				mutation{
+					updateSubcomment(subcommentId: "${subcomment.subcommentId}", description: "${subcomment.description}") {
+					  success
+					  errors
+					}
+				  }
+				`,
+				},
+				config
+			);
+	
+			dispatch({
+				type: EDIT_SUBCOMMENT_SUCCESS,
+				payload: data,
+			});
+
+		} catch (error) {
+			dispatch({
+				type: EDIT_SUBCOMMENT_FAIL,
+				payload:
+					error.response && error.response.data.detail
+						? error.response.data.detail
+						: error.message,
+			});
+		}
+	};

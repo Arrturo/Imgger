@@ -69,6 +69,7 @@ const CategoryPost = () => {
                       createTime
                       isLiked
                       isDisliked
+					  views
                       commentsCount
                       image{
                         url

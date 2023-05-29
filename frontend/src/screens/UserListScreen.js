@@ -1,16 +1,17 @@
-import React, {useState, useEffect, useProps} from 'react'
-import { useNavigate, useLocation} from 'react-router-dom'
-import {Form, Button, Row, Col, Table} from 'react-bootstrap'
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import {useDispatch, useSelector} from 'react-redux'
-import FormContainer from '../components/FormContainer';
-import {listUsers, deleteUser} from '../actions/userActions'
-import {LinkContainer} from 'react-router-bootstrap'
-import axios from 'axios';
-
+import React, { useState, useEffect, useProps } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Form, Button, Row, Col, Table } from "react-bootstrap";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import { useDispatch, useSelector } from "react-redux";
+import FormContainer from "../components/FormContainer";
+import { listUsers, deleteUser } from "../actions/userActions";
+import { LinkContainer } from "react-router-bootstrap";
+import axios from "axios";
 
 function UserListScreen() {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -43,8 +44,6 @@ function UserListScreen() {
     
         }    
     } 
-    console.log(users)
-
 
   return (
     <div>
@@ -55,7 +54,7 @@ function UserListScreen() {
                 <Table striped hover responsive className="table-sm mb-5">
                     <thead className="text-center ">
                         <tr>
-                            <th>Id</th>
+							              <th></th>
                             <th>Username</th>
                             <th>Email</th>
                             <th>Date of join</th>
@@ -64,8 +63,9 @@ function UserListScreen() {
                         </tr>
                     </thead>
                     <tbody className="text-center">
-                        {users.map(user => (
+                        {users.map((user, index) => (
                             <tr key={user.node.id}>
+                                <td>{index + 1}</td>
                                 <td>{user.node.id}</td>
                                 <td>{user.node.username}</td>
                                 <td>{user.node.email}</td>
@@ -82,10 +82,9 @@ function UserListScreen() {
                         ))}
                     </tbody>
                 </Table>
-
-            )}
-    </div>
-  )
+			)}
+		</div>
+	);
 }
 
-export default UserListScreen
+export default UserListScreen;
