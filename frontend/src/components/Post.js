@@ -45,7 +45,7 @@ function Post({post, my, liked}) {
         ) : null}
         <Link to={`/post/${post.node.id}`} target="blank">
           <Card.Img
-            className={`scale-90	 max-h-72 ${post.node.id == hoveredItemId ? 'opacity-20' : null}`}
+            className={`scale-90	 max-h-96 ${post.node.id == hoveredItemId ? 'opacity-20' : null}`}
             src={`${post?.node.image?.url}`}
           />
         </Link>
@@ -60,6 +60,7 @@ function Post({post, my, liked}) {
               <p className=""><i class="fa-regular fa-thumbs-up"></i> {post.node.likes}</p> 
               <p> <i class="fa-regular fa-thumbs-down"></i> {post.node.dislikes}</p>
               <p><i class="fa-regular fa-comment-dots"></i> {post.node.commentsCount}</p>
+              <p> <i class="fa-regular fa-eye"></i> {post.node.views}</p>
             </div>
           </Card.Text>
         </Card.Body>
@@ -83,7 +84,7 @@ function Post({post, my, liked}) {
       <Card className="my-3 rounded hover:opacity-80">
         <Link to={`/post/${post.node.id}`}>
           <Card.Img
-            className="scale-90	 max-h-72"
+            className="scale-90 max-h-96"
             src={`${post?.node.image?.url}`}
           />
         </Link>

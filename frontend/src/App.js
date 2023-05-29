@@ -25,6 +25,7 @@ import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import SearchingPost from './screens/SearchPage'
 import toast, { Toaster } from 'react-hot-toast';
 import ActivationScreen from './screens/ActivationScreen';
+import Rules from './screens/Rules';
 
 function App() {
 	useEffect(() => {
@@ -56,6 +57,7 @@ function App() {
 							<Route path='/search/:keywords' element={<SearchingPost />} />
 							<Route path='/password-reset/:token' element={<ResetPasswordScreen />} />
 							<Route path='/activate/:token' element={<ActivationScreen />} />
+							<Route path='/rules' element={<Rules />} />
 							
 						</Routes>
 					</Container>
