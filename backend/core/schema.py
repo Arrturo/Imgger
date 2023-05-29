@@ -70,6 +70,9 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     posts = DjangoFilterConnectionField(PostType)
     posts_count = graphene.Int()
     posts_by_id = graphene.Field(PostType, id=graphene.String(required=True))
+    posts_by_short_url = graphene.Field(
+        PostType, short_url=graphene.String(required=True)
+    )
     posts_by_user = DjangoFilterConnectionField(
         PostType, user_id=graphene.ID(required=True)
     )
@@ -125,8 +128,10 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         likes_count = Count("likes", distinct=True)
         dislikes_count = Count("dislikes", distinct=True)
         rank = likes_count - dislikes_count
-        return Post.objects.annotate(rank=rank, likes_count=likes_count).order_by(
-            "-rank", "-likes_count"
+        return (
+            Post.objects.filter(is_private=False)
+            .annotate(rank=rank, likes_count=likes_count)
+            .order_by("-rank", "-likes_count")
         )
 
     def resolve_posts_by_views(self, info, **kwargs):
@@ -157,6 +162,9 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
             Post.objects.filter(pk=post_id).update(views=F("views") + 1)
             cache.set('last_increase_time', datetime.now())
         return Post.objects.get(pk=post_id)
+
+    def resolve_posts_by_short_url(self, info, short_url, **kwargs):
+        return Post.objects.get(short_url=short_url)
 
     def resolve_comments(self, info, **kwargs):
         return Comment.objects.all()
