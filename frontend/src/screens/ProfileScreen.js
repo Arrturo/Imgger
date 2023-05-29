@@ -49,6 +49,9 @@ function ProfileScreen() {
 
 	const handleDeleteCancel = () => {
 		setShowDeleteConfirmation(false);
+		setPassword1("");
+		setMessageDelete("");
+		deleteUserOwnError && dispatch({ type: "USER_DELETE_OWN_REQUEST" });
 	};
 
 	const handleDeleteAccount = (e) => {
@@ -106,19 +109,20 @@ function ProfileScreen() {
 				  placeholder="Enter your password"
 				  value={password1}
 				  onChange={(e) => setPassword1(e.target.value)}
-				  isInvalid={deleteUserOwnError}
+				  isInvalid={messageDelete}
 				/>
 				<Form.Control.Feedback type="invalid">
-				  {messageDelete && deleteUserOwnError ? messageDelete : deleteUserOwnError}
+				  {messageDelete}
 				</Form.Control.Feedback>
 			  </Form.Group>
-			  {/* {deleteUserOwnError && <Message variant="danger">{deleteUserOwnError}</Message>} */}
+			  <br />
+			  {deleteUserOwnError && <Message variant="danger">{deleteUserOwnError}</Message>}
 			</Modal.Body>
 			<Modal.Footer>
-			  <Button variant="secondary" onClick={handleDeleteCancel}>
+			  <Button variant="secondary" style={{ color: 'black' }} onClick={handleDeleteCancel}>
 				Cancel
 			  </Button>
-			  <Button variant="danger" onClick={handleDeleteAccount}>
+			  <Button variant="danger" style={{ color: 'black' }} onClick={handleDeleteAccount}>
 				Delete Account
 			  </Button>
 			</Modal.Footer>

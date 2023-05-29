@@ -9,6 +9,7 @@ from graphql_jwt.decorators import login_required, staff_member_required
 
 from ..models import Category, Image, Post
 from ..types import PostType
+from django.utils import timezone
 
 
 class CreatePostMutation(graphene.Mutation):
@@ -60,6 +61,7 @@ class CreatePostMutation(graphene.Mutation):
                         image=image,
                         is_private=True,
                         short_url=f"{''.join(random.choices(string.ascii_uppercase + string.digits, k=7))}",
+                        expiration_date=timezone.now() + timezone.timedelta(days=1),
                     )
                 else:
                     post = Post(
@@ -67,6 +69,7 @@ class CreatePostMutation(graphene.Mutation):
                         description=description,
                         is_private=True,
                         short_url=f"{''.join(random.choices(string.ascii_uppercase + string.digits, k=7))}",
+                        expiration_date=timezone.now() + timezone.timedelta(days=1),
                     )
             post.save()
             print(post)

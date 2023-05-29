@@ -1,16 +1,17 @@
-import React, {useState, useEffect, useProps} from 'react'
-import { useNavigate, useLocation} from 'react-router-dom'
-import {Form, Button, Row, Col, Table} from 'react-bootstrap'
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import {useDispatch, useSelector} from 'react-redux'
-import FormContainer from '../components/FormContainer';
-import {listUsers, deleteUser} from '../actions/userActions'
-import {LinkContainer} from 'react-router-bootstrap'
-import axios from 'axios';
-
+import React, { useState, useEffect, useProps } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Form, Button, Row, Col, Table } from "react-bootstrap";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import { useDispatch, useSelector } from "react-redux";
+import FormContainer from "../components/FormContainer";
+import { listUsers, deleteUser } from "../actions/userActions";
+import { LinkContainer } from "react-router-bootstrap";
+import axios from "axios";
 
 function UserListScreen() {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -34,8 +35,6 @@ function UserListScreen() {
 
 
 
-
-    
     const deleteHandler = (id, email) => {
         if(window.confirm(`Are you sure to delete user with email: ${email} ?`)){
             dispatch(deleteUser(id))
@@ -43,12 +42,8 @@ function UserListScreen() {
                 window.location.reload()
             }, 1000)
     
-        }
-
-
-        
+        }    
     } 
-
 
   return (
     <div>
@@ -59,7 +54,7 @@ function UserListScreen() {
                 <Table striped hover responsive className="table-sm mb-5">
                     <thead className="text-center ">
                         <tr>
-                            <th>Id</th>
+							              <th></th>
                             <th>Username</th>
                             <th>Email</th>
                             <th>Date of join</th>
@@ -68,28 +63,28 @@ function UserListScreen() {
                         </tr>
                     </thead>
                     <tbody className="text-center">
-                        {users.map(user => (
-                            <tr key={user.id}>
-                                <td>{user.id}</td>
-                                <td>{user.username}</td>
-                                <td>{user.email}</td>
-                                <td>{(user.dateJoined).substring(0, 10)}</td>
-                                <td>{user.isStaff ? (
+                        {users.map((user, index) => (
+                            <tr key={user.node.id}>
+                                <td>{index + 1}</td>
+                                <td>{user.node.id}</td>
+                                <td>{user.node.username}</td>
+                                <td>{user.node.email}</td>
+                                <td>{(user.node.dateJoined).substring(0, 10)}</td>
+                                <td>{user.node.isStaff ? (
                                     <i class="fa-solid fa-circle-check text-lime-500"></i>
                                     ): <i class="fa-solid fa-circle-minus text-red-500"></i>}</td>
                                 <td>
-                                    <a href={`/admin/userlist/${user.id}/edit`}><Button varinat='light' className="btn-m"><i class="fa-regular fa-pen-to-square text-lime-500"></i></Button></a>
+                                    <a href={`/admin/userlist/${user.node.id}/edit`}><Button varinat='light' className="btn-m"><i class="fa-regular fa-pen-to-square text-lime-500"></i></Button></a>
                                     
-                                    <Button varinat='danger' className="btn-m" onClick={() => deleteHandler(user.id, user.email)} ><i class="fa-solid fa-trash-can text-red-500"></i></Button>
+                                    <Button varinat='danger' className="btn-m" onClick={() => deleteHandler(user.node.id, user.node.email)} ><i class="fa-solid fa-trash-can text-red-500"></i></Button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </Table>
-
-            )}
-    </div>
-  )
+			)}
+		</div>
+	);
 }
 
-export default UserListScreen
+export default UserListScreen;

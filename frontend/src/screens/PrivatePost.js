@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
 	Link,
 	useParams,
@@ -32,6 +32,7 @@ function PrivatePost() {
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const urlRef = useRef(null);
 
 	const postDetails = useSelector((state) => state.postDetails);
 	const { loading, error, post } = postDetails;
@@ -42,12 +43,18 @@ function PrivatePost() {
 		dispatch(postsDetails(id));
 	}, [dispatch]);
 
-    useEffect(() => {
-        if (post) {
-          setIsPriv(post.isPrivate);
-        }
-      }, [post]);
+	useEffect(() => {
+		if (post) {
+			setIsPriv(post.isPrivate);
+		}
+	}, [post]);
 
+	const handleCopyUrl = () => {
+		if (urlRef.current) {
+			urlRef.current.select();
+			document.execCommand("copy");
+		}
+	};
 
 	return (
 		<div className="mb-24">
@@ -58,11 +65,26 @@ function PrivatePost() {
 			) : isPriv === true ? (
 				<div>
 					<h1 className="text-center mb-5 text-2xl underline">Private post</h1>
+					<Col className="float-right">
+						<Button
+							variant="secondary"
+							className="bg-gray-500"
+							onClick={handleCopyUrl}
+						>
+							Copy URL adress
+						</Button>
+						<input
+							type="text"
+							readOnly
+							value={window.location.href}
+							ref={urlRef}
+							className="hidden"
+						/>
+					</Col>
 					<Row>
 						<Col md={6}>
 							<p className="text-xl">
-								Uploaded at {post?.createTime?.substring(0, 10)}{" "}
-								{post?.createTime?.substring(15, 19)}
+								Uploaded {dayjs(post?.createTime).fromNow()}
 							</p>
 							<Image src={post?.image?.url} alt={post.title} fluid />
 						</Col>
@@ -85,7 +107,9 @@ function PrivatePost() {
 						</Col>
 					</Row>
 				</div>
-			) : <h1 className="text-center text-4xl">This post is not private!</h1>}
+			) : (
+				<h1 className="text-center text-4xl">This post is not private!</h1>
+			)}
 		</div>
 	);
 }

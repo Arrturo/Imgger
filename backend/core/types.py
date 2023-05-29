@@ -8,6 +8,11 @@ class UserType(DjangoObjectType):
     class Meta:
         model = ExtendUser
         fields = "__all__"
+        filter_fields = {
+            "username": ["exact", "icontains", "istartswith"],
+            "email": ["exact", "icontains", "istartswith"],
+        }
+        interfaces = (graphene.relay.Node,)
 
 
 class PostType(DjangoObjectType):
@@ -110,6 +115,7 @@ class CommentType(DjangoObjectType):
     dislikes = graphene.Int()
     is_liked = graphene.Boolean()
     is_disliked = graphene.Boolean()
+    subcomments = graphene.Int()
 
     def resolve_likes(self, info, **kwargs):
         return self.likes.count()
@@ -128,6 +134,9 @@ class CommentType(DjangoObjectType):
         if user.is_anonymous:
             return False
         return self.dislikes.filter(id=user.id).exists()
+    
+    def resolve_subcomments(self, info, **kwargs):
+        return Subcomment.objects.filter(comment=self.id).count()
 
 
 class ImageType(DjangoObjectType):

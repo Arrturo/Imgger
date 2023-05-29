@@ -123,7 +123,7 @@ function CreatingPost() {
 	}, [post, navigate]);
 
 	return (
-		<div>
+		<div className="mb-40">
 			{uploadStatus ? (
 				<div>
 					<h1 className="text-5xl text-center">Add post</h1>
