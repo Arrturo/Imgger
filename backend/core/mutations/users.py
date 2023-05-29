@@ -90,13 +90,15 @@ class LoginMutation(graphene.Mutation):
     errors = graphene.String()
 
     @classmethod
-    def mutate(cls, root, info, password, username=None, email=None, **kwargs):
+    def mutate(cls, root, info, password, username, **kwargs):
         try:
             context = info.context
-            if email:
-                username = ExtendUser.objects.get(email=email).username
-
+            try:
+                username = ExtendUser.objects.get(email=username).username
+            except:
+                pass
             user = authenticate(username=username, password=password)
+
             if user is not None:
                 if user.status.verified:
                     context.jwt_cookie = True
