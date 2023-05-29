@@ -16,9 +16,9 @@ class CreateCommentMutation(graphene.Mutation):
     errors = graphene.String()
 
     @login_required
-    def mutate(self, info, post_id, comment, user_id):
+    def mutate(self, info, post_id, comment):
         try:
-            user = ExtendUser.objects.get(id=user_id)
+            user = info.context.user
             post = Post.objects.get(
                 id=base64.b64decode(post_id).decode("utf-8").split(":")[1]
             )

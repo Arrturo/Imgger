@@ -382,7 +382,7 @@ export const addComment =
 				{
 					query: `
                 mutation{
-                   createComment(postId: "${postId}", userId: ${userId}, comment: "${comment}"){
+                   createComment(postId: "${postId}", comment: "${comment}"){
                         success
                         errors
                    }
