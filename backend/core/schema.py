@@ -68,6 +68,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     me = graphene.Field(UserType)
     users_by_id = graphene.Field(UserType, id=graphene.ID(required=True))
     posts = DjangoFilterConnectionField(PostType)
+    posts_count = graphene.Int()
     posts_by_id = graphene.Field(PostType, id=graphene.String(required=True))
     posts_by_user = DjangoFilterConnectionField(
         PostType, user_id=graphene.ID(required=True)
@@ -104,6 +105,9 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_posts(self, info, **kwargs):
         return Post.objects.filter(is_private=False).order_by("-create_time")
 
+    def resolve_posts_count(self, info, **kwargs):
+        return Post.objects.filter(is_private=False).count()
+    
     def resolve_posts_by_category(self, info, **kwargs):
         return Post.objects.filter(category=kwargs["category"])
 

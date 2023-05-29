@@ -121,7 +121,6 @@ class RefreshTokenMiddleware(MiddlewareMixin):
         try:
             if (
                 request.COOKIES.get("JWT-refresh-token") is None
-                or request.COOKIES.get("JWT") is None
             ):
                 return
             if request.path == "/logout/":
