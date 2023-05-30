@@ -122,19 +122,20 @@ function PostScreen() {
 		dispatch(addingSubcomment(clickedCommentId, subcomment));
 		setTimeout(() => {
 			dispatch(subcomments(clickedCommentId));
+			dispatch(postComments(id));
 			setSubcomment("");
 		}, 300);
 	};
 
-	const deleteHandler = (id, name) => {
+	const deleteHandler = (idk, name) => {
 		if (
 			window.confirm(
 				`Are you sure to delete comment: "${name}" and all subcomments of this comment ?`
 			)
 		) {
-			dispatch(deleteComment(id));
+			dispatch(deleteComment(idk));
 			setTimeout(() => {
-				window.location.reload();
+				dispatch(postComments(id))
 			}, 100);
 		}
 	};
@@ -428,7 +429,8 @@ function PostScreen() {
 																	: setClickedCommentId(com.node.id)
 															)}
 														>
-															<i class="fa-solid fa-reply-all"></i> 55
+															<i class="fa-solid fa-reply-all"></i>{" "}
+															{com?.node.subcomments}
 														</button>
 													</p>
 												</div>

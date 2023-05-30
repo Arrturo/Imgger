@@ -263,9 +263,10 @@ main {
 
 .subcomment {
 	position: relative;
-	background-color: #feffda;
+	background-color: #f9fbb9;
 	border-radius: 20px;
 	padding: 4px;
+	border: 1px solid rgb(252, 200, 200);
 }
 
 .sub-container {
@@ -375,4 +376,8 @@ main {
 
 .akordeon_header {
 	padding: 10px 0px;
+}
+
+.url_address{
+	display: none;
 }

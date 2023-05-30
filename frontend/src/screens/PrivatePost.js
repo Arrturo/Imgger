@@ -49,15 +49,10 @@ function PrivatePost() {
 		}
 	}, [post]);
 
-	const handleCopyUrl = () => {
-		if (urlRef.current) {
-			urlRef.current.select();
-			document.execCommand("copy");
-		}
-	};
+
 
 	return (
-		<div className="mb-24">
+		<div className="mb-24 min-h-screen">
 			{loading ? (
 				<Loader />
 			) : error ? (
@@ -65,7 +60,7 @@ function PrivatePost() {
 			) : isPriv === true ? (
 				<div>
 					<h1 className="text-center mb-5 text-2xl underline">Private post</h1>
-					<Col className="float-right">
+					{/* <Col className="float-right">
 						<Button
 							variant="secondary"
 							className="bg-gray-500"
@@ -78,9 +73,9 @@ function PrivatePost() {
 							readOnly
 							value={window.location.href}
 							ref={urlRef}
-							className="hidden"
+							className="url_address w-96"
 						/>
-					</Col>
+					</Col> */}
 					<Row>
 						<Col md={6}>
 							<p className="text-xl">
