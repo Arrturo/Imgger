@@ -146,7 +146,7 @@ export const myPostListReducers = (state = {myPosts:[]}, action) => {
             return {loadingPosts: true, posts:[]}
         
         case MY_POST_LIST_SUCCESS:
-            return {loadingPosts: false, posts: action.payload}
+            return {loadingPosts: false, posts: action.payload.postsByUser?.edges, postsCount: action.payload.postsByUserCount}
 
         case MY_POST_LIST_FAIL:
             return {loadingPosts: false, error: action.payload}

@@ -134,7 +134,7 @@ class CommentType(DjangoObjectType):
         if user.is_anonymous:
             return False
         return self.dislikes.filter(id=user.id).exists()
-    
+
     def resolve_subcomments(self, info, **kwargs):
         return Subcomment.objects.filter(comment=self.id).count()
 

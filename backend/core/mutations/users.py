@@ -1,3 +1,5 @@
+import base64
+
 import graphene
 from django.contrib.auth import authenticate, logout
 from django.http import HttpResponse
@@ -5,7 +7,6 @@ from django.utils.deprecation import MiddlewareMixin
 from graphql_auth import mutations
 from graphql_jwt.decorators import login_required, staff_member_required
 from graphql_jwt.shortcuts import create_refresh_token, get_refresh_token, get_token
-import base64
 
 from ..models import ExtendUser
 from ..types import UserType
@@ -126,9 +127,7 @@ class LoginMutation(graphene.Mutation):
 class RefreshTokenMiddleware(MiddlewareMixin):
     def process_request(self, request):
         try:
-            if (
-                request.COOKIES.get("JWT-refresh-token") is None
-            ):
+            if request.COOKIES.get("JWT-refresh-token") is None:
                 return
             if request.path == "/logout/":
                 return

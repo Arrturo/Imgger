@@ -1,14 +1,13 @@
 import base64
+from datetime import datetime, timedelta
 
 import graphene
+from django.core.cache import cache
 from django.db.models import Count, F, Q
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_auth import mutations
 from graphql_auth.schema import MeQuery, UserQuery
 from graphql_jwt.decorators import login_required, staff_member_required
-
-from datetime import datetime, timedelta
-from django.core.cache import cache
 
 from .models import Category, Comment, ExtendUser, Image, Post, Subcomment
 from .mutations.categories import (
@@ -55,16 +54,19 @@ from .types import (
     UserType,
 )
 
+
 def can_increase_views():
-    last_increase_time = cache.get('last_increase_time')
+    last_increase_time = cache.get("last_increase_time")
     if last_increase_time:
         elapsed_time = datetime.now() - last_increase_time
         if elapsed_time < timedelta(minutes=1):
             return False
     return True
 
+
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     users = DjangoFilterConnectionField(UserType)
+    users_count = graphene.Int()
     me = graphene.Field(UserType)
     users_by_id = graphene.Field(UserType, id=graphene.ID(required=True))
     posts = DjangoFilterConnectionField(PostType)
@@ -73,8 +75,8 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     posts_by_short_url = graphene.Field(
         PostType, short_url=graphene.String(required=True)
     )
-    posts_by_user = DjangoFilterConnectionField(
-        PostType)
+    posts_by_user = DjangoFilterConnectionField(PostType)
+    posts_by_user_count = graphene.Int()
     posts_by_popularity = DjangoFilterConnectionField(PostType)
     posts_by_views = DjangoFilterConnectionField(PostType)
     search = DjangoFilterConnectionField(
@@ -95,6 +97,10 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_users(self, info, **kwargs):
         return ExtendUser.objects.all().order_by("id")
 
+    @staff_member_required
+    def resolve_users_count(self, info, **kwargs):
+        return ExtendUser.objects.all().count()
+
     def resolve_me(self, info, **kwargs):
         user = info.context.user
         if user.is_anonymous:
@@ -111,15 +117,22 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
     def resolve_posts_count(self, info, **kwargs):
         return Post.objects.filter(is_private=False).count()
-    
+
     def resolve_posts_by_category(self, info, **kwargs):
         return Post.objects.filter(category=kwargs["category"])
 
     @login_required
-    def resolve_posts_by_user(self, info,  **kwargs):
+    def resolve_posts_by_user(self, info, **kwargs):
         try:
             user = info.context.user
             return Post.objects.filter(user=user).order_by("-create_time")
+        except:
+            raise Exception("Not logged in!")
+
+    def resolve_posts_by_user_count(self, info, **kwargs):
+        try:
+            user = info.context.user
+            return Post.objects.filter(user=user).count()
         except:
             raise Exception("Not logged in!")
 
@@ -159,7 +172,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         post_id = int(post_id)
         if can_increase_views():
             Post.objects.filter(pk=post_id).update(views=F("views") + 1)
-            cache.set('last_increase_time', datetime.now())
+            cache.set("last_increase_time", datetime.now())
         return Post.objects.get(pk=post_id)
 
     def resolve_posts_by_short_url(self, info, short_url, **kwargs):
