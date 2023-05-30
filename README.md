@@ -1,5 +1,5 @@
 # Imgger ![Project Status](https://img.shields.io/badge/status-in%20progress-yellow)
-You can check our app by clicking link: https://imgger.smallhost.pl/
+You can check our app by clicking the link: https://imgger.smallhost.pl/
 
 This is a web application built with Django, GraphQL API, React and PostgreSQL. The purpose of this app is to provide users with a platform to upload, view, and share images with others.
 
@@ -26,17 +26,17 @@ This is a web application built with Django, GraphQL API, React and PostgreSQL. 
 3. React
 4. PostgreSQL
 5. Firebase
-6. Mailhog
+6. JSON Web Token (JWT)
 7. Docker
 
 ## Installation
 1. Clone the repository to your local machine using the command: 
 ```
-git clone https://github.com/Arrturo/PySquad.git
+git clone https://github.com/Arrturo/Imgger.git
 ```
 2. Navigate to the project directory using the command: 
 ```
-cd PySquad
+cd Imgger
 ```
 3. Build the Docker image using the command: 
 ```
@@ -51,9 +51,9 @@ The application should now be running and accessible at http://localhost:8000/ (
 ## Usage
 The PySquad application provides the following functionality:
 * User registration and login
-* Uploading images
+* Uploading images (Public/Private)
 * Viewing images
 * Sharing images with others
 * Adding comments to images
 
-To use the application, create an account and start uploading images. You can then view your uploaded images and share them with others by copying the image link. Other users can view and comment on your images.
+To use the application, create an account (or not) and start uploading images. You can then view your uploaded images and share them with others by copying the image link. Other users can view and comment on your images.
