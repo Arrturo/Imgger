@@ -214,7 +214,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 	}
 };
 
-export const listUsers = () => async (dispatch, getState) => {
+export const listUsers = (offset) => async (dispatch, getState) => {
 	try {
 		dispatch({
 			type: USER_LIST_REQUEST,
@@ -230,27 +230,28 @@ export const listUsers = () => async (dispatch, getState) => {
 			`${url}/graphql`,
 			{
 				query: `
-        query{
-          users{
-			edges{
-				node{
-					id
-					username
-					email
-					isStaff
-					dateJoined
-				}
-			}
-          }
-        }
-      `,
+					query{
+						users(first: 10, offset: ${offset}){
+							edges{
+								node{
+									id
+									username
+									email
+									isStaff
+									dateJoined
+								}
+							}
+						}
+						usersCount
+					}
+				`,
 			},
 			config
 		);
 
 		dispatch({
 			type: USER_LIST_SUCCESS,
-			payload: data.data.users.edges,
+			payload: data.data,
 		});
 	} catch (error) {
 		dispatch({

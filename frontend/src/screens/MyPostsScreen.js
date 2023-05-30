@@ -20,6 +20,8 @@ import {
 import Post from "../components/Post";
 import Rank from "../components/Rank";
 
+import ReactPaginate from "react-paginate";
+
 function MyPostsScreen() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -28,7 +30,7 @@ function MyPostsScreen() {
 	const { loading, error, userInfo } = userLogin;
 
 	const myPosts = useSelector((state) => state.myPostList);
-	const { loadingPosts, posts } = myPosts;
+	const { loadingPosts, posts , postsCount} = myPosts;
 
 	const [myPostsSection, setMyPostsSection] = useState(true);
 	const [likedPostsSection, setLikedPostsSection] = useState(false);
@@ -36,16 +38,30 @@ function MyPostsScreen() {
 	const likedPosts = useSelector((state) => state.likedPostList);
 	const { loadingLikedPosts, liked } = likedPosts;
 
+	const [activePage, setActivePage] = useState(1);
+    const [loadingPage, setLoadingPage] = useState(false);
+    const postsPerPage = 12;
+
+	console.log(postsCount)
+
 	useEffect(() => {
 		if (userInfo) {
-			dispatch(myPostsList(userInfo?.user?.id));
+			dispatch(myPostsList((activePage - 1) * postsPerPage))
 			dispatch(likedPostsList());
 		} else {
 			navigate(`/login`);
 		}
-	}, [dispatch, navigate]);
+	}, [dispatch, navigate, userInfo, activePage]);
 
-	console.log(posts?.length)
+	const handlePageChange = (pageNumber) => {
+        setLoadingPage(true);
+        setActivePage(pageNumber);
+    
+        setTimeout(() => {
+          setLoadingPage(false);
+        }, 300);
+      };
+
 	return (
 		<div>
 			<Row className="myposts-bg rounded-2xl border-4 border-rose-400">
@@ -55,9 +71,9 @@ function MyPostsScreen() {
 							<i class="fa-solid fa-user"></i>
 						</span>{" "}
 						{userInfo?.user?.username}
-						<Rank points={posts?.length} />
+						<Rank points={postsCount? postsCount : 0} />
 					</p>
-					<p className="text-xl ms-auto">{posts?.length} uploaded posts</p>
+					<p className="text-xl ms-auto">{postsCount? postsCount : 0} posts published</p>
 				</Col>
 			</Row>
 			<Row>
@@ -86,6 +102,7 @@ function MyPostsScreen() {
 					</Button>
 				</p>
 			</Row>
+			
 			{myPostsSection === true ? (
 				<Row className="mt-5">
 					<p className="text-center text-3xl">
@@ -97,6 +114,24 @@ function MyPostsScreen() {
 							<Post key={post?.node?.id} post={post} my={true} />
 						</Col>
 					))}
+					<div className="my-5">
+						<ReactPaginate
+							pageCount={Math.ceil(postsCount / postsPerPage)}
+							pageRangeDisplayed={5}
+							marginPagesDisplayed={2}
+							onPageChange={({ selected }) => handlePageChange(selected + 1)}
+							containerClassName="pagination justify-content-center"
+							pageClassName="page-item"
+							pageLinkClassName="page-link"
+							activeClassName="active"
+							previousClassName="page-item"
+							previousLinkClassName="page-link"
+							nextClassName="page-item"
+							nextLinkClassName="page-link"
+							breakClassName="page-item"
+							breakLinkClassName="page-link"
+							disabledClassName="disabled" />
+					</div>
 				</Row>
 			) : null}
 			{likedPostsSection === true ? (

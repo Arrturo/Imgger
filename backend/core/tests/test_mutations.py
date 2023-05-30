@@ -3,8 +3,7 @@ import io
 import json
 from io import BytesIO
 
-from django.core.files.uploadedfile import (InMemoryUploadedFile,
-                                            SimpleUploadedFile)
+from django.core.files.uploadedfile import InMemoryUploadedFile, SimpleUploadedFile
 from django.test import Client
 from graphene_django.utils import GraphQLTestCase
 from PIL import Image as PILImage
