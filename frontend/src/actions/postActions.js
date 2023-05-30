@@ -84,7 +84,7 @@ export const postsList = (offset) => async (dispatch, getState) => {
                             createTime
                             isLiked
                             isDisliked
-							short_url
+							shortUrl
                             image{
                                 id
                                 url
@@ -142,7 +142,7 @@ export const postsDetails = (id) => async (dispatch, getState) => {
                         createTime
                         isPrivate
 						views
-						short_url
+						shortUrl
                         nextPost{
                             id
                         }
@@ -519,7 +519,7 @@ export const myPostsList = (id) => async (dispatch, getState) => {
 			{
 				query: `
                 query{
-                    postsByUser(userId: ${id}){
+                    postsByUser{
                         edges{
                           node{
                             id
@@ -530,7 +530,7 @@ export const myPostsList = (id) => async (dispatch, getState) => {
                             createTime
                             isLiked
                             isDisliked
-                            short_url
+                            shortUrl
                             views
                             image{
                                 id

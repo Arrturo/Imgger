@@ -68,7 +68,7 @@ function PostsAdminScreen() {
           <Table striped hover responsive className="table-sm mb-5">
             <thead className="text-center">
               <tr>
-                <th>Id</th>
+                <th></th>
                 <th>Image</th>
                 <th>Title</th>
                 <th>Author</th>
@@ -77,13 +77,13 @@ function PostsAdminScreen() {
               </tr>
             </thead>
             <tbody className="text-center">
-              {posts.map((post) => (
+              {posts.map((post, index) => (
                 <tr key={post?.node?.id}>
-                  <td>{post?.node?.id}</td>
+                  <td>{index + 1}</td>
                   <td>
                     <a href={`/post/${post?.node?.id}`}>
                       <Image
-                        className="max-h-28"
+                        className="max-h-28 mx-auto d-block"
                         src={post?.node?.image?.url}
                         alt={post?.node?.title}
                       />

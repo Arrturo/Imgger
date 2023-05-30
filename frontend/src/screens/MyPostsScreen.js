@@ -45,6 +45,7 @@ function MyPostsScreen() {
 		}
 	}, [dispatch, navigate]);
 
+	console.log(posts?.length)
 	return (
 		<div>
 			<Row className="myposts-bg rounded-2xl border-4 border-rose-400">

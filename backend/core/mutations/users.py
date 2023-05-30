@@ -74,10 +74,7 @@ class DeleteMeMutation(graphene.Mutation):
             user = info.context.user
             refresh_token_instance.delete()
             user.delete()
-            response = super().mutate(root, info, **kwargs)
-            response.delete_cookie("JWT-refresh-token")
-            response.delete_cookie("JWT")
-            return response
+            return cls(success=True)
         except Exception as e:
             return cls(success=False, errors=str(e))
 

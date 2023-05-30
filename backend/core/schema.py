@@ -74,8 +74,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         PostType, short_url=graphene.String(required=True)
     )
     posts_by_user = DjangoFilterConnectionField(
-        PostType, user_id=graphene.ID(required=True)
-    )
+        PostType)
     posts_by_popularity = DjangoFilterConnectionField(PostType)
     posts_by_views = DjangoFilterConnectionField(PostType)
     search = DjangoFilterConnectionField(
@@ -117,12 +116,12 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return Post.objects.filter(category=kwargs["category"])
 
     @login_required
-    def resolve_posts_by_user(self, info, user_id, **kwargs):
-        return (
-            Post.objects.filter(user=user_id)
-            .filter(is_private=False)
-            .order_by("-create_time")
-        )
+    def resolve_posts_by_user(self, info,  **kwargs):
+        try:
+            user = info.context.user
+            return Post.objects.filter(user=user).order_by("-create_time")
+        except:
+            raise Exception("Not logged in!")
 
     def resolve_posts_by_popularity(self, info, **kwargs):
         likes_count = Count("likes", distinct=True)
