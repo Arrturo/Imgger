@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
-import { subcomments, deleteSubcomment, editSubcomment } from "../actions/postActions";
+import { subcomments, deleteSubcomment, editSubcomment, postComments } from "../actions/postActions";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -24,6 +24,7 @@ function SubcommentItem({ subcomment, commentId, post }) {
 			dispatch(deleteSubcomment(subcommentId));
 			setTimeout(() => {
 				dispatch(subcomments(commentId));
+				dispatch(postComments(post.id));
 			}, 100);
 		}
 	};
