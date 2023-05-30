@@ -217,16 +217,16 @@ function CreatingPost() {
 												type="radio"
 												label="3 days"
 												name="expiration2"
-												checked={selectedOption === 3}
-												onChange={() => setSelectedOption(3)}
+												checked={selectedOption === 2}
+												onChange={() => setSelectedOption(2)}
 											/>
 											<Form.Check
 												className="mt-1 text-xl"
 												type="radio"
 												label="7 days"
 												name="expiration3"
-												checked={selectedOption === 7}
-												onChange={() => setSelectedOption(7)}
+												checked={selectedOption === 3}
+												onChange={() => setSelectedOption(3)}
 											/>
 										</div>
 									</Form.Group>
