@@ -135,7 +135,7 @@ function PostScreen() {
 		) {
 			dispatch(deleteComment(idk));
 			setTimeout(() => {
-				dispatch(postComments(id))
+				dispatch(postComments(id));
 			}, 100);
 		}
 	};
@@ -447,10 +447,14 @@ function PostScreen() {
 															: setClickedCommentId(com.node.id)
 													)}
 												>
-													<span className="text-center">
-														Replays{" "}
-														<i class="fa-solid fa-circle-arrow-down"></i>
-													</span>
+													{clickedCommentId === null ? (
+														<span className="text-center">
+															Replays{" "}
+															<i class="fa-solid fa-circle-arrow-down"></i>
+														</span>
+													) : (
+														<i class="fa-solid fa-circle-arrow-up"></i>
+													)}
 												</Button>
 											) : null}
 										</p>
