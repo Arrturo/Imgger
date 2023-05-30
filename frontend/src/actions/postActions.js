@@ -528,7 +528,7 @@ export const myPostsList = (id) => async (dispatch, getState) => {
 			{
 				query: `
                 query{
-                    postsByUser(userId: ${id}){
+                    postsByUser{
                         edges{
                           node{
                             id

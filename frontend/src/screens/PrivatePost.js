@@ -49,7 +49,17 @@ function PrivatePost() {
 		}
 	}, [post]);
 
-
+	function CopyUrlButton(props) {
+		const handleClick = () => {
+		  navigator.clipboard.writeText(props.url);
+		};
+	  
+		return (
+		  <button onClick={handleClick} className="btn btn-primary">
+			Copy URL
+		  </button>
+		);
+	  }
 
 	return (
 		<div className="mb-24 min-h-screen">
@@ -60,22 +70,9 @@ function PrivatePost() {
 			) : isPriv === true ? (
 				<div>
 					<h1 className="text-center mb-5 text-2xl underline">Private post</h1>
-					{/* <Col className="float-right">
-						<Button
-							variant="secondary"
-							className="bg-gray-500"
-							onClick={handleCopyUrl}
-						>
-							Copy URL adress
-						</Button>
-						<input
-							type="text"
-							readOnly
-							value={window.location.href}
-							ref={urlRef}
-							className="url_address w-96"
-						/>
-					</Col> */}
+					<Col className="float-right">
+						<CopyUrlButton url={window.location.href} />
+					</Col>
 					<Row>
 						<Col md={6}>
 							<p className="text-xl">
