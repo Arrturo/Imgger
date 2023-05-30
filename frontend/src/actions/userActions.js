@@ -25,6 +25,7 @@ import {
 } from "../constants/userConstants";
 import axios from "axios";
 import {url} from '../constants/host'
+import { Navigate } from "react-router-dom";
 
 axios.defaults.withCredentials = true;
 
@@ -176,7 +177,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 			{
 				query: `
         mutation{
-          updateUser(userId: ${user.id}, username: "${user.username}", email: "${user.email}", password: "${user.password}"){
+          updateUser(userId: "${user.id}", username: "${user.username}", email: "${user.email}", password: "${user.password}"){
             user{
               id
               username
@@ -197,8 +198,6 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 		});
 
 		const userData = JSON.parse(localStorage.getItem("userInfo"));
-		console.log(userData.user.username);
-		console.log(data.data.updateUser.user.username);
 		userData.user.username = data.data.updateUser.user.username;
 		userData.user.email = data.data.updateUser.user.email;
 
@@ -233,11 +232,15 @@ export const listUsers = () => async (dispatch, getState) => {
 				query: `
         query{
           users{
-              id
-              username
-              email
-              isStaff
-              dateJoined
+			edges{
+				node{
+					id
+					username
+					email
+					isStaff
+					dateJoined
+				}
+			}
           }
         }
       `,
@@ -247,7 +250,7 @@ export const listUsers = () => async (dispatch, getState) => {
 
 		dispatch({
 			type: USER_LIST_SUCCESS,
-			payload: data.data,
+			payload: data.data.users.edges,
 		});
 	} catch (error) {
 		dispatch({
@@ -276,15 +279,15 @@ export const deleteUser = (id) => async (dispatch, getState) => {
 			`${url}/graphql`,
 			{
 				query: `
-        mutation{
-          deleteUser(userId: ${id}){
-              user{
-                  username
-                  email
-              }
-          }
-        }
-      `,
+					mutation{
+					deleteUser(userId: "${id}"){
+						user{
+							username
+							email
+						}
+					}
+					}
+				`,
 			},
 			config
 		);
@@ -324,14 +327,14 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
 			`${url}/graphql`,
 			{
 				query: `
-        query{
-          usersById(id: ${id}){
-              id
-              username
-              email
-              isStaff
-          }
-        }
+				query{
+					usersById(id: "${id}"){
+						id
+						username
+						email
+						isStaff
+					}
+				}
       `,
 			},
 			config
@@ -375,18 +378,18 @@ export const updateUserProfileByAdmin =
 				`${url}/graphql`,
 				{
 					query: `
-        mutation{
-          updateUser(userId: ${user.id}, username: "${user.username}", email: "${user.email}", password: "", isStaff: ${user.isStaff}){
-            user{
-              id
-              username
-              email
-              isStaff
-              dateJoined
-            }
-          }
-        }
-      `,
+						mutation{
+						updateUser(userId: "${user.id}", username: "${user.username}", email: "${user.email}", password: "", isStaff: ${user.isStaff}){
+							user{
+							id
+							username
+							email
+							isStaff
+							dateJoined
+							}
+						}
+						}
+     				 `,
 				},
 				config
 			);
@@ -407,7 +410,7 @@ export const updateUserProfileByAdmin =
 	};
 
 
-	export const deleteUserOwn = () => async (dispatch, getState) => {
+	export const deleteUserOwn = (password) => async (dispatch, getState) => {
 		try {
 			dispatch({
 				type: USER_DELETE_OWN_REQUEST,
@@ -423,23 +426,37 @@ export const updateUserProfileByAdmin =
 				`${url}/graphql`,
 				{
 					query: `
-			mutation{
-			  deleteMe{
-				  success
-				  errors
-			  }
-			}
-		  `,
+						mutation {
+							deleteMe(password: "${password}") {
+								success
+								errors
+							}
+						}
+					`,
 				},
 				config
 			);
 	
-			localStorage.removeItem("userInfo");
-			
-			dispatch({
-				type: USER_DELETE_OWN_SUCCESS,
-				payload: data,
-			});
+			if (data.data.deleteMe.success === true) {
+				localStorage.removeItem("userInfo");
+				dispatch({
+					type: USER_DELETE_OWN_SUCCESS,
+				});
+				dispatch({
+					type: USER_LOGOUT,
+				});
+				
+				setTimeout(() => {
+					window.location.reload();
+				}
+				, 1000);
+			}
+			else {
+				dispatch({
+					type: USER_DELETE_OWN_FAIL,
+					payload: data.data.deleteMe.errors
+				});
+			}
 		} catch (error) {
 			dispatch({
 				type: USER_DELETE_OWN_FAIL,

@@ -1,4 +1,6 @@
 import base64
+import random
+import string
 
 import graphene
 from django.contrib.auth import get_user_model
@@ -7,6 +9,7 @@ from graphql_jwt.decorators import login_required, staff_member_required
 
 from ..models import Category, Image, Post
 from ..types import PostType
+from django.utils import timezone
 
 
 class CreatePostMutation(graphene.Mutation):
@@ -16,54 +19,55 @@ class CreatePostMutation(graphene.Mutation):
         image_id = graphene.String(required=True)
         category_id = graphene.ID()
         is_private = graphene.Boolean()
+        expiration_date = graphene.Int()
 
     success = graphene.Boolean()
     errors = graphene.String()
     post = graphene.Field(PostType)
 
-    def mutate(self, info, title, description, image_id, category_id, is_private):
+    def mutate(self, info, title, description, image_id, category_id, is_private, expiration_date=None):
         try:
             user = info.context.user
-            print(user)
-            if not user.is_anonymous:
-                category_id = Category.objects.get(
-                    id=base64.b64decode(category_id).decode("utf-8").split(":")[1]
+            exp_date = None
+            if is_private:
+                exp_date = timezone.now() + timezone.timedelta(days=1)
+                if expiration_date:
+                    match(expiration_date):
+                        case 1:
+                            exp_date = timezone.now() + timezone.timedelta(days=1)
+                        case 2:
+                            exp_date = timezone.now() + timezone.timedelta(days=3)
+                        case 3:
+                            exp_date = timezone.now() + timezone.timedelta(days=7)
+                        case other:
+                            exp_date = timezone.now() + timezone.timedelta(days=1)
+
+            image = Image.objects.get(id=image_id)
+            category_id = base64.b64decode(category_id).decode("utf-8").split(":")[1]
+            category = Category.objects.get(id=category_id)
+
+            if user.is_authenticated:
+                post = Post.objects.create(
+                    title=title,
+                    description=description,
+                    image=image,
+                    category=category,
+                    user=user,
+                    is_private=is_private,
+                    short_url=f"{''.join(random.choices(string.ascii_uppercase + string.digits, k=7))}",
+                    expiration_date=exp_date
                 )
-                if image_id:
-                    image = Image.objects.get(id=image_id)
-                    post = Post(
-                        title=title,
-                        description=description,
-                        user=user,
-                        image=image,
-                        category=category_id,
-                        is_private=is_private,
-                    )
-                else:
-                    post = Post(
-                        title=title,
-                        description=description,
-                        user=user,
-                        category=category_id,
-                        is_private=is_private,
-                    )
             else:
-                if image_id:
-                    image = Image.objects.get(id=image_id)
-                    post = Post(
-                        title=title,
-                        description=description,
-                        image=image,
-                        is_private=True,
-                    )
-                else:
-                    post = Post(
-                        title=title,
-                        description=description,
-                        is_private=True,
-                    )
+                post = Post.objects.create(
+                    title=title,
+                    description=description,
+                    image=image,
+                    category=category,
+                    is_private=True,
+                    short_url=f"{''.join(random.choices(string.ascii_uppercase + string.digits, k=7))}",
+                    expiration_date=exp_date
+                )
             post.save()
-            print(post)
             return CreatePostMutation(success=True, post=post)
         except Exception as e:
             return CreatePostMutation(success=False, errors=str(e))
@@ -93,7 +97,7 @@ class UpdatePostMutation(graphene.Mutation):
                 )
             if title:
                 post.title = title
-            # if description:
+
             if category_id:
                 category_id = Category.objects.get(
                     id=base64.b64decode(category_id).decode("utf-8").split(":")[1]

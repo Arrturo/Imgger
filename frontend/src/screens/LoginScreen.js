@@ -115,8 +115,8 @@ function LoginScreen() {
 
                 <Form onSubmit={submitHandler} className="text-2xl">
                     <Form.Group controlId='username'>
-                        <Form.Label> <i class="fa-solid fa-user-tag"></i> Username</Form.Label>
-                            <Form.Control type='text' placeholder='Enter your username' value={username} onChange={(e)=>setUsername(e.target.value)}>
+                        <Form.Label> <i class="fa-solid fa-user-tag"></i> Username or email address</Form.Label>
+                            <Form.Control type='text' placeholder='Enter your username / email' value={username} onChange={(e)=>setUsername(e.target.value)}>
                                 
                             </Form.Control>
                     </Form.Group>

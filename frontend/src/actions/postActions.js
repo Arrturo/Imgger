@@ -41,10 +41,20 @@ import {
 	SUBCOMMENT_FAIL,
 	SUBCOMMENT_REQUEST,
 	SUBCOMMENT_SUCCESS,
+	ADD_SUBCOMMENT_FAIL,
+	ADD_SUBCOMMENT_REQUEST,
+	ADD_SUBCOMMENT_RESET,
+	ADD_SUBCOMMENT_SUCCESS,
+	DELETE_SUBCOMMENT_FAIL,
+	DELETE_SUBCOMMENT_REQUEST,
+	DELETE_SUBCOMMENT_SUCCESS,
+	EDIT_SUBCOMMENT_FAIL,
+	EDIT_SUBCOMMENT_REQUEST,
+	EDIT_SUBCOMMENT_SUCCESS,
 } from "../constants/postConstants";
 import { url } from "../constants/host";
 
-export const postsList = () => async (dispatch, getState) => {
+export const postsList = (offset) => async (dispatch, getState) => {
 	try {
 		dispatch({ type: POST_LIST_REQUEST });
 
@@ -63,7 +73,7 @@ export const postsList = () => async (dispatch, getState) => {
 			{
 				query: `
                 query{
-                    posts(first: 10, offset: 0){
+                    posts(first: 10, offset: ${offset}){
                         edges{
                           node{
                             id
@@ -74,6 +84,7 @@ export const postsList = () => async (dispatch, getState) => {
                             createTime
                             isLiked
                             isDisliked
+							shortUrl
                             image{
                                 id
                                 url
@@ -82,9 +93,9 @@ export const postsList = () => async (dispatch, getState) => {
                                 username
                             }
                           }
-                          cursor
                         }
-                      }
+					}
+					postsCount
                 }
                 `,
 			},
@@ -93,7 +104,7 @@ export const postsList = () => async (dispatch, getState) => {
 
 		dispatch({
 			type: POST_LIST_SUCCESS,
-			payload: data.data.posts.edges,
+			payload: data.data,
 		});
 	} catch (error) {
 		dispatch({
@@ -131,6 +142,7 @@ export const postsDetails = (id) => async (dispatch, getState) => {
                         createTime
                         isPrivate
 						views
+						shortUrl
                         nextPost{
                             id
                         }
@@ -172,7 +184,15 @@ export const postsDetails = (id) => async (dispatch, getState) => {
 };
 
 export const createPost =
-	(title, description, userId, imageId, categoryId, isPrivate) =>
+	(
+		title,
+		description,
+		userId,
+		imageId,
+		categoryId,
+		isPrivate,
+		selectedOption
+	) =>
 	async (dispatch, getState) => {
 		try {
 			dispatch({
@@ -190,7 +210,7 @@ export const createPost =
 					query: `
                 mutation{
                    createPost(title: "${title}", description: "${description}", imageId: "${imageId}", 
-                   categoryId: "${categoryId}", isPrivate: ${isPrivate}){
+                   categoryId: "${categoryId}", isPrivate: ${isPrivate}, expirationDate: ${selectedOption}){
                         success
                         errors
                         post{
@@ -329,6 +349,7 @@ export const postComments = (postId) => async (dispatch, getState) => {
 								dislikes
 								isLiked
 								isDisliked
+								subcomments
                                 }
                             }
                         }
@@ -372,7 +393,7 @@ export const addComment =
 				{
 					query: `
                 mutation{
-                   createComment(postId: "${postId}", userId: ${userId}, comment: "${comment}"){
+                   createComment(postId: "${postId}", comment: "${comment}"){
                         success
                         errors
                    }
@@ -507,7 +528,7 @@ export const myPostsList = (id) => async (dispatch, getState) => {
 			{
 				query: `
                 query{
-                    postsByUser(userId: ${id}){
+                    postsByUser{
                         edges{
                           node{
                             id
@@ -518,6 +539,8 @@ export const myPostsList = (id) => async (dispatch, getState) => {
                             createTime
                             isLiked
                             isDisliked
+                            shortUrl
+                            views
                             image{
                                 id
                                 url
@@ -578,6 +601,7 @@ export const likedPostsList = () => async (dispatch, getState) => {
                             description
                             likes
                             dislikes
+							views
                             image{
                               id
                               url
@@ -748,6 +772,140 @@ export const subcomments = (commentId) => async (dispatch, getState) => {
 			type: SUBCOMMENT_FAIL,
 			payload:
 				error.respone && error.response.data.detail
+					? error.response.data.detail
+					: error.message,
+		});
+	}
+};
+
+export const addingSubcomment =
+	(commentId, subcomment) => async (dispatch, getState) => {
+		try {
+			dispatch({
+				type: ADD_SUBCOMMENT_REQUEST,
+			});
+
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
+			const { data } = await axios.post(
+				`${url}/graphql`,
+				{
+					query: `
+                mutation{
+					createSubcomment(commentId: "${commentId}", description: "${subcomment}"){
+                        success
+                        errors
+                   }
+                }
+            `,
+				},
+				config
+			);
+
+			dispatch({
+				type: ADD_SUBCOMMENT_SUCCESS,
+				payload: data.data.createSubcomment,
+			});
+		} catch (error) {
+			dispatch({
+				type: ADD_SUBCOMMENT_FAIL,
+				payload:
+					error.response && error.response.data.detail
+						? error.response.data.detail
+						: error.message,
+			});
+		}
+	};
+
+export const deleteSubcomment =
+	(subcommentId) => async (dispatch, getState) => {
+		try {
+			dispatch({
+				type: DELETE_SUBCOMMENT_REQUEST,
+			});
+
+			const {
+				userLogin: { userInfo },
+			} = getState();
+
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
+
+			const { data } = await axios.post(
+				`${url}/graphql`,
+				{
+					query: `
+					mutation{
+						deleteSubcomment(subcommentId: "${subcommentId}"){
+							success
+							errors
+						}
+					}
+				`,
+				},
+				config
+			);
+
+			dispatch({
+				type: DELETE_SUBCOMMENT_SUCCESS,
+			});
+		} catch (error) {
+			dispatch({
+				type: DELETE_SUBCOMMENT_FAIL,
+				payload:
+					error.response && error.response.data.detail
+						? error.response.data.detail
+						: error.message,
+			});
+		}
+	};
+
+export const editSubcomment = (subcomment) => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: EDIT_SUBCOMMENT_REQUEST,
+		});
+
+		const {
+			userLogin: { userInfo },
+		} = getState();
+
+		const config = {
+			headers: {
+				"Content-type": "application/json",
+			},
+		};
+
+		const { data } = await axios.post(
+			`${url}/graphql`,
+			{
+				query: `
+				mutation{
+					updateSubcomment(subcommentId: "${subcomment.subcommentId}", description: "${subcomment.description}") {
+					  success
+					  errors
+					}
+				  }
+				`,
+			},
+			config
+		);
+
+		dispatch({
+			type: EDIT_SUBCOMMENT_SUCCESS,
+			payload: data,
+		});
+	} catch (error) {
+		dispatch({
+			type: EDIT_SUBCOMMENT_FAIL,
+			payload:
+				error.response && error.response.data.detail
 					? error.response.data.detail
 					: error.message,
 		});

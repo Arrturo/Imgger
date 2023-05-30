@@ -70,7 +70,7 @@ export const userListReducer = (state = {users: []}, action) => {
             return {loading: true, users: []}
         
         case USER_LIST_SUCCESS:
-            return {loading: false, users: action.payload.users}
+            return {loading: false, users: action.payload}
         
         case USER_LIST_FAIL:
             return {loading: false, error: action.payload}
@@ -115,13 +115,13 @@ export const userDetailsReducer = (state = {user: {} }, action) => {
 
 export const userDeleteOwnReducer = (state = {}, action) => {
     switch(action.type){
-        case USER_DELETE_REQUEST:
+        case USER_DELETE_OWN_REQUEST:
             return {loading: true}
         
-        case USER_DELETE_SUCCESS:
+        case USER_DELETE_OWN_SUCCESS:
             return {loading: false, success: true}
         
-        case USER_DELETE_FAIL:
+        case USER_DELETE_OWN_FAIL:
             return {loading: false, error: action.payload}
         
         default:

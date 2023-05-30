@@ -13,14 +13,12 @@ import firebaseConfig from "../firebaseConfig.json";
 import "firebase/firestore";
 import "firebase/storage";
 import { useParams } from "react-router-dom";
-import {url} from '../constants/host'
+import { url } from "../constants/host";
 
 const PAGE_NUMBER = 0;
 
-
 const SearchingPost = () => {
 	const { keywords } = useParams();
-
 
 	const app = initializeApp(firebaseConfig);
 	const analytics = getAnalytics(app);
@@ -32,7 +30,6 @@ const SearchingPost = () => {
 	const [loading, setLoading] = useState(true);
 
 	const [hasNextPage, setHasNextPage] = useState(true);
-
 
 	useEffect(() => {
 		dispatch(categoriesList());
@@ -63,6 +60,7 @@ const SearchingPost = () => {
                       isLiked
                       isDisliked
                       commentsCount
+					  views
                       image{
                         url
                       }
@@ -112,9 +110,7 @@ const SearchingPost = () => {
 
 	return (
 		<div className="app">
-				<h1 className="text-center text-3xl">
-					Search results for: "{keywords}"
-				</h1>
+			<h1 className="text-center text-3xl">Search results for: "{keywords}"</h1>
 			<PostList posts={postData} />
 			{loading && <Loader />}
 		</div>

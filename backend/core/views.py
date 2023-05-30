@@ -8,7 +8,6 @@ from .schema import schema
 # Create your views here.
 
 
-
 def logout_view(request):
     response = JsonResponse({"success": True, "errors": None}, status=200)
 

@@ -29,12 +29,15 @@ import {
 	deleteComment,
 	editComment,
 	subcomments,
+	addingSubcomment,
+	deleteSubcomment,
 } from "../actions/postActions";
 import CategoryItem from "../components/CategoryItem";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import axios from 'axios'
+import axios from "axios";
 import { url } from "../constants/host";
+import Subcomment from "../components/Subcomment";
 
 dayjs.extend(relativeTime);
 
@@ -56,6 +59,7 @@ function PostScreen() {
 	const { subc } = useSelector((state) => state.subcomments);
 
 	const [comment, setComment] = useState("");
+	const [subcomment, setSubcomment] = useState("");
 
 	const [hoveredItemId, setHoveredItemId] = useState(null);
 	const [clickedItemId, setClickedItemId] = useState(null);
@@ -66,7 +70,7 @@ function PostScreen() {
 
 	const [isPriv, setIsPriv] = useState(false);
 
-	const [giveLike, setGiveLike] = useState(false)
+	const [giveLike, setGiveLike] = useState(false);
 
 	const handleItemMouseEnter = (itemId) => {
 		setHoveredItemId(itemId);
@@ -79,14 +83,14 @@ function PostScreen() {
 	const likePostHandler = (id) => {
 		dispatch(likePost(id));
 		setTimeout(() => {
-			window.location.reload();
+			dispatch(postsDetails(id));
 		}, 100);
 	};
 
 	const dislikePostHandler = (id) => {
 		dispatch(dislikePost(id));
 		setTimeout(() => {
-			window.location.reload();
+			dispatch(postsDetails(id));
 		}, 100);
 	};
 
@@ -108,19 +112,30 @@ function PostScreen() {
 		e.preventDefault();
 		dispatch(addComment(id, userInfo?.user?.id, comment));
 		setTimeout(() => {
-			window.location.reload();
+			dispatch(postComments(id));
+			setComment("");
 		}, 100);
 	};
 
-	const deleteHandler = (id, name) => {
+	const addSubcomment = (el) => {
+		el.preventDefault();
+		dispatch(addingSubcomment(clickedCommentId, subcomment));
+		setTimeout(() => {
+			dispatch(subcomments(clickedCommentId));
+			dispatch(postComments(id));
+			setSubcomment("");
+		}, 300);
+	};
+
+	const deleteHandler = (idk, name) => {
 		if (
 			window.confirm(
 				`Are you sure to delete comment: "${name}" and all subcomments of this comment ?`
 			)
 		) {
-			dispatch(deleteComment(id));
+			dispatch(deleteComment(idk));
 			setTimeout(() => {
-				window.location.reload();
+				dispatch(postComments(id))
 			}, 100);
 		}
 	};
@@ -128,7 +143,10 @@ function PostScreen() {
 	const saveChangesHandler = (event) => {
 		event.preventDefault();
 		dispatch(editComment({ id: clickedItemId, content: editedComment }));
-		window.location.reload();
+		setTimeout(() => {
+			dispatch(postComments(id));
+			setEditMode(false);
+		}, 100);
 	};
 
 	const CommentClick = (commentId) => {
@@ -155,11 +173,10 @@ function PostScreen() {
 			},
 			config
 		);
-		
-		setTimeout(() => {
-			window.location.reload()
-		}, 100)
 
+		setTimeout(() => {
+			dispatch(postComments(id));
+		}, 100);
 	};
 
 	const dislikeComment = async (commentId) => {
@@ -184,9 +201,8 @@ function PostScreen() {
 		);
 
 		setTimeout(() => {
-			window.location.reload()
-		}, 100)
-
+			dispatch(postComments(id));
+		}, 100);
 	};
 
 	return (
@@ -267,10 +283,8 @@ function PostScreen() {
 
 						<Col md={6}>
 							<p className="text-xl">
-								Added by:{" "}
+								Added {dayjs(post?.createTime).fromNow()} by:{" "}
 								<span className="text-purple-500">{post?.user?.username}</span>{" "}
-								at {post?.createTime?.substring(0, 10)}{" "}
-								{post?.createTime?.substring(15, 19)}
 								<span className="text-sm mx-12">Views: {post?.views}</span>
 							</p>
 							<Image src={post?.image?.url} alt={post.title} fluid />
@@ -312,14 +326,11 @@ function PostScreen() {
 
 							<div className="my-2 ">
 								{comments.map((com) => (
-									// <button className="but-com">
-
 									<div
 										key={com.node.id}
-										className=" border-b-2 p-1 com"
+										className=" border-b-2 p-1 com  subkomentarzebox"
 										onMouseEnter={() => handleItemMouseEnter(com.node.id)}
 										onMouseLeave={handleItemMouseLeave}
-										// onClick={() => (CommentClick(com.node.id), clickedCommentId === com.node.id ? setClickedCommentId(null) : setClickedCommentId(com.node.id))}
 									>
 										<p className="text-sm p-2">
 											<span className="flex">
@@ -386,7 +397,11 @@ function PostScreen() {
 													<p className="text-base">
 														<button
 															disabled={!userInfo}
-															className={`mt-2 px-3 ${com.node.isLiked ? 'text-lime-600' : 'hover:text-lime-600'} ease-in duration-75`}
+															className={`mt-2 px-3 ${
+																com.node.isLiked
+																	? "text-lime-600"
+																	: "hover:text-lime-600"
+															} ease-in duration-75`}
 															onClick={() => likeComment(com.node.id)}
 														>
 															<i class="fa-solid fa-thumbs-up"></i>{" "}
@@ -394,11 +409,28 @@ function PostScreen() {
 														</button>
 														<button
 															disabled={!userInfo}
-															className={`mt-2 ${com.node.isDisliked ? 'text-red-500' : 'hover:text-red-500'} ease-in duration-75`}
+															className={`mt-2 ${
+																com.node.isDisliked
+																	? "text-red-500"
+																	: "hover:text-red-500"
+															} ease-in duration-75`}
 															onClick={() => dislikeComment(com.node.id)}
 														>
 															<i class="fa-solid fa-thumbs-down"></i>{" "}
 															{com?.node?.dislikes}
+														</button>
+
+														<button
+															className="pl-3"
+															onClick={() => (
+																CommentClick(com.node.id),
+																clickedCommentId === com.node.id
+																	? setClickedCommentId(null)
+																	: setClickedCommentId(com.node.id)
+															)}
+														>
+															<i class="fa-solid fa-reply-all"></i>{" "}
+															{com?.node.subcomments}
 														</button>
 													</p>
 												</div>
@@ -408,46 +440,77 @@ function PostScreen() {
 													type="submit"
 													variant="primary"
 													className="reply-btn"
+													onClick={() => (
+														CommentClick(com.node.id),
+														clickedCommentId === com.node.id
+															? setClickedCommentId(null)
+															: setClickedCommentId(com.node.id)
+													)}
 												>
-													<i class="fa-solid fa-reply"></i> Reply
+													<span className="text-center">
+														Replays{" "}
+														<i class="fa-solid fa-circle-arrow-down"></i>
+													</span>
 												</Button>
 											) : null}
 										</p>
-
-										{com.node.id === clickedCommentId ? (
-											<div className="my-3">
-												{subc.map((sc) => (
-													<button className="subc border-b-2 p-1">
-														<p className="text-sm p-2">
-															<span className="flex">
-																<strong className="text-base text-amber-800 pr-2">
-																	{sc.node.user.id == post?.user?.id ? (
-																		<span className="text-gray-900">
-																			<span className="text-purple-500">
-																				{sc.node.user.username}
-																			</span>{" "}
-																			(Author)
-																		</span>
-																	) : (
-																		<span>{sc.node.user.username}</span>
-																	)}
-																</strong>
-																{dayjs(sc.node.createTime).fromNow()}
-															</span>
-															<p className="content-sub">{sc.node.content}</p>
-															{sc.node.user.id == userInfo?.user?.id ||
-															userInfo?.user?.isStaff === true ? (
-																<button className="edit-btn edit-btn-sub px-3">
-																	<i class="fa-solid fa-trash"></i>
-																</button>
-															) : null}
-														</p>
-													</button>
+										{clickedCommentId === com.node.id && (
+											<div className="message_subc mt-2">
+												{subc.length === 0 && (
+													<div className="message_subc">
+														<Message varing="info">
+															Users have not added any subcomments yet
+														</Message>
+													</div>
+												)}
+												{subc.map((sub) => (
+													<Subcomment
+														subcomment={sub.node}
+														commentId={clickedCommentId}
+														post={post}
+													/>
 												))}
+												{userInfo ? (
+													<Form
+														onSubmit={addSubcomment}
+														className="subcomment-form mt-5"
+													>
+														<FormGroup controlId="subcomment" className="mt-1">
+															<Form.Label>Replay</Form.Label>
+															<Form.Control
+																as="textarea"
+																row="5"
+																value={subcomment}
+																onChange={(el) =>
+																	setSubcomment(el.target.value)
+																}
+																placeholer="Enter a subcomment"
+															></Form.Control>
+														</FormGroup>
+
+														<Button
+															type="submit"
+															variant="primary"
+															className="button-primary mt-3 mb-5"
+														>
+															<i class="fa-solid fa-share-nodes"></i> Add
+															subcomment
+														</Button>
+													</Form>
+												) : (
+													<div className="mt-3 message_subc">
+														<Message variant="info">
+															You must be{" "}
+															<Link to="/login" className="text-red-700">
+																logged in{" "}
+															</Link>{" "}
+															to add a subcomment
+														</Message>
+													</div>
+												)}
 											</div>
-										) : null}
+										)}
 									</div>
-									// </button>
 								))}
 							</div>
 

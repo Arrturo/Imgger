@@ -1,9 +1,11 @@
 import graphene
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
+from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 from graphql_auth import mutations
-from graphql_jwt.decorators import login_required
-from graphql_jwt.shortcuts import create_refresh_token, get_token
+from graphql_jwt.decorators import login_required, staff_member_required
+from graphql_jwt.shortcuts import create_refresh_token, get_refresh_token, get_token
+import base64
 
 from ..models import ExtendUser
 from ..types import UserType
@@ -25,7 +27,8 @@ class UpdateUserMutation(graphene.Mutation):
 
     @login_required
     def mutate(self, info, user_id, username, email, password, isStaff=None):
-        user = ExtendUser.objects.get(id=user_id)
+        id = base64.b64decode(user_id).decode("utf-8").split(":")[1]
+        user = ExtendUser.objects.get(id=id)
         if username:
             user.username = username
         if email:
@@ -44,31 +47,43 @@ class DeleteUserMutation(graphene.Mutation):
 
     user = graphene.Field(UserType)
 
+    @staff_member_required
     @login_required
     def mutate(self, info, user_id):
+        user_id = base64.b64decode(user_id).decode("utf-8").split(":")[1]
         user = ExtendUser.objects.get(id=user_id)
         user.delete()
         return DeleteUserMutation(user=user)
 
 
 class DeleteMeMutation(graphene.Mutation):
+    class Arguments:
+        password = graphene.String(required=True)
+
     success = graphene.Boolean()
     errors = graphene.String()
 
+    @classmethod
     @login_required
-    def mutate(self, info):
+    def mutate(cls, root, info, password, **kwargs):
         try:
+            if not info.context.user.check_password(password):
+                return cls(success=False, errors="Incorrect password")
+            refresh_token = info.context.COOKIES.get("JWT-refresh-token")
+            refresh_token_instance = get_refresh_token(refresh_token)
             user = info.context.user
+            refresh_token_instance.delete()
             user.delete()
-            return DeleteMeMutation(success=True, errors=None)
+            return cls(success=True)
         except Exception as e:
-            return DeleteMeMutation(success=False, errors=str(e))
+            return cls(success=False, errors=str(e))
 
 
 class LoginMutation(graphene.Mutation):
     # Define mutation fields
     class Arguments:
-        username = graphene.String(required=True)
+        username = graphene.String()
+        email = graphene.String()
         password = graphene.String(required=True)
 
     user = graphene.Field(UserType)
@@ -76,10 +91,15 @@ class LoginMutation(graphene.Mutation):
     errors = graphene.String()
 
     @classmethod
-    def mutate(cls, root, info, username, password, **kwargs):
+    def mutate(cls, root, info, password, username, **kwargs):
         try:
             context = info.context
+            try:
+                username = ExtendUser.objects.get(email=username).username
+            except:
+                pass
             user = authenticate(username=username, password=password)
+
             if user is not None:
                 if user.status.verified:
                     context.jwt_cookie = True
@@ -105,21 +125,26 @@ class LoginMutation(graphene.Mutation):
 
 class RefreshTokenMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        if (
-            request.COOKIES.get("JWT-refresh-token")
-            and request.COOKIES.get("JWT-token") is None
-        ):
+        try:
+            if (
+                request.COOKIES.get("JWT-refresh-token") is None
+            ):
+                return
+            if request.path == "/logout/":
+                return
             schema = graphene.Schema(mutation=AuthMutation)
             result = schema.execute(
                 '''
-                mutation {
-                    refreshToken(refreshToken: "'''
+                    mutation {
+                        refreshToken(refreshToken: "'''
                 + request.COOKIES.get("JWT-refresh-token")
                 + """")
-                            {
-                                token
+                                {
+                                    token
+                                    }
                                 }
-                            }
-                        """
+                            """
             )
             request.jwt_token = result.data.get("refreshToken").get("token")
+        except Exception as e:
+            print(e)
