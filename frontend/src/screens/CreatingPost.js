@@ -20,7 +20,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { POST_CREATE_RESET } from "../constants/postConstants";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
-import {url} from '../constants/host'
+import { url } from "../constants/host";
 
 function CreatingPost() {
 	const dispatch = useDispatch();
@@ -45,6 +45,8 @@ function CreatingPost() {
 	const [cat, setCat] = useState("");
 
 	const [isPrivate, setIsPrivate] = useState(true);
+
+	const [selectedOption, setSelectedOption] = useState(1);
 
 	const userId = userInfo?.user?.id;
 
@@ -93,7 +95,7 @@ function CreatingPost() {
 
 			if (imageId) {
 				await dispatch(
-					createPost(title, description, userId, imageId, cat, isPrivate)
+					createPost(title, description, userId, imageId, cat, isPrivate, selectedOption)
 				);
 			} else {
 				console.log("Image ID not available yet.");
@@ -103,13 +105,13 @@ function CreatingPost() {
 		}
 	};
 
+	console.log(selectedOption)
+
 	useEffect(() => {
 		if (userInfo?.user) {
 			setIsPrivate(false);
 		}
 	}, [navigate]);
-
-	console.log(isPrivate);
 
 	useEffect(() => {
 		if (post?.success === true) {
@@ -195,6 +197,40 @@ function CreatingPost() {
 										onChange={(e) => setIsPrivate(e.target.checked)}
 									></Form.Check>
 								</FormGroup>
+
+								{isPrivate ? (
+									<Form.Group>
+										<Form.Label className="text-xl mt-5 ">
+											Expiration time:
+										</Form.Label>
+										<div className="flex justify-between">
+											<Form.Check
+												className="mt-1 text-xl"
+												type="radio"
+												label="1 day"
+												name="expiration"
+												checked={selectedOption === 1}
+												onChange={() => setSelectedOption(1)}
+											/>
+											<Form.Check
+												className="mt-1 text-xl"
+												type="radio"
+												label="3 days"
+												name="expiration2"
+												checked={selectedOption === 3}
+												onChange={() => setSelectedOption(3)}
+											/>
+											<Form.Check
+												className="mt-1 text-xl"
+												type="radio"
+												label="7 days"
+												name="expiration3"
+												checked={selectedOption === 7}
+												onChange={() => setSelectedOption(7)}
+											/>
+										</div>
+									</Form.Group>
+								) : null}
 
 								<Button
 									type="submit"

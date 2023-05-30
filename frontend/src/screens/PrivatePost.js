@@ -62,7 +62,7 @@ function PrivatePost() {
 	  }
 
 	return (
-		<div className="mb-24">
+		<div className="mb-24 min-h-screen">
 			{loading ? (
 				<Loader />
 			) : error ? (
