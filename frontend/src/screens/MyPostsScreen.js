@@ -1,22 +1,9 @@
-import React, { useState, useEffect, useProps } from "react";
-import { useNavigate, useLocation, useParams, Link } from "react-router-dom";
-import {
-	Form,
-	Button,
-	Row,
-	Col,
-	Table,
-	Image,
-	ListGroup,
-} from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, Row, Col } from "react-bootstrap";
 import Loader from "../components/Loader";
-import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
-import {
-	myPostsList,
-	likedPostsList,
-	deletePost,
-} from "../actions/postActions";
+import { myPostsList, likedPostsList } from "../actions/postActions";
 import Post from "../components/Post";
 import Rank from "../components/Rank";
 
@@ -45,7 +32,7 @@ function MyPostsScreen() {
 		}
 	}, [dispatch, navigate]);
 
-	console.log(posts?.length)
+	console.log(posts?.length);
 	return (
 		<div>
 			<Row className="myposts-bg rounded-2xl border-4 border-rose-400">

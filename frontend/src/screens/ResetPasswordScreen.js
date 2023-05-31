@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useProps } from "react";
+import React, { useState } from "react";
 import FormContainer from "../components/FormContainer";
-import { Form, Button, Row, Col, FormGroup } from "react-bootstrap";
-import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { Form, Button } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Message from "../components/Message";
-import Loader from "../components/Loader";
-import {url} from '../constants/host'
+import { url } from "../constants/host";
 
 function ResetPasswordScreen() {
 	const { token } = useParams();

@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Button, Row, Col, Table, Modal } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
-import {
-	getUserDetails,
-	updateUserProfile,
-	deleteUserOwn,
-} from "../actions/userActions";
+import { updateUserProfile, deleteUserOwn } from "../actions/userActions";
 
 function ProfileScreen() {
 	const location = useLocation();
@@ -31,9 +26,13 @@ function ProfileScreen() {
 
 	const userLogin = useSelector((state) => state.userLogin);
 	const { error: loginError, loading, userInfo } = userLogin;
-	
+
 	const userDeleteOwn = useSelector((state) => state.userDeleteOwn);
-	const { error: deleteUserOwnError, loading: deleteUserOwnLoading, success: deleteUserOwnSuccess } = userDeleteOwn;
+	const {
+		error: deleteUserOwnError,
+		loading: deleteUserOwnLoading,
+		success: deleteUserOwnSuccess,
+	} = userDeleteOwn;
 
 	useEffect(() => {
 		if (userInfo === null) {
@@ -88,45 +87,58 @@ function ProfileScreen() {
 
 	return (
 		<div className="mb-72">
-		  <Button
-			variant="danger"
-			className="bg-red-600 float-right"
-			onClick={handleDeleteConfirmation}
-		  >
-			Delete account
-		  </Button>
-		  <Modal show={showDeleteConfirmation} onHide={handleDeleteCancel}>
-			<Modal.Header closeButton>
-			  <Modal.Title>Confirm Account Deletion</Modal.Title>
-			</Modal.Header>
-			<Modal.Body>
-			  <p>Are you sure you want to delete your account?</p>
-			  <p>This action is irreversible and will permanently delete your account.</p>
-			  <Form.Group controlId="password">
-				<Form.Label>Password: </Form.Label>
-				<Form.Control
-				  type="password"
-				  placeholder="Enter your password"
-				  value={password1}
-				  onChange={(e) => setPassword1(e.target.value)}
-				  isInvalid={messageDelete}
-				/>
-				<Form.Control.Feedback type="invalid">
-				  {messageDelete}
-				</Form.Control.Feedback>
-			  </Form.Group>
-			  <br />
-			  {deleteUserOwnError && <Message variant="danger">{deleteUserOwnError}</Message>}
-			</Modal.Body>
-			<Modal.Footer>
-			  <Button variant="secondary" style={{ color: 'black' }} onClick={handleDeleteCancel}>
-				Cancel
-			  </Button>
-			  <Button variant="danger" style={{ color: 'black' }} onClick={handleDeleteAccount}>
-				Delete Account
-			  </Button>
-			</Modal.Footer>
-		  </Modal>
+			<Button
+				variant="danger"
+				className="bg-red-600 float-right"
+				onClick={handleDeleteConfirmation}
+			>
+				Delete account
+			</Button>
+			<Modal show={showDeleteConfirmation} onHide={handleDeleteCancel}>
+				<Modal.Header closeButton>
+					<Modal.Title>Confirm Account Deletion</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<p>Are you sure you want to delete your account?</p>
+					<p>
+						This action is irreversible and will permanently delete your
+						account.
+					</p>
+					<Form.Group controlId="password">
+						<Form.Label>Password: </Form.Label>
+						<Form.Control
+							type="password"
+							placeholder="Enter your password"
+							value={password1}
+							onChange={(e) => setPassword1(e.target.value)}
+							isInvalid={messageDelete}
+						/>
+						<Form.Control.Feedback type="invalid">
+							{messageDelete}
+						</Form.Control.Feedback>
+					</Form.Group>
+					<br />
+					{deleteUserOwnError && (
+						<Message variant="danger">{deleteUserOwnError}</Message>
+					)}
+				</Modal.Body>
+				<Modal.Footer>
+					<Button
+						variant="secondary"
+						style={{ color: "black" }}
+						onClick={handleDeleteCancel}
+					>
+						Cancel
+					</Button>
+					<Button
+						variant="danger"
+						style={{ color: "black" }}
+						onClick={handleDeleteAccount}
+					>
+						Delete Account
+					</Button>
+				</Modal.Footer>
+			</Modal>
 			<Row className="flex justify-center">
 				<Col md={5}>
 					<h2 className="text-4xl text-center mb-3">My Account:</h2>

@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "react-bootstrap";
-import Loader from "../components/Loader";
-import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
-import { subcomments, deleteSubcomment, editSubcomment, postComments } from "../actions/postActions";
+import {
+	subcomments,
+	deleteSubcomment,
+	editSubcomment,
+	postComments,
+} from "../actions/postActions";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -15,7 +18,6 @@ function SubcommentItem({ subcomment, commentId, post }) {
 
 	const [editMode, setEditMode] = useState(false);
 	const [editedSubcomment, setEditedSubcomment] = useState("");
-	
 
 	const dispatch = useDispatch();
 
@@ -31,13 +33,17 @@ function SubcommentItem({ subcomment, commentId, post }) {
 
 	const saveChangesHandler = (event) => {
 		event.preventDefault();
-		dispatch(editSubcomment({ subcommentId: subcomment.id, description: editedSubcomment }));
+		dispatch(
+			editSubcomment({
+				subcommentId: subcomment.id,
+				description: editedSubcomment,
+			})
+		);
 		setTimeout(() => {
 			dispatch(subcomments(commentId));
-			setEditMode(false)
+			setEditMode(false);
 		}, 100);
 	};
-
 
 	return (
 		<div className="mt-2 sub-container subcomment">
@@ -75,8 +81,7 @@ function SubcommentItem({ subcomment, commentId, post }) {
 								<button
 									className="edit-btn edit-btn-sub mx-5"
 									onClick={() => (
-										setEditMode(true),
-										setEditedSubcomment(subcomment.content)
+										setEditMode(true), setEditedSubcomment(subcomment.content)
 									)}
 								>
 									<i class="fa-solid fa-pencil"></i>
