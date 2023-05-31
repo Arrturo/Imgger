@@ -102,8 +102,12 @@ function Post({ post, my, liked }) {
 			) : (
 				<Card
 					className={`my-3 rounded hover:opacity-80 ${
-						post?.node.likes >= 30 ? `ramka` : null
-					}`}
+						post?.node.likes >= 10 ? `ramka` : null
+					}
+					${
+						post?.node.views >= 100 ? `top-views` : null
+					}
+					`}
 				>
 					<Link to={`/post/${post.node.id}`}>
 						<Card.Img
