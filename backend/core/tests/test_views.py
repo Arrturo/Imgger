@@ -1,5 +1,6 @@
 import json
 from graphene_django.utils import GraphQLTestCase
+from django.test import Client
 
 from core.models import ExtendUser
 

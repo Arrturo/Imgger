@@ -152,7 +152,6 @@ class ImagesGraphQLTestCase(GraphQLTestCase):
 
 class CategoriesGraphQLTestCase(GraphQLTestCase):
     def setUp(self):
-        # Create a user
         self.user = ExtendUser.objects.create_user(
             username="testuser",
             password="testpassword",
@@ -258,8 +257,6 @@ class CategoriesGraphQLTestCase(GraphQLTestCase):
         self.assertEqual(content["data"]["deleteCategory"]["success"], True)
 
 
-
-
 class UsersGraphQLTestCase(GraphQLTestCase):
     def setUp(self):
         # Create a user
@@ -277,9 +274,6 @@ class UsersGraphQLTestCase(GraphQLTestCase):
         self.client.login(username="testuser", password="testpassword")
 
     def test_query(self):
-        # Create a client
-
-        # Create the query string
         query = """query {
                         me {
                             username
@@ -287,10 +281,8 @@ class UsersGraphQLTestCase(GraphQLTestCase):
                         }
                     }"""
 
-        # Make the request
         response = self.client.post("/graphql", data={"query": query})
 
-        # Check the response
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             json.loads(response.content),
@@ -319,7 +311,9 @@ class UsersGraphQLTestCase(GraphQLTestCase):
         self.assertEqual(content["data"]["login"]["user"]["username"], "testuser")
 
     def test_update_user_mutations(self):
-        id = self.user.id
+        id = base64.b64encode(
+            "UserType:{}".format(self.user.id).encode("utf-8")
+        ).decode("utf-8")
         mutation = """mutation($userId: ID!){
                         updateUser(userId:, $userId, username: "test", email: "test@test.pl", password: "testpassword", isStaff: false){
                             user {
@@ -348,6 +342,9 @@ class UsersGraphQLTestCase(GraphQLTestCase):
         self.assertEqual(content["data"]["updateUser"]["user"]["isStaff"], False)
 
     def test_delete_user_mutation(self):
+        id = base64.b64encode(
+            "UserType:{}".format(self.user.id).encode("utf-8")
+        ).decode("utf-8")
         mutation = """mutation($userId: ID!){
                         deleteUser(userId: $userId){
                             user{
@@ -358,7 +355,7 @@ class UsersGraphQLTestCase(GraphQLTestCase):
                     }
                 """
 
-        variables = {"userId": self.user.id}
+        variables = {"userId": id}
         result = self.client.post(
             "/graphql",
             data={"query": mutation, "variables": json.dumps(variables)},
@@ -371,6 +368,68 @@ class UsersGraphQLTestCase(GraphQLTestCase):
         self.assertEqual(
             content["data"]["deleteUser"]["user"]["email"], "test123@test.pl"
         )
+
+    def test_delete_me_mutation(self):
+        mutation = """
+            mutation {
+                login(username: "testuser", password: "testpassword") {
+                    success
+                    errors
+                    user {
+                        username
+                    }
+                }
+            }
+        """
+        result = self.client.post(
+            "/graphql", data={"query": mutation}
+        )
+        content = json.loads(result.content)
+        self.assertEqual(result.status_code, 200)
+        mutation = '''
+            mutation DeleteMe($password: String!) {
+                deleteMe(password: $password) {
+                    success
+                    errors
+                }
+            }
+        '''
+        variables = {
+            "password": "testpassword",
+        }
+
+        response = self.client.post('/graphql', json.dumps({
+            'query': mutation,
+            'variables': variables,
+        }), content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertTrue(content["data"]["deleteMe"]["success"])
+        self.assertIsNone(content["data"]["deleteMe"]["errors"])
+
+    def test_error_delete_user_mutation(self):
+        mutation = '''
+            mutation DeleteMe($password: String!) {
+                deleteMe(password: $password) {
+                    success
+                    errors
+                }
+            }
+        '''
+        variables = {
+            "password": "testpassword",
+        }
+
+        response = self.client.post('/graphql', json.dumps({
+            'query': mutation,
+            'variables': variables,
+        }), content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertFalse(content["data"]["deleteMe"]["success"])
+        self.assertIsNotNone(content["data"]["deleteMe"]["errors"])
 
 
 class PostsGraphQLTestCase(GraphQLTestCase):
@@ -450,13 +509,14 @@ class PostsGraphQLTestCase(GraphQLTestCase):
             "CategoryType:{}".format(self.category.id).encode("utf-8")
         ).decode("utf-8")
         mutation = """mutation($categoryId: ID!, $imageId: String!){
-                        createPost(title: "test", description: "testowanie", imageId: $imageId, categoryId: $categoryId, isPrivate: false){
+                        createPost(title: "test", description: "testowanie", imageId: $imageId, categoryId: $categoryId, isPrivate: true, expirationDate: 3){
                             post{
                                 title
                                 description
                                 image{
                                     name
                                 }
+                                expirationDate
                             }
                             errors
                             success
@@ -483,6 +543,7 @@ class PostsGraphQLTestCase(GraphQLTestCase):
         self.assertEqual(
             content["data"]["createPost"]["post"]["image"]["name"], "TestImage"
         )
+        self.assertIsNotNone(content["data"]["createPost"]["post"]["expirationDate"])
         self.assertEqual(content["data"]["createPost"]["success"], True)
 
     def test_error_create_post_mutation(self):
@@ -772,9 +833,6 @@ class AnonymousPostsGraphQLTestCase(GraphQLTestCase):
         self.assertEqual(content["data"]["createPost"]["success"], False)
 
     
-
-
-
 class CommentsGraphQLTestCase(GraphQLTestCase):
     def setUp(self) -> None:
         self.user = ExtendUser.objects.create_user(
@@ -859,15 +917,15 @@ class CommentsGraphQLTestCase(GraphQLTestCase):
         post_id = base64.b64encode(
             "CategoryType:{}".format(self.post.id).encode("utf-8")
         ).decode("utf-8")
-        mutation = """mutation($userId: ID!, $postId: ID!){
-                        createComment(postId: $postId, userId: $userId, comment: "test"){
+        mutation = """mutation($postId: ID!){
+                        createComment(postId: $postId, comment: "test"){
                             success
                             errors
                         }
                     }
                 """
 
-        variables = {"userId": self.user.id, "postId": post_id}
+        variables = {"postId": post_id}
         result = self.client.post(
             "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
         )
@@ -946,6 +1004,36 @@ class CommentsGraphQLTestCase(GraphQLTestCase):
         self.assertIn("likeComment", content["data"])
         self.assertIn("success", content["data"]["likeComment"])
         self.assertEqual(content["data"]["likeComment"]["success"], True)
+        self.assertTrue(self.user in self.comment.likes.all())
+
+    def test_nolike_comment_mutation(self):
+        self.comment.likes.add(self.user)
+        self.comment.save()
+        comment_id = base64.b64encode(
+            "CategoryType:{}".format(self.comment.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """mutation($commentId: String!){
+                            likeComment(commentId: $commentId){
+                                success
+                                errors
+                            }
+                        }
+                        """
+
+        variables = {"commentId": comment_id}
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+
+        self.assertIn("likeComment", content["data"])
+        self.assertIn("success", content["data"]["likeComment"])
+        self.assertEqual(content["data"]["likeComment"]["success"], True)
+        self.assertFalse(self.user in self.comment.likes.all())
 
     def test_dislike_comment_mutation(self):
         comment_id = base64.b64encode(
@@ -972,6 +1060,36 @@ class CommentsGraphQLTestCase(GraphQLTestCase):
         self.assertIn("dislikeComment", content["data"])
         self.assertIn("success", content["data"]["dislikeComment"])
         self.assertEqual(content["data"]["dislikeComment"]["success"], True)
+        self.assertTrue(self.user in self.comment.dislikes.all())
+
+    def test_delete_dislike_comment_mutation(self):
+        self.comment.dislikes.add(self.user)
+        self.comment.save()
+        comment_id = base64.b64encode(
+            "CategoryType:{}".format(self.comment.id).encode("utf-8")
+        ).decode("utf-8")
+        mutation = """mutation($commentId: String!){
+                            dislikeComment(commentId: $commentId){
+                                success
+                                errors
+                            }
+                        }
+                        """
+
+        variables = {"commentId": comment_id}
+        result = self.client.post(
+            "/graphql", data={"query": mutation, "variables": json.dumps(variables)}
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+        content = json.loads(result.content)
+        self.assertIn("data", content)
+
+        self.assertIn("dislikeComment", content["data"])
+        self.assertIn("success", content["data"]["dislikeComment"])
+        self.assertEqual(content["data"]["dislikeComment"]["success"], True)
+        self.assertFalse(self.user in self.comment.dislikes.all())
 
 
 class SubCommentsGraphQLTestCase(GraphQLTestCase):
@@ -1115,12 +1233,3 @@ class SubCommentsGraphQLTestCase(GraphQLTestCase):
         self.assertIn("data", content)
         self.assertIn("deleteSubcomment", content["data"])
         self.assertEqual(content["data"]["deleteSubcomment"]["success"], True)
-
-
-
-
-
-
-
-          
-
