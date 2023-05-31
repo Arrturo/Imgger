@@ -3,9 +3,7 @@ import axios from "axios";
 import PostList from "../components/PostList";
 import Loader from "../components/Loader";
 import { categoriesList } from "../actions/categoriesActions";
-import CategoryItem from "../components/CategoryItem";
-import { useDispatch, useSelector } from "react-redux";
-
+import { useDispatch } from "react-redux";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import "firebase/auth";
