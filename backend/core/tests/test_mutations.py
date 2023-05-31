@@ -1,6 +1,6 @@
 import base64
 import json
-
+from django.core.files.uploadedfile import InMemoryUploadedFile, SimpleUploadedFile
 from django.test import Client
 from graphene_django.utils import GraphQLTestCase
 

@@ -509,7 +509,7 @@ export const editComment = (comment) => async (dispatch, getState) => {
 	}
 };
 
-export const myPostsList = (id) => async (dispatch, getState) => {
+export const myPostsList = (offset) => async (dispatch, getState) => {
 	try {
 		dispatch({ type: MY_POST_LIST_REQUEST });
 
@@ -528,7 +528,7 @@ export const myPostsList = (id) => async (dispatch, getState) => {
 			{
 				query: `
                 query{
-                    postsByUser{
+                    postsByUser(first: 12, offset: ${offset}){
                         edges{
                           node{
                             id
@@ -549,9 +549,9 @@ export const myPostsList = (id) => async (dispatch, getState) => {
                                 username
                             }
                           }
-                          cursor
                         }
                       }
+					  postsByUserCount
                 }
                 `,
 			},
@@ -560,7 +560,7 @@ export const myPostsList = (id) => async (dispatch, getState) => {
 
 		dispatch({
 			type: MY_POST_LIST_SUCCESS,
-			payload: data?.data?.postsByUser?.edges,
+			payload: data?.data,
 		});
 	} catch (error) {
 		dispatch({

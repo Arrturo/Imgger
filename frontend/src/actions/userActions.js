@@ -9,7 +9,6 @@ import {
 	USER_UPDATE_PROFILE_REQUEST,
 	USER_UPDATE_PROFILE_SUCCESS,
 	USER_UPDATE_PROFILE_FAIL,
-	USER_UPDATE_PROFILE_RESET,
 	USER_LIST_FAIL,
 	USER_LIST_REQUEST,
 	USER_LIST_SUCCESS,
@@ -21,11 +20,10 @@ import {
 	USER_DETAILS_SUCCESS,
 	USER_DELETE_OWN_FAIL,
 	USER_DELETE_OWN_REQUEST,
-	USER_DELETE_OWN_SUCCESS
+	USER_DELETE_OWN_SUCCESS,
 } from "../constants/userConstants";
 import axios from "axios";
-import {url} from '../constants/host'
-import { Navigate } from "react-router-dom";
+import { url } from "../constants/host";
 
 axios.defaults.withCredentials = true;
 
@@ -214,7 +212,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 	}
 };
 
-export const listUsers = () => async (dispatch, getState) => {
+export const listUsers = (offset) => async (dispatch, getState) => {
 	try {
 		dispatch({
 			type: USER_LIST_REQUEST,
@@ -230,27 +228,28 @@ export const listUsers = () => async (dispatch, getState) => {
 			`${url}/graphql`,
 			{
 				query: `
-        query{
-          users{
-			edges{
-				node{
-					id
-					username
-					email
-					isStaff
-					dateJoined
-				}
-			}
-          }
-        }
-      `,
+					query{
+						users(first: 10, offset: ${offset}){
+							edges{
+								node{
+									id
+									username
+									email
+									isStaff
+									dateJoined
+								}
+							}
+						}
+						usersCount
+					}
+				`,
 			},
 			config
 		);
 
 		dispatch({
 			type: USER_LIST_SUCCESS,
-			payload: data.data.users.edges,
+			payload: data.data,
 		});
 	} catch (error) {
 		dispatch({
@@ -409,23 +408,22 @@ export const updateUserProfileByAdmin =
 		}
 	};
 
+export const deleteUserOwn = (password) => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: USER_DELETE_OWN_REQUEST,
+		});
 
-	export const deleteUserOwn = (password) => async (dispatch, getState) => {
-		try {
-			dispatch({
-				type: USER_DELETE_OWN_REQUEST,
-			});
-	
-			const config = {
-				headers: {
-					"Content-type": "application/json",
-				},
-			};
-	
-			const { data } = await axios.post(
-				`${url}/graphql`,
-				{
-					query: `
+		const config = {
+			headers: {
+				"Content-type": "application/json",
+			},
+		};
+
+		const { data } = await axios.post(
+			`${url}/graphql`,
+			{
+				query: `
 						mutation {
 							deleteMe(password: "${password}") {
 								success
@@ -433,37 +431,35 @@ export const updateUserProfileByAdmin =
 							}
 						}
 					`,
-				},
-				config
-			);
-	
-			if (data.data.deleteMe.success === true) {
-				localStorage.removeItem("userInfo");
-				dispatch({
-					type: USER_DELETE_OWN_SUCCESS,
-				});
-				dispatch({
-					type: USER_LOGOUT,
-				});
-				
-				setTimeout(() => {
-					window.location.reload();
-				}
-				, 1000);
-			}
-			else {
-				dispatch({
-					type: USER_DELETE_OWN_FAIL,
-					payload: data.data.deleteMe.errors
-				});
-			}
-		} catch (error) {
+			},
+			config
+		);
+
+		if (data.data.deleteMe.success === true) {
+			localStorage.removeItem("userInfo");
+			dispatch({
+				type: USER_DELETE_OWN_SUCCESS,
+			});
+			dispatch({
+				type: USER_LOGOUT,
+			});
+
+			setTimeout(() => {
+				window.location.reload();
+			}, 1000);
+		} else {
 			dispatch({
 				type: USER_DELETE_OWN_FAIL,
-				payload:
-					error.response && error.response.data.detail
-						? error.response.data.detail
-						: error.message,
+				payload: data.data.deleteMe.errors,
 			});
 		}
-	};
+	} catch (error) {
+		dispatch({
+			type: USER_DELETE_OWN_FAIL,
+			payload:
+				error.response && error.response.data.detail
+					? error.response.data.detail
+					: error.message,
+		});
+	}
+};

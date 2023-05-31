@@ -1,25 +1,11 @@
 import React, { useState, useEffect } from "react";
-import FormContainer from "../components/FormContainer";
 import { useDispatch, useSelector } from "react-redux";
-import {
-	Row,
-	Col,
-	Image,
-	ListGroup,
-	Button,
-	Card,
-	Form,
-	FormLabel,
-	FormGroup,
-} from "react-bootstrap";
+import { Row, Col, Image, Button, Form, FormGroup } from "react-bootstrap";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { categoriesList } from "../actions/categoriesActions";
 import { createPost } from "../actions/postActions";
 import { useNavigate, Link } from "react-router-dom";
-import { POST_CREATE_RESET } from "../constants/postConstants";
-import Message from "../components/Message";
-import Loader from "../components/Loader";
 import { url } from "../constants/host";
 
 function CreatingPost() {
@@ -95,7 +81,15 @@ function CreatingPost() {
 
 			if (imageId) {
 				await dispatch(
-					createPost(title, description, userId, imageId, cat, isPrivate, selectedOption)
+					createPost(
+						title,
+						description,
+						userId,
+						imageId,
+						cat,
+						isPrivate,
+						selectedOption
+					)
 				);
 			} else {
 				console.log("Image ID not available yet.");
@@ -105,7 +99,7 @@ function CreatingPost() {
 		}
 	};
 
-	console.log(selectedOption)
+	console.log(selectedOption);
 
 	useEffect(() => {
 		if (userInfo?.user) {

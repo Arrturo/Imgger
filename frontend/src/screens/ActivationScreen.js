@@ -1,11 +1,6 @@
-import React, { useState, useEffect, useProps } from "react";
-import FormContainer from "../components/FormContainer";
-import { Form, Button, Row, Col, FormGroup } from "react-bootstrap";
-import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import Message from "../components/Message";
-import Loader from "../components/Loader";
 import { url } from "../constants/host";
 
 const ActivationScreen = () => {

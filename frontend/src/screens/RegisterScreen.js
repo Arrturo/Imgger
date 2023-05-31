@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useProps } from "react";
+import React, { useState, useEffect } from "react";
 import FormContainer from "../components/FormContainer";
-import { Form, Button, Row, Col, FormGroup } from "react-bootstrap";
+import { Form, Button, Row, Col } from "react-bootstrap";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../actions/userActions";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 function RegisterScreen() {
 	const [username, setUsername] = useState("");
@@ -123,7 +123,16 @@ function RegisterScreen() {
 								className="form-checkbox h-5 w-5 text-primary-500 rounded focus:ring-primary-500"
 							/>
 							<label htmlFor="rules" className="ml-2 break-words text-lg">
-								I agree with the rules on our website and accept <a href="/rules" target="_blank" className="text-red-700 hover:text-red-800"> the regulations </a> <span className="text-red-600">*</span>
+								I agree with the rules on our website and accept{" "}
+								<a
+									href="/rules"
+									target="_blank"
+									className="text-red-700 hover:text-red-800"
+								>
+									{" "}
+									the regulations{" "}
+								</a>{" "}
+								<span className="text-red-600">*</span>
 							</label>
 						</div>
 					</Form.Group>

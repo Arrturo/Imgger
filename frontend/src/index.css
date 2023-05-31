@@ -173,8 +173,8 @@ main {
 	border-radius: 15px;
 	max-height: 40px;
 	position: absolute;
-	left: 50%;
-	top: 65px;
+	left: 90%;
+	bottom: 10px;
 	transform: translateX(-30%);
 }
 
@@ -378,6 +378,18 @@ main {
 	padding: 10px 0px;
 }
 
-.url_address{
+.url_address {
 	display: none;
+}
+
+.ramka {
+	border: 2px solid #ff4d00; 
+	border-radius: 20px; 
+	box-shadow: 0 0 20px rgb(255, 106, 0); 
+}
+
+.top-views {
+	border: 2px solid #3300ff; 
+	border-radius: 20px; 
+	box-shadow: 0 0 20px rgb(81, 0, 255); 
 }

@@ -5,7 +5,9 @@ import Alert from "react-bootstrap/Alert";
 function Rules() {
 	return (
 		<Accordion eventKey="0" className="mb-12">
-			<h1 className="text-4xl text-center mb-5 underline decoration-double decoration-amber-500">Imgger community rules</h1>
+			<h1 className="text-4xl text-center mb-5 underline decoration-double decoration-amber-500">
+				Imgger community rules
+			</h1>
 
 			<Alert className="akordeon_body">
 				Imgger is a fun place where anyone is welcome to discover entertaining

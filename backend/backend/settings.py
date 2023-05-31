@@ -45,7 +45,7 @@ firebase_admin.initialize_app(cred, {"storageBucket": get_secret("storageBucket"
 SECRET_KEY = get_secret("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -79,6 +79,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "core.mutations.users.RefreshTokenMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -86,7 +88,8 @@ ROOT_URLCONF = "backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["core", os.path.join(BASE_DIR, "templates")],
+        "DIRS": ["core", os.path.join(BASE_DIR, "templates"), "../frontend/build"],
+        # "DIRS": ["core", os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -106,7 +109,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ["*"]
 CSRF_COOKIE_SECURE = True
 CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000",
+    "http://localhost:8000",
 ]
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True
@@ -156,7 +159,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), "../frontend/build/static"]
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # AUTH_USER_MODEL = 'core.ExtendUser'
 

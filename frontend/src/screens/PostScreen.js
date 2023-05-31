@@ -1,20 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-	Link,
-	useParams,
-	useHistory,
-	useLocation,
-	useNavigate,
-} from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
 	Row,
 	Col,
 	Image,
 	ListGroup,
 	Button,
-	Card,
 	Form,
-	FormLabel,
 	FormGroup,
 } from "react-bootstrap";
 import Loader from "../components/Loader";
@@ -23,14 +15,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { likePost, dislikePost } from "../actions/postActions";
 import {
 	postsDetails,
-	postsList,
 	postComments,
 	addComment,
 	deleteComment,
 	editComment,
 	subcomments,
 	addingSubcomment,
-	deleteSubcomment,
 } from "../actions/postActions";
 import CategoryItem from "../components/CategoryItem";
 import dayjs from "dayjs";
@@ -135,7 +125,7 @@ function PostScreen() {
 		) {
 			dispatch(deleteComment(idk));
 			setTimeout(() => {
-				dispatch(postComments(id))
+				dispatch(postComments(id));
 			}, 100);
 		}
 	};
@@ -447,10 +437,14 @@ function PostScreen() {
 															: setClickedCommentId(com.node.id)
 													)}
 												>
-													<span className="text-center">
-														Replays{" "}
-														<i class="fa-solid fa-circle-arrow-down"></i>
-													</span>
+													{clickedCommentId === null ? (
+														<span className="text-center">
+															Replays{" "}
+															<i class="fa-solid fa-circle-arrow-down"></i>
+														</span>
+													) : (
+														<i class="fa-solid fa-circle-arrow-up"></i>
+													)}
 												</Button>
 											) : null}
 										</p>

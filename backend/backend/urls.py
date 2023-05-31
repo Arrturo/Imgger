@@ -16,8 +16,9 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView
 from graphene_file_upload.django import FileUploadGraphQLView
 from graphql_jwt.decorators import jwt_cookie
 
@@ -25,7 +26,7 @@ from core.schema import schema
 from core.views import logout_view
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    # path("admin/", admin.site.urls),
     path(
         "graphql",
         jwt_cookie(
@@ -33,6 +34,8 @@ urlpatterns = [
         ),
     ),
     path("logout/", csrf_exempt(logout_view), name="logout"),
+    # path('', TemplateView.as_view(template_name='index.html')),
+    re_path(r"^(?:.*)/?$", TemplateView.as_view(template_name="index.html")),
 ]
 
 if settings.DEBUG:

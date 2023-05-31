@@ -4,12 +4,12 @@ import string
 
 import graphene
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from firebase_admin import storage
 from graphql_jwt.decorators import login_required, staff_member_required
 
 from ..models import Category, Image, Post
 from ..types import PostType
-from django.utils import timezone
 
 
 class CreatePostMutation(graphene.Mutation):
@@ -25,14 +25,23 @@ class CreatePostMutation(graphene.Mutation):
     errors = graphene.String()
     post = graphene.Field(PostType)
 
-    def mutate(self, info, title, description, image_id, category_id, is_private, expiration_date=None):
+    def mutate(
+        self,
+        info,
+        title,
+        description,
+        image_id,
+        category_id,
+        is_private,
+        expiration_date=None,
+    ):
         try:
             user = info.context.user
             exp_date = None
             if is_private:
                 exp_date = timezone.now() + timezone.timedelta(days=1)
                 if expiration_date:
-                    match(expiration_date):
+                    match (expiration_date):
                         case 1:
                             exp_date = timezone.now() + timezone.timedelta(days=1)
                         case 2:
@@ -55,7 +64,7 @@ class CreatePostMutation(graphene.Mutation):
                     user=user,
                     is_private=is_private,
                     short_url=f"{''.join(random.choices(string.ascii_uppercase + string.digits, k=7))}",
-                    expiration_date=exp_date
+                    expiration_date=exp_date,
                 )
             else:
                 post = Post.objects.create(
@@ -65,7 +74,7 @@ class CreatePostMutation(graphene.Mutation):
                     category=category,
                     is_private=True,
                     short_url=f"{''.join(random.choices(string.ascii_uppercase + string.digits, k=7))}",
-                    expiration_date=exp_date
+                    expiration_date=exp_date,
                 )
             post.save()
             return CreatePostMutation(success=True, post=post)
