@@ -1,11 +1,11 @@
 import json
 from graphene_django.utils import GraphQLTestCase
 from django.test import Client
-
 from core.models import ExtendUser
 
 class UsersGraphQLTestCase(GraphQLTestCase):
     def setUp(self):
+        self.client = Client()
         self.user = ExtendUser.objects.create_user(
             username="testuser",
             password="testpassword",
@@ -31,7 +31,7 @@ class UsersGraphQLTestCase(GraphQLTestCase):
         result = self.client.post(
             "/graphql", data={"query": mutation}
         )
-        content = json.loads(result.content)
+        content = json.loads(result.content)  
         self.assertEqual(result.status_code, 200)
         self.assertIn("data", content)
         self.assertIn("login", content["data"])
@@ -39,8 +39,13 @@ class UsersGraphQLTestCase(GraphQLTestCase):
         self.assertEqual(content["data"]["login"]["errors"], None)
         self.assertEqual(content["data"]["login"]["user"]["username"], "testuser")
 
-        response = self.client.post("/logout", follow=True)
+        response = self.client.post("http://localhost:8000/logout/", follow=True)
+
         self.assertEqual(response.status_code, 200)
 
         self.assertNotIn("JWT-refresh-token=""", response.cookies)
         self.assertNotIn("JWT-token=""", response.cookies)
+
+
+
+

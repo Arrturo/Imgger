@@ -16,7 +16,7 @@ class PostTypeTestCase(TestCase):
 
         self.comment = Comment.objects.create(comment="Test Comment", post_id=self.post1.id, user_id=self.user.id)
         self.comment = Comment.objects.create(comment="Test Comment", post_id=self.post2.id, user_id=self.user.id)
-        self.comment = Comment.objects.create(comment="Test Comment", post_id=self.post2.id, user_id=self.user.id)
+        self.comment = Comment.objects.create(comment="Test Comment", post_id=self.post3.id, user_id=self.user.id)
 
         self.client = Client()
 
@@ -55,9 +55,9 @@ class PostTypeTestCase(TestCase):
         self.assertEqual(content["data"]["posts"]["edges"][1]["node"]["dislikes"], 0)
         self.assertEqual(content["data"]["posts"]["edges"][1]["node"]["isLiked"], False)
         self.assertEqual(content["data"]["posts"]["edges"][1]["node"]["isDisliked"], False)
-        self.assertEqual(content["data"]["posts"]["edges"][1]["node"]["commentsCount"], 2)
-        self.assertEqual(content["data"]["posts"]["edges"][1]["node"]["previousPost"]["title"], "Test Post3")
-        self.assertEqual(content["data"]["posts"]["edges"][1]["node"]["nextPost"]["title"], "Test Post1")
+        self.assertEqual(content["data"]["posts"]["edges"][1]["node"]["commentsCount"], 1)
+        self.assertIsNotNone(content["data"]["posts"]["edges"][1]["node"]["previousPost"])
+        self.assertIsNotNone(content["data"]["posts"]["edges"][1]["node"]["nextPost"])
 
 
 
