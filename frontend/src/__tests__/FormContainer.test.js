@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Footer from '../FormContainer';
-import FormContainer from '../FormContainer';
+import Footer from '../components/FormContainer';
+import FormContainer from '../components/FormContainer';
 import { Container, Row, Col } from 'react-bootstrap';
 
 test('it render Hello', () => {

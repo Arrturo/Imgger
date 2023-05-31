@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Message from '../Message';
+import Message from '../components/Message';
 
 test('renders message component with correct text', () => {
   const messageText = 'Example message';
