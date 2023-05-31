@@ -1,28 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-	Link,
-	useParams,
-	useHistory,
-	useLocation,
-	useNavigate,
-} from "react-router-dom";
-import {
-	Row,
-	Col,
-	Image,
-	ListGroup,
-	Button,
-	Card,
-	Form,
-	FormLabel,
-	FormGroup,
-} from "react-bootstrap";
+import { useParams, useNavigate } from "react-router-dom";
+import { Row, Col, Image, ListGroup } from "react-bootstrap";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
-import { likePost, dislikePost } from "../actions/postActions";
 import { postsDetails } from "../actions/postActions";
-import CategoryItem from "../components/CategoryItem";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
@@ -51,15 +33,15 @@ function PrivatePost() {
 
 	function CopyUrlButton(props) {
 		const handleClick = () => {
-		  navigator.clipboard.writeText(props.url);
+			navigator.clipboard.writeText(props.url);
 		};
-	  
+
 		return (
-		  <button onClick={handleClick} className="btn btn-primary">
-			Copy URL
-		  </button>
+			<button onClick={handleClick} className="btn btn-primary">
+				Copy URL
+			</button>
 		);
-	  }
+	}
 
 	return (
 		<div className="mb-24 min-h-screen">
