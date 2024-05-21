@@ -1,5 +1,5 @@
 # Imgger ![Project Status](https://img.shields.io/badge/status-in%20progress-yellow)
-You can check our app by clicking the link: https://imgger.smallhost.pl/
+You can check our app by clicking the link: https://imgger.space/
 
 This is a web application built with Django, GraphQL API, React and PostgreSQL. The purpose of this app is to provide users with a platform to upload, view, and share images with others.
 
